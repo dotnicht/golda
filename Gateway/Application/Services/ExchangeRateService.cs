@@ -105,7 +105,15 @@ namespace Binebase.Exchange.Gateway.Application.Services
             }
 
             _logger.LogInformation($"Exchange rate {rate.Pair} {rate.Rate} {rate.DateTime}.");
-            _cacheClient.AddToList(rate.Pair.ToString(), rate).Wait();
+
+            try
+            {
+                _cacheClient.AddToList(rate.Pair.ToString(), rate).Wait();
+            }
+            catch (AggregateException ex)
+            {
+                _logger.LogError(ex, "Error adding exchange rate to cache.");
+            }
         }
 
         public void Dispose() => _timer?.Dispose();

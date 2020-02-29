@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EditorConfigFiles Update="../.editorconfig" Link=".editorconfig" />
+      <EditorConfigFiles Update="../../.editorconfig" Link=".editorconfig" />
     </ItemGroup>
 
 </Project>

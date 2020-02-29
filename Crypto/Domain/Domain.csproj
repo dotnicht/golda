@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>Binebase.Exchange.CryptoService.Domain</RootNamespace>
+    <AssemblyName>Binebase.Exchange.CryptoService.Domain</AssemblyName>
+  </PropertyGroup>
+
+</Project>
