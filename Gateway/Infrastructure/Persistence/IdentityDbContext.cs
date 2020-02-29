@@ -1,6 +1,6 @@
 ﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Common.Domain;
-using Binebase.Exchange.Gateway.Common.Interfaces;
+using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Common.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

@@ -1,5 +1,5 @@
 ﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Common.Interfaces;
+using Binebase.Exchange.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Security.Claims;

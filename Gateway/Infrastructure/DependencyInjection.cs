@@ -2,7 +2,7 @@
 using Binance.Net.Interfaces;
 using Binebase.Exchange.Gateway.Application.Common.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Common;
+using Binebase.Exchange.Common;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

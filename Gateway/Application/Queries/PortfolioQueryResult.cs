@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.Gateway.Common.Domain;
+﻿using Binebase.Exchange.Common.Domain;
 using System.Collections.Generic;
 
 namespace Binebase.Exchange.Gateway.Application.Queries

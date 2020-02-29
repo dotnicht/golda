@@ -1,5 +1,5 @@
 ﻿using Binebase.Exchange.Gateway.Application.Common.Mappings;
-using Binebase.Exchange.Gateway.Common.Domain;
+using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using System;
 

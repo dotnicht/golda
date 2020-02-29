@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.Gateway.Common.Domain;
+﻿using Binebase.Exchange.Common.Domain;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

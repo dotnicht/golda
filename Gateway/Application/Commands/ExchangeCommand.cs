@@ -1,7 +1,7 @@
-﻿using Binebase.Exchange.Gateway.Application.Common.Exceptions;
+﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Common.Interfaces;
+using Binebase.Exchange.Gateway.Application.Common.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Common.Domain;
-using Binebase.Exchange.Gateway.Common.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;

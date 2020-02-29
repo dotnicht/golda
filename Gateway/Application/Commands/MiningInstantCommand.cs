@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Common.Domain;
+using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;

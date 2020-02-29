@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Binebase.Exchange.Gateway.Application.Common.Behaviours;
-using Binebase.Exchange.Gateway.Common;
+using Binebase.Exchange.Common;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;

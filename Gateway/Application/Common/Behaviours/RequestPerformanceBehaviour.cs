@@ -1,5 +1,5 @@
 ﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Common.Interfaces;
+using Binebase.Exchange.Common.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;

@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.Gateway.Common.Domain;
+﻿using Binebase.Exchange.Common.Domain;
 
 namespace Binebase.Exchange.Gateway.Domain.Entities
 {

@@ -2,7 +2,7 @@
 using Binebase.Exchange.Gateway.Application.Common.Exceptions;
 using Binebase.Exchange.Gateway.Application.Common.Models;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Common.Interfaces;
+using Binebase.Exchange.Common.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

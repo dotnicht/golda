@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.Gateway.Common;
+﻿using Binebase.Exchange.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
