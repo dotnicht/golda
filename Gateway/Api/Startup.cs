@@ -1,0 +1,124 @@
+using Binebase.Exchange.Gateway.Api.Common;
+using Binebase.Exchange.Gateway.Application;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Common;
+using Binebase.Exchange.Gateway.Infrastructure;
+using Binebase.Exchange.Gateway.Infrastructure.Account;
+using Binebase.Exchange.Gateway.Infrastructure.Persistence;
+using Binebase.Exchange.Gateway.Persistence;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using NSwag;
+using NSwag.Generation.Processors.Security;
+using System.Linq;
+using System.Reflection;
+
+namespace Binebase.Exchange.Gateway.Api
+{
+    public class Startup
+    {
+        public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment) => (Configuration, Environment) = (configuration, environment);
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddApplication();
+            services.AddInfrastructure(Configuration);
+            services.AddPersistence(Configuration);
+
+            services.AddServices(Assembly.GetExecutingAssembly());
+
+            services.AddHttpContextAccessor();
+            services.AddHttpClient<IAccountService, AccountService>();
+
+            services.AddHealthChecks().AddDbContextCheck<DbContext>("Persistence");
+            services.AddHealthChecks().AddDbContextCheck<IdentityDbContext>("Identity");
+
+            services.AddControllers()
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining<IDbContext>();
+                    fv.ImplicitlyValidateChildProperties = true;
+                })
+                .AddNewtonsoftJson();
+
+            services.AddCors(setup => setup.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+                policy.AllowAnyOrigin();
+            }));
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
+            services.AddOpenApiDocument(configure =>
+            {
+                configure.Title = "Binebase.Exchange API";
+                configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Type into the textbox: Bearer {your JWT token}."
+                });
+
+                configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            });
+
+            services.AddConfigurationProviders(Configuration);
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, ICacheClient redisService)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseCustomExceptionHandler();
+            app.UseHealthChecks("/health");
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseSwaggerUi3(settings =>
+            {
+                settings.Path = "/api";
+                settings.DocumentPath = "/api/specification.json";
+            });
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseCors();
+
+            app.UseCors();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
+            });
+
+            redisService.Connect();
+        }
+    }
+}

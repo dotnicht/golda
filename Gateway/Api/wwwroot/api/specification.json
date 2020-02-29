@@ -1,0 +1,989 @@
+﻿{
+  "x-generator": "NSwag v13.2.2.0 (NJsonSchema v10.1.4.0 (Newtonsoft.Json v12.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Binebase.Exchange API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/Account/Balance": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Balance",
+        "parameters": [
+          {
+            "name": "Currency",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Account/Portfolio": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Portfolio",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/PortfolioQuery"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Account/Transactions": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Transactions",
+        "parameters": [
+          {
+            "name": "Currency",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionsQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Auth/SignUp": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_SignUp",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Auth/SignIn": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_SignIn",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Auth/Confirm": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_Confirm",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Auth/Resend": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_Resend",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Auth/SendPasswordReset": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_SendPasswordReset",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendPasswordResetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Auth/ResetPassword": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_ResetPassword",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Crypto/Address": {
+      "get": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Address",
+        "parameters": [
+          {
+            "name": "Currency",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Crypto/Addresses": {
+      "get": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Addresses",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/AddressesQuery"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressesQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Crypto/ExchnageRate": {
+      "get": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_ExchnageRate",
+        "parameters": [
+          {
+            "name": "Base",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Quote",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeRateQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Crypto/ExchnageRates": {
+      "get": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_ExchnageRates",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ExchangeRatesQuery"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExchangeRatesQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Crypto/Exchange": {
+      "post": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Exchange",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExchangeCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Mining/Status": {
+      "get": {
+        "tags": [
+          "Mining"
+        ],
+        "operationId": "Mining_Status",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/MiningStatusQuery"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiningStatusQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Mining/Daily": {
+      "post": {
+        "tags": [
+          "Mining"
+        ],
+        "operationId": "Mining_Daily",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MiningDailyCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiningDailyCommandResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Mining/Request": {
+      "post": {
+        "tags": [
+          "Mining"
+        ],
+        "operationId": "Mining_Request",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MiningRequestCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiningRequestCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BalanceQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "balance": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "Currency": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH",
+          "EUR"
+        ],
+        "enum": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH",
+          "EUR"
+        ]
+      },
+      "PortfolioQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "portfolio": {
+            "type": "object",
+            "nullable": true,
+            "x-dictionaryKey": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "additionalProperties": {
+              "type": "number",
+              "format": "decimal"
+            }
+          }
+        }
+      },
+      "PortfolioQuery": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionsQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Transaction"
+            }
+          }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "balance": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "source": {
+            "$ref": "#/components/schemas/TransactionSource"
+          }
+        }
+      },
+      "TransactionSource": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Mining",
+          "Exchange",
+          "Deposit",
+          "Widthraw",
+          "Refferal",
+          "Fee"
+        ],
+        "enum": [
+          "Mining",
+          "Exchange",
+          "Deposit",
+          "Widthraw",
+          "Refferal",
+          "Fee"
+        ]
+      },
+      "SignUpCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmation": {
+            "type": "string",
+            "nullable": true
+          },
+          "referral": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          }
+        }
+      },
+      "SignInCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SignInCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ConfirmCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ConfirmCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ResendCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SendPasswordResetCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ResetPasswordCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmation": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "AddressQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "AddressesQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "addresses": {
+            "type": "object",
+            "nullable": true,
+            "x-dictionaryKey": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "AddressesQuery": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ExchangeRateQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "rate": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "ExchangeRatesQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "rates": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "type": "number",
+              "format": "decimal"
+            }
+          }
+        }
+      },
+      "ExchangeRatesQuery": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ExchangeCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "base": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "referenceId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          }
+        }
+      },
+      "MiningStatusQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "dailyTimeout": {
+            "type": "string",
+            "format": "time-span"
+          },
+          "instantTimeout": {
+            "type": "string",
+            "format": "time-span"
+          },
+          "currentMiningCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "boostMapping": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "MiningStatusQuery": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MiningDailyCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TransactionType"
+          }
+        }
+      },
+      "TransactionType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Default",
+          "Bonus",
+          "Instant"
+        ],
+        "enum": [
+          "Default",
+          "Bonus",
+          "Instant"
+        ]
+      },
+      "MiningDailyCommand": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MiningRequestCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "MiningRequestCommand": {
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "apiKey",
+        "description": "Type into the textbox: Bearer {your JWT token}.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
+}

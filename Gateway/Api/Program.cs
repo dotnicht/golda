@@ -1,0 +1,45 @@
+using Binebase.Exchange.Gateway.Infrastructure.Persistence;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
+
+namespace Binebase.Exchange.Gateway.Api
+{
+    public sealed class Program
+    {
+        public async static Task Main(string[] args)
+        {
+            var host = CreateWebHostBuilder(args).Build();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var identity = services.GetRequiredService<IdentityDbContext>();
+                    await identity.Database.MigrateAsync();
+                    var context = services.GetRequiredService<Persistence.DbContext>();
+                    await context.Database.MigrateAsync();
+                    //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                    //var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+                    //await ApplicationDbContextSeed.SeedAsync(context, userManager, roleManager);
+                }
+                catch (Exception ex)
+                {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+                }
+            }
+
+            host.Run();
+        }
+
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+            => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+    }
+}

@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>Binebase.Exchange.Gateway.Infrastructure</RootNamespace>
+        <AssemblyName>Binebase.Exchange.Gateway.Infrastructure</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Persistence\Migrations\20200204155747_Referrals.cs" />
+      <Compile Remove="Persistence\Migrations\20200204155747_Referrals.Designer.cs" />
+      <Compile Remove="Persistence\Migrations\20200206170437_ReferralCode.cs" />
+      <Compile Remove="Persistence\Migrations\20200206170437_ReferralCode.Designer.cs" />
+      <Compile Remove="Persistence\Migrations\20200206170811_Referral1.cs" />
+      <Compile Remove="Persistence\Migrations\20200206170811_Referral1.Designer.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Binance.Net" Version="5.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.1" />
+        <PackageReference Include="StackExchange.Redis" Version="2.0.601" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
+        <PackageReference Include="SendGrid" Version="9.12.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\Common\Common.csproj" />
+    </ItemGroup>
+
+</Project>

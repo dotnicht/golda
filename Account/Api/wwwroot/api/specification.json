@@ -1,0 +1,453 @@
+﻿{
+  "x-generator": "NSwag v13.2.3.0 (NJsonSchema v10.1.5.0 (Newtonsoft.Json v12.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Binebase.Exchange.AccountService API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/Account/Portfolio": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Portfolio",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Account/Balance": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Balance",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Currency",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Account/Transactions": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Transactions",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Currency",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionsQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Account": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Create",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Account/Currency": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Currency",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCurrencyCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Currency2",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveCurrencyCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Account/Debit": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Debit",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DebitAccountCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebitAccountCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Account/Credit": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Credit",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreditAccountCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditAccountCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PortfolioQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "portfolio": {
+            "type": "object",
+            "nullable": true,
+            "x-dictionaryKey": {
+              "$ref": "#/components/schemas/Currency"
+            },
+            "additionalProperties": {
+              "type": "number",
+              "format": "decimal"
+            }
+          }
+        }
+      },
+      "Currency": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH"
+        ],
+        "enum": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH"
+        ]
+      },
+      "BalanceQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "TransactionsQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Transaction"
+            }
+          }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "balance": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateAccountCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "AddCurrencyCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          }
+        }
+      },
+      "RemoveCurrencyCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          }
+        }
+      },
+      "DebitAccountCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "DebitAccountCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "payload": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreditAccountCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "CreditAccountCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "payload": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "apiKey",
+        "description": "Type into the textbox: Bearer {your JWT token}.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
+}

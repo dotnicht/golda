@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>Binebase.Exchange.AccountService.Domain</RootNamespace>
+    <AssemblyName>Binebase.Exchange.AccountService.Domain</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ValueObjects\Currency.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NEventStore.Domain" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\" />
+    <Folder Include="ValueObjects\" />
+  </ItemGroup>
+
+</Project>
