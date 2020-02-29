@@ -43,9 +43,9 @@ namespace Binebase.Exchange.AccountService.Infrastructure
                 services.AddTransient<IDateTime, DateTimeService>();
             }
 
-            services.AddAuthentication();
+            //services.AddAuthentication();
 
-            var store = Wireup
+            services.AddSingleton(x => Wireup
                 .Init()
                 .LogToOutputWindow(LogLevel.Verbose)
                 .LogToConsoleWindow(LogLevel.Verbose)
@@ -56,9 +56,8 @@ namespace Binebase.Exchange.AccountService.Infrastructure
                 //.Compress()
                 //.EncryptWith()
                 //.HookIntoPipelineUsing(new[] { new PipelineHook() })
-                .UsingJsonSerialization();
-
-            services.AddSingleton(store.Build());
+                .UsingJsonSerialization()
+                .Build());
 
             services.AddTransient<IRepository, EventStoreRepository>();
             services.AddTransient<IConstructAggregates, AggregateFactory>();
