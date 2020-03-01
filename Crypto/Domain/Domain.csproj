@@ -6,4 +6,10 @@
     <AssemblyName>Binebase.Exchange.CryptoService.Domain</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\" />
+    <Folder Include="Enums\" />
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+
 </Project>
