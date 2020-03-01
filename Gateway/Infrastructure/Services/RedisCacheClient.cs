@@ -79,7 +79,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             return range.SingleOrDefault();
         }
 
-        public void Connect()
+        public void Dispose() => _redis?.Dispose();
+
+        private IDatabase GetDatabase()
         {
             if (_redis == null || !_redis.IsConnected || !_redis.IsConnecting)
             {
@@ -93,12 +95,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     throw;
                 }
             }
-        }
 
-        public void Dispose() => _redis?.Dispose();
-
-        private IDatabase GetDatabase()
-        {
             if (_redis == null || !_redis.IsConnected)
             {
                 throw new InvalidOperationException("Not connected to Redis server.");

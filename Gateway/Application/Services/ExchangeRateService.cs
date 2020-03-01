@@ -68,8 +68,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task Subscribe()
         {
-            _cacheClient.Connect();
-
             await _exchangeRateProvider.Subscribe(new Pair(Currency.BTC, Currency.EUR), x => _cacheClient.AddToList(new Pair(Currency.BTC, Currency.EURB).ToString(), x));
             await _exchangeRateProvider.Subscribe(new Pair(Currency.ETH, Currency.EUR), x => _cacheClient.AddToList(new Pair(Currency.ETH, Currency.EURB).ToString(), x));
 

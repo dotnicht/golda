@@ -80,7 +80,7 @@ namespace Binebase.Exchange.Gateway.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, ICacheClient redisService)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -106,19 +106,14 @@ namespace Binebase.Exchange.Gateway.Api
             });
 
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors();
-
             app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
             });
-
-            redisService.Connect();
         }
     }
 }
