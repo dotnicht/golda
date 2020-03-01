@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Binebase.Exchange.Gateway.Infrastructure
 {
@@ -47,20 +48,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             {
                 x.Events = new JwtBearerEvents
                 {
-                    OnTokenValidated = context =>
-                    {
-                        if (context.Principal.Identity is ClaimsIdentity claims && Guid.TryParse(claims.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value, out var userId))
-                        {
-                            var identity = context.HttpContext.RequestServices.GetRequiredService<IIdentityService>();
-                            var user = identity.GetUser(userId).Result;
-                            if (user == null)
-                            {
-                                context.Fail(new SecurityException($"User not found with ID {userId}."));
-                            }
-                        }
-
-                        return Task.CompletedTask;
-                    }
+                    OnTokenValidated = HandleTokenValidation
                 };
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
@@ -84,6 +72,30 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             services.AddAuthentication();
 
             return services;
+        }
+
+        private static async Task HandleTokenValidation(TokenValidatedContext context) 
+        {
+            if (context.Principal.Identity is ClaimsIdentity claims 
+                && Guid.TryParse(claims.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value, out var userId))
+            {
+                var user = context.HttpContext.RequestServices
+                    .GetRequiredService<IIdentityService>()
+                    .GetUser(userId).Result;
+
+                if (user == null)
+                {
+                    context.Fail(new SecurityException($"User not found with ID {userId}."));
+                }
+                else
+                {
+                    context.HttpContext.RequestServices
+                        .GetRequiredService<ILogger<IIdentityService>>()
+                        .LogInformation($"Token validated. User ID {user.Id} ({user.Email}).");
+                }
+            }
+
+            await Task.CompletedTask;
         }
     }
 }
