@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Entities\" />
     <Folder Include="ValueObjects\" />
   </ItemGroup>

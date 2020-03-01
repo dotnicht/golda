@@ -22,8 +22,4 @@
     <Folder Include="Common\Mappings\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EditorConfigFiles Update="C:\Development\Binebase.Exchange.AccountService\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
 </Project>
