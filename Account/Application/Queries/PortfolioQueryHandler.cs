@@ -16,7 +16,7 @@ namespace Binebase.Exchange.AccountService.Application.Queries
 
         public async Task<PortfolioQueryResult> Handle(PortfolioQuery request, CancellationToken cancellationToken)
         {
-            var account = _repository.GetById<Account>(request.Id) ?? throw new NotFoundException(nameof(Account), request.Id);
+            var account = _repository.GetById<Account>(request.Id, int.MaxValue) ?? throw new NotFoundException(nameof(Account), request.Id);
             var result = new PortfolioQueryResult { Portfolio = account.Portfolio.ToDictionary(x => x.Currency, x => x.Amount) };
             return await Task.FromResult(result);
         }

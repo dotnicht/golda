@@ -25,7 +25,7 @@ namespace Binebase.Exchange.AccountService.Application.Commands
 
             public async Task<DebitAccountCommandResult> Handle(DebitAccountCommand request, CancellationToken cancellationToken)
             {
-                var account = _repository.GetById<Account>(request.Id);
+                var account = _repository.GetById<Account>(request.Id, int.MaxValue);
                 var id = account.Debit(request.Currency, request.Amount, request.Payload);
                 _repository.Save(account, Guid.NewGuid());
                 return await Task.FromResult(new DebitAccountCommandResult { Id = id });

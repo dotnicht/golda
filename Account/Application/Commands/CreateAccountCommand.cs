@@ -22,7 +22,7 @@ namespace Binebase.Exchange.AccountService.Application.Commands
 
             public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
             {
-                var account = _repository.GetById<Account>(request.Id);
+                var account = _repository.GetById<Account>(request.Id, int.MaxValue);
                 if (account.Created)
                 {
                     throw new AccountException($"Account already exists {request.Id}.");
