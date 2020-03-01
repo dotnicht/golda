@@ -1,13 +1,8 @@
-﻿using Binebase.Exchange.AccountService.Application;
-using Binebase.Exchange.AccountService.Application.Common.Interfaces;
-using Binebase.Exchange.AccountService.Domain.Aggregates;
-using Binebase.Exchange.AccountService.Infrastructure.Identity;
-using Binebase.Exchange.AccountService.Infrastructure.Persistence;
-using Binebase.Exchange.AccountService.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication;
+﻿using Binebase.Exchange.AccountService.Domain.Aggregates;
+using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,7 +34,6 @@ namespace Binebase.Exchange.AccountService.Infrastructure
             }
             else
             {
-                services.AddTransient<IIdentityService, IdentityService>();
                 services.AddTransient<IDateTime, DateTimeService>();
             }
 

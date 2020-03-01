@@ -1,9 +1,7 @@
 using Binebase.Exchange.AccountService.Application;
-using Binebase.Exchange.AccountService.Application.Common.Interfaces;
+using Binebase.Exchange.AccountService.Application.Commands;
 using Binebase.Exchange.AccountService.Infrastructure;
-using Binebase.Exchange.AccountService.Infrastructure.Persistence;
-using Binebase.Exchange.AccountService.Api.Common;
-using Binebase.Exchange.AccountService.Api.Services;
+using Binebase.Exchange.Common.Api.Common;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,14 +29,12 @@ namespace Binebase.Exchange.AccountService.Api
             services.AddApplication();
             services.AddInfrastructure(Configuration, Environment);
 
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-
             services.AddHttpContextAccessor();
 
             //services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
             services.AddControllers()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<IApplicationDbContext>())
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddCurrencyCommand>()) // TODO: replace.
                 .AddNewtonsoftJson();
 
             // Customize default API behavior

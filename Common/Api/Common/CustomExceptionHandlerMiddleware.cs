@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.Common.Application.Common.Exceptions;
+﻿using Binebase.Exchange.Common.Application.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -29,10 +29,9 @@ namespace Binebase.Exchange.Common.Api.Common
             }
         }
 
-        private Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var code = HttpStatusCode.InternalServerError;
-
             var result = string.Empty;
 
             switch (exception)
@@ -41,8 +40,17 @@ namespace Binebase.Exchange.Common.Api.Common
                     code = HttpStatusCode.BadRequest;
                     result = JsonConvert.SerializeObject(validationException.Failures);
                     break;
+                case NotSupportedException _:
+                    code = HttpStatusCode.BadRequest;
+                    break;
                 case NotFoundException _:
                     code = HttpStatusCode.NotFound;
+                    break;
+                case SecurityException _:
+                    code = HttpStatusCode.Unauthorized;
+                    break;
+                case NotImplementedException _:
+                    code = HttpStatusCode.NotImplemented;
                     break;
             }
 
@@ -51,7 +59,7 @@ namespace Binebase.Exchange.Common.Api.Common
 
             if (string.IsNullOrEmpty(result))
             {
-                result = JsonConvert.SerializeObject(new { error = exception.Message });
+                result = JsonConvert.SerializeObject(new { Error = new[] { exception.Message } });
             }
 
             return context.Response.WriteAsync(result);

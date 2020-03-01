@@ -1,6 +1,6 @@
-﻿using Binebase.Exchange.Common.Domain;
+﻿using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Gateway.Application.Common.Exceptions;
+using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using IDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IDbContext;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {

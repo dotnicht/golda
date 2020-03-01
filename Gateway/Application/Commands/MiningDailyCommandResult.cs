@@ -1,10 +1,4 @@
-﻿using Binebase.Exchange.Gateway.Application.Common.Mappings;
-using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Gateway.Domain.Entities;
-using Binebase.Exchange.Gateway.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Binebase.Exchange.Gateway.Domain.Enums;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {

@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.AccountService.Application.Common.Interfaces;
-using Binebase.Exchange.AccountService.Domain.Aggregates;
+﻿using Binebase.Exchange.AccountService.Domain.Aggregates;
 using Binebase.Exchange.AccountService.Domain.Common;
 using Binebase.Exchange.AccountService.Domain.Exceptions;
 using MediatR;

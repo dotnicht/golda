@@ -1,7 +1,5 @@
-using Binebase.Exchange.CryptoService.Infrastructure.Identity;
 using Binebase.Exchange.CryptoService.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,10 +23,6 @@ namespace Binebase.Exchange.CryptoService.Api
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
                     context.Database.Migrate();
-
-                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-
-                    await ApplicationDbContextSeed.SeedAsync(userManager);
                 }
                 catch (Exception ex)
                 {

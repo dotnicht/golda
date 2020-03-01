@@ -1,7 +1,7 @@
-using Binebase.Exchange.Gateway.Api.Common;
+using Binebase.Exchange.Common.Api.Common;
+using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Account;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
@@ -35,6 +35,7 @@ namespace Binebase.Exchange.Gateway.Api
             services.AddPersistence(Configuration);
 
             services.AddServices(Assembly.GetExecutingAssembly());
+            services.AddServices(typeof(IAccountService).Assembly);
 
             services.AddHttpContextAccessor();
             services.AddHttpClient<IAccountService, AccountService>();

@@ -1,6 +1,6 @@
 ﻿using Binance.Net;
 using Binance.Net.Interfaces;
-using Binebase.Exchange.Gateway.Application.Common.Exceptions;
+using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;

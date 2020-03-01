@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Binebase.Exchange.Gateway.Application.Common.Mappings;
+using Binebase.Exchange.Common.Application.Mappings;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;

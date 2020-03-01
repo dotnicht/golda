@@ -7,6 +7,7 @@ using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Binebase.Exchange.Common.Infrastructure.Services;
 
 namespace Worker
 {

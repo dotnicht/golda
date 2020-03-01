@@ -39,6 +39,7 @@
     </Target>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Api\Api.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>

@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using IDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IDbContext;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {

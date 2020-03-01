@@ -1,8 +1,4 @@
-﻿using AutoMapper;
-using Binebase.Exchange.AccountService.Application.Common.Behaviours;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Binebase.Exchange.AccountService.Application
 {
@@ -10,11 +6,6 @@ namespace Binebase.Exchange.AccountService.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
-
             return services;
         }
     }

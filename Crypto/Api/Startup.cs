@@ -1,8 +1,8 @@
+using Binebase.Exchange.Common.Api.Common;
 using Binebase.Exchange.CryptoService.Application;
-using Binebase.Exchange.CryptoService.Application.Common.Interfaces;
+using Binebase.Exchange.CryptoService.Application.Interfaces;
+using Binebase.Exchange.CryptoService.Infrastructure;
 using Binebase.Exchange.CryptoService.Infrastructure.Persistence;
-using Binebase.Exchange.CryptoService.Api.Common;
-using Binebase.Exchange.CryptoService.Api.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,7 +14,6 @@ using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Linq;
-using Binebase.Exchange.CryptoService.Infrastructure;
 
 namespace Binebase.Exchange.CryptoService.Api
 {
@@ -36,15 +35,13 @@ namespace Binebase.Exchange.CryptoService.Api
             services.AddApplication();
             services.AddInfrastructure(Configuration, Environment);
 
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-
             services.AddHttpContextAccessor();
 
             services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
-            services.AddControllersWithViews()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<IApplicationDbContext>())
+            services.AddControllers()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<IDbContext>())
                 .AddNewtonsoftJson();
 
             services.AddRazorPages();

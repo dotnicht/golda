@@ -1,6 +1,6 @@
-﻿using Binebase.Exchange.Gateway.Application.Common.Exceptions;
-using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -14,22 +14,20 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public string Email { get; set; }
 
-        public class ResendCommandHandler : IRequestHandler<ResendCommand>, IConfigurationProvider<ResendCommandHandler.Configuration>
+        public class ResendCommandHandler : IRequestHandler<ResendCommand>
         {
             private readonly IIdentityService _identityService;
             private readonly IEmailService _emailService;
             private readonly IAccountService _accountService;
             private readonly IDateTime _dateTime;
-            private readonly IOptions<Configuration> _options;
 
             public ResendCommandHandler(
                 IIdentityService identityService,
                 IEmailService emailService,
                 IAccountService accountService,
-                IDateTime dateTime,
-                IOptions<Configuration> options)
-                => (_identityService, _emailService, _accountService, _dateTime, _options)
-                    = (identityService, emailService, accountService,  dateTime, options);
+                IDateTime dateTime)
+                => (_identityService, _emailService, _accountService, _dateTime)
+                    = (identityService, emailService, accountService,  dateTime);
 
             public async Task<Unit> Handle(ResendCommand request, CancellationToken cancellationToken)
             {
@@ -41,11 +39,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(user.Id));
 
                 return Unit.Value;
-            }
-
-            public class Configuration
-            {
-                public string SomeValue { get; set; }
             }
         }
     }

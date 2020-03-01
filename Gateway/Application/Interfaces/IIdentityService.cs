@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.Gateway.Application.Common.Models;
+﻿using Binebase.Exchange.Common.Application.Models;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using System;
 using System.Threading.Tasks;

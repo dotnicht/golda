@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.Gateway.Application.Common.Models;
+﻿using Binebase.Exchange.Common.Application.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;

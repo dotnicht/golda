@@ -1,9 +1,6 @@
-﻿using Binebase.Exchange.CryptoService.Application;
-using Binebase.Exchange.CryptoService.Application.Common.Interfaces;
-using Binebase.Exchange.CryptoService.Infrastructure.Identity;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.CryptoService.Infrastructure.Persistence;
-using Binebase.Exchange.CryptoService.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,10 +16,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
-
-            services.AddDefaultIdentity<ApplicationUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddScoped<IDbContext>(provider => provider.GetService<ApplicationDbContext>());
 
             if (environment.IsEnvironment("Test"))
             {
@@ -31,11 +25,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
             else
             {
                 services.AddTransient<IDateTime, DateTimeService>();
-                services.AddTransient<IIdentityService, IdentityService>();
             }
-
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
 
             return services;
         }

@@ -1,4 +1,7 @@
-﻿using Binebase.Exchange.Common.Application.Interfaces;
+﻿using AutoMapper;
+using Binebase.Exchange.Common.Application.Behaviours;
+using Binebase.Exchange.Common.Application.Interfaces;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -74,6 +77,16 @@ namespace Binebase.Exchange.Common.Application
                     }
                 }
             }
+
+            return services;
+        }
+
+        public static IServiceCollection AddApplication(this IServiceCollection services)
+        {
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
 
             return services;
         }

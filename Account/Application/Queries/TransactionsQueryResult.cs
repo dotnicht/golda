@@ -1,8 +1,5 @@
-﻿using Binebase.Exchange.AccountService.Application.Common.Mappings;
-using Binebase.Exchange.AccountService.Domain.Common;
+﻿using Binebase.Exchange.AccountService.Domain.Common;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Binebase.Exchange.AccountService.Application.Queries
 {

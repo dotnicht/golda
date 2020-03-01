@@ -1,5 +1,5 @@
-﻿using Binebase.Exchange.AccountService.Application.Common.Exceptions;
-using Binebase.Exchange.AccountService.Domain.Aggregates;
+﻿using Binebase.Exchange.AccountService.Domain.Aggregates;
+using Binebase.Exchange.Common.Application.Exceptions;
 using MediatR;
 using NEventStore.Domain.Persistence;
 using System.Linq;

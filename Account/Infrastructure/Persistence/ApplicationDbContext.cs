@@ -1,5 +1,5 @@
-﻿using Binebase.Exchange.AccountService.Application.Common.Interfaces;
-using Binebase.Exchange.AccountService.Domain.Common;
+﻿using Binebase.Exchange.AccountService.Domain.Common;
+using Binebase.Exchange.Common.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Threading;
@@ -7,37 +7,15 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.AccountService.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : DbContext, IApplicationDbContext
+    public class ApplicationDbContext : DbContext, IDbContext
     {
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IDateTime _dateTime;
-
         public ApplicationDbContext(
-            DbContextOptions options,
-            ICurrentUserService currentUserService,
-            IDateTime dateTime) : base(options)
+            DbContextOptions options) : base(options)
         {
-            _currentUserService = currentUserService;
-            _dateTime = dateTime;
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedBy = _currentUserService.UserId;
-                        entry.Entity.Created = _dateTime.Now;
-                        break;
-                    case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
-                        entry.Entity.LastModified = _dateTime.Now;
-                        break;
-                }
-            }
-
             return base.SaveChangesAsync(cancellationToken);
         }
 
