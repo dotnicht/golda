@@ -1,11 +1,11 @@
-﻿using Binebase.Exchange.Common.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Reflection;
 
-namespace Binebase.Exchange.Common
+namespace Binebase.Exchange.Common.Application
 {
     public static class ServiceCollectionExtensions
     {

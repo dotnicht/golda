@@ -1,5 +1,5 @@
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Interfaces;
+using Binebase.Exchange.Common.Application.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;

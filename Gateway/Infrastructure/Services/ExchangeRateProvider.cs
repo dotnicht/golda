@@ -1,6 +1,6 @@
 ﻿using Binance.Net.Interfaces;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Interfaces;
+using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Binebase.Exchange.Common.Interfaces
+namespace Binebase.Exchange.Common.Application.Interfaces
 {
     public interface IDateTime
     {

@@ -1,11 +1,10 @@
 ﻿using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Common.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using System;
 
 namespace Binebase.Exchange.Gateway.Domain.Entities
 {
-    public class Transaction : IIdContainer
+    public class Transaction
     {
         public Guid Id { get; set; }
         public Currency Currency { get; set; }
