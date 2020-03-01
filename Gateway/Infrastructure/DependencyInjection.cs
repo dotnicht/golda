@@ -18,6 +18,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Binebase.Exchange.Common.Infrastructure.Services;
 
 namespace Binebase.Exchange.Gateway.Infrastructure
 {
@@ -64,6 +65,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             //if (!environment.IsEnvironment("Test"))
             {
                 services.AddServices(Assembly.GetExecutingAssembly());
+                services.AddServices(typeof(DateTimeService).Assembly);
 
                 services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
                 services.AddTransient<IBinanceClient, BinanceClient>();

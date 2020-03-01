@@ -7,6 +7,7 @@ using Binebase.Exchange.Gateway.Infrastructure.Account;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Persistence;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,7 @@ namespace Binebase.Exchange.Gateway.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
+            services.AddMediatR(typeof(IAccountService).Assembly);
             services.AddInfrastructure(Configuration);
             services.AddPersistence(Configuration);
 
