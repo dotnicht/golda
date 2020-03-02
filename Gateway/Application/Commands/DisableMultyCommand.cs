@@ -32,8 +32,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var passStatus = await _identityService.CheckUserPassword(user.Id, request.Password);
                 if (!passStatus) throw new NotSupportedException();
 
-                var iStfaValid = await _identityService.VerifyTwoFactorToken(user.Id, request.Code);
-                if (!iStfaValid)
+                var isTfaValid = await _identityService.VerifyTwoFactorToken(user.Id, request.Code);
+                if (!isTfaValid)
                     throw new SecurityException();
 
                 await _identityService.SetTwoFactorAuthentication(_currentUserService.UserId, false);
