@@ -85,7 +85,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
                 foreach (var range in _configuration.Probability.InstantMiningRanges.OrderBy(x => x.Key))
                 {
-                    if (new Random().NextDouble() <= range.Key)
+                    //if (new Random().NextDouble() <= range.Key)
                     {
                         bine *= (decimal)new Random().NextDouble() * (range.Value[1] - range.Value[0]) + range.Value[0];
                         break;
@@ -160,14 +160,14 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 public double Default { get; set; }
                 public double Bonus { get; set; }
                 public double Instant { get; set; }
-                public Dictionary<double, int[]> InstantMiningRanges { get; set; }
+                public Dictionary<double[], int[]> InstantMiningRanges { get; set; }
             }
 
             public class PromotionItem
             {
                 public double Probability { get; set; }
                 public decimal[] ExchangeRange { get; set; }
-                public Dictionary<Currency, double> Currencies { get; set; }
+                public Dictionary<Currency, double[]> Currencies { get; set; }
             }
         }
     }

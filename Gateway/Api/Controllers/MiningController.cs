@@ -14,7 +14,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         public async Task<ActionResult<MiningStatusQueryResult>> Status([FromQuery]MiningStatusQuery query) => await Mediator.Send(query);
 
         [HttpPost]
-        public async Task<ActionResult<MiningDailyCommandResult>> Daily(MiningDailyCommand command) => await Mediator.Send(command);
+        public async Task<ActionResult<MiningBonusCommandResult>> Daily(MiningBonusCommand command) => await Mediator.Send(command);
 
         [HttpPost, AllowAnonymous]
         new public async Task<ActionResult<MiningRequestCommandResult>> Request(MiningRequestCommand command) => await Mediator.Send(command);

@@ -509,7 +509,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MiningDailyCommand"
+                "$ref": "#/components/schemas/MiningBonusCommand"
               }
             }
           },
@@ -522,7 +522,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MiningDailyCommandResult"
+                  "$ref": "#/components/schemas/MiningBonusCommandResult"
                 }
               }
             }
@@ -922,7 +922,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "MiningDailyCommandResult": {
+      "MiningBonusCommandResult": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -949,7 +949,7 @@
           "Instant"
         ]
       },
-      "MiningDailyCommand": {
+      "MiningBonusCommand": {
         "type": "object",
         "additionalProperties": false
       },
