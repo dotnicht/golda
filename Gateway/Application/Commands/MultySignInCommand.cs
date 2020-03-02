@@ -26,8 +26,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 if (!isTfaEnabled.Result)
                     throw new NotSupportedException();
 
-                var iStfaValid = _identityService.VerifyTwoFactorToken(user.Id, request.Code);
-                if (!iStfaValid.Result)
+                var iStfaValid = await _identityService.VerifyTwoFactorToken(user.Id, request.Code);
+                if (!iStfaValid)
                     throw new SecurityException();
 
                 var token = await _identityService.GenerateAuthToken(user);

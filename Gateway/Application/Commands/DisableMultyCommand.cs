@@ -25,7 +25,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var status = _identityService.GetTwoFactorEnabled(user.Id);
                 if (status.Result) return Unit.Value;//TODO:clarify the behavior with Nicholas
 
-                await _identityService.EnableTwoFactorAuthentication(_currentUserService.UserId, false);
+                await _identityService.SetTwoFactorAuthentication(_currentUserService.UserId, false);
 
                 return Unit.Value;
             }

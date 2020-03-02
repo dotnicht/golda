@@ -20,9 +20,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<SignInCommandResult> Handle(SignInCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(request.Email);
-                var isTfaEnabled = _identityService.GetTwoFactorEnabled(user.Id);
+                var isTfaEnabled = await _identityService.GetTwoFactorEnabled(user.Id);
 
-                if (isTfaEnabled.Result)
+                if (isTfaEnabled)
                     return new SignInCommandResult { Id = user.Id, Email = user.Email };
 
                 var result = await _identityService.Authenticate(request.Email, request.Password);
