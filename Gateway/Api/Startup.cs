@@ -1,5 +1,6 @@
 using Binebase.Exchange.Common.Api.Common;
 using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
@@ -26,18 +27,20 @@ namespace Binebase.Exchange.Gateway.Api
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Environment { get; }
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment) => (Configuration, Environment) = (configuration, environment);
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment) 
+            => (Configuration, Environment) = (configuration, environment);
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
             services.AddMediatR(typeof(IAccountService).Assembly);
-            services.AddInfrastructure(Configuration);
-            services.AddPersistence(Configuration);
-
             services.AddServices(Assembly.GetExecutingAssembly());
             services.AddServices(typeof(IAccountService).Assembly);
+            //services.AddServices(typeof(DateTimeService).Assembly);
+
+            services.AddInfrastructure(Configuration);
+            services.AddPersistence(Configuration);
 
             services.AddHttpContextAccessor();
             services.AddHttpClient<IAccountService, AccountService>();

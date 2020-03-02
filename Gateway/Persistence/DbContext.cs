@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using IDbContext = Binebase.Exchange.Common.Application.Interfaces.IDbContext;
+using IDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IDbContext;
 
 namespace Binebase.Exchange.Gateway.Persistence
 {
