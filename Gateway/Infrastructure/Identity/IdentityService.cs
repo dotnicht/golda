@@ -34,8 +34,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<Configuration> options)
-            => (_httpContextAccessor, _userManager, _signInManager, _dateTime, _mapper,  _configuration)
-                = (httpContextAccessor, userManager, signInManager, dateTime,  mapper, options.Value);
+            => (_httpContextAccessor, _userManager, _signInManager, _dateTime, _mapper, _configuration)
+                = (httpContextAccessor, userManager, signInManager, dateTime, mapper, options.Value);
 
         public async Task<string> GetUserName(Guid userId)
         {
@@ -74,6 +74,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         public async Task<string> GenerateResetPasswordUrl(Guid userId)
             => await Task.FromResult(string.Format(_configuration.ResetPasswordUrlFormat, userId, HttpUtility.UrlEncode(await GeneratePasswordResetToken(userId))));
 
+        public async Task<string> GenerateAuthenticatorUrl(User user, string key)
+            => await Task.FromResult(string.Format(_configuration.AuthenticatorUrlFormat, key, HttpUtility.UrlEncode(user.Email)));
+
         public Task<string> GenerateConfirmationToken(Guid userId)
             => _userManager.GenerateEmailConfirmationTokenAsync(_userManager.Users.Single(u => u.Id == userId));
 
@@ -86,12 +89,37 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             return result.ToApplicationResult();
         }
 
+        public async Task<string> GetAuthenticatorKey(Guid userId)
+        {
+            return await _userManager.GetAuthenticatorKeyAsync(_userManager.Users.Single(u => u.Id == userId));
+        }
+
+        public async Task<Result> ResetAuthenticatorKey(Guid userId)
+        {
+            var result = await _userManager.ResetAuthenticatorKeyAsync(_userManager.Users.Single(u => u.Id == userId));
+            return result.ToApplicationResult();
+        }
+
+        public async Task<bool> GetTwoFactorEnabled(Guid userId)
+        {
+            return await _userManager.GetTwoFactorEnabledAsync(_userManager.Users.Single(u => u.Id == userId));
+        }
+
+        public async Task<Result> EnableTwoFactorAuthentication(Guid userId, bool isEnable)
+        {
+            var result = await _userManager.SetTwoFactorEnabledAsync(_userManager.Users.Single(u => u.Id == userId), isEnable);
+            return result.ToApplicationResult();
+        }
+
+        public async Task<bool> VerifyTwoFactorToken(Guid userId, string token)
+        {
+            var result = await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);
+            return result;
+        }
+
         public async Task<string> GenerateAuthToken(User user)
         {
-            if (user is null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            if (user is null) throw new ArgumentNullException(nameof(user));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration.AuthSecret);
@@ -129,10 +157,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<Result> Authenticate(User user)
         {
-            if (user is null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            if (user is null) throw new ArgumentNullException(nameof(user));
 
             var app = await _userManager.FindByNameAsync(user.Email);
             if (!await _signInManager.CanSignInAsync(app))
@@ -154,6 +179,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             public string AuthSecret { get; set; }
             public string ConfirmationUrlFormat { get; set; }
             public string ResetPasswordUrlFormat { get; set; }
+            public string AuthenticatorUrlFormat { get; set; }
         }
     }
 }

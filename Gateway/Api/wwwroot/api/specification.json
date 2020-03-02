@@ -173,6 +173,38 @@
         }
       }
     },
+    "/api/Auth/MultySignIn": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_MultySignIn",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultySignInCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Auth/Confirm": {
       "post": {
         "tags": [
@@ -278,6 +310,102 @@
             "description": ""
           }
         }
+      }
+    },
+    "/api/Auth/Multy": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_Multy",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/MultyQuery"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultyQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_Multy2",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultyCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_Multy3",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisableMultyCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Crypto/Address": {
@@ -739,6 +867,20 @@
           }
         }
       },
+      "MultySignInCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "ConfirmCommandResult": {
         "type": "object",
         "additionalProperties": false,
@@ -812,6 +954,41 @@
             "nullable": true
           }
         }
+      },
+      "MultyQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MultyQuery": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MultyCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "DisableMultyCommand": {
+        "type": "object",
+        "additionalProperties": false
       },
       "AddressQueryResult": {
         "type": "object",
