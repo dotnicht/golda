@@ -8,28 +8,28 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class MiningDailyCommand : IRequest<MiningDailyCommandResult>
+    public class MiningBonusCommand : IRequest<MiningBonusCommandResult>
     {
-        public class MiningDailyCommandHandler : IRequestHandler<MiningDailyCommand, MiningDailyCommandResult>
+        public class MiningBonusCommandHandler : IRequestHandler<MiningBonusCommand, MiningBonusCommandResult>
         {
             private readonly ICurrentUserService _currentUserService;
             private readonly ICalculationService _calculationService;
             private readonly IAccountService _accountService;
 
-            public MiningDailyCommandHandler(
+            public MiningBonusCommandHandler(
                 ICurrentUserService currentUserService,
                 ICalculationService calculationService,
                 IAccountService accountService)
                 => (_currentUserService, _calculationService, _accountService)
                     = (currentUserService, calculationService, accountService);
 
-            public async Task<MiningDailyCommandResult> Handle(MiningDailyCommand request, CancellationToken cancellationToken)
+            public async Task<MiningBonusCommandResult> Handle(MiningBonusCommand request, CancellationToken cancellationToken)
             {
                 var timeout = await _calculationService.GetBonusTimeout();
                 if (timeout > default(TimeSpan)) throw new NotSupportedException();
 
                 var (amount, type) = await _calculationService.GenerateSimpleMiningReward();
-                var result = new MiningDailyCommandResult
+                var result = new MiningBonusCommandResult
                 {
                     Amount = amount,
                     Type = type
