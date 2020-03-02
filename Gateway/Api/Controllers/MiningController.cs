@@ -11,12 +11,19 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
     public class MiningController : ApiController
     {
         [HttpGet]
-        public async Task<ActionResult<MiningStatusQueryResult>> Status([FromQuery]MiningStatusQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<MiningStatusQueryResult>> Status([FromQuery]MiningStatusQuery query) 
+            => await Mediator.Send(query);
 
         [HttpPost]
-        public async Task<ActionResult<MiningBonusCommandResult>> Daily(MiningBonusCommand command) => await Mediator.Send(command);
+        public async Task<ActionResult<MiningBonusCommandResult>> Bonus(MiningBonusCommand command) 
+            => await Mediator.Send(command);
+
+        [HttpPost]
+        public async Task<ActionResult<MiningInstantCommandResult>> Instant(MiningInstantCommand command) 
+            => await Mediator.Send(command);
 
         [HttpPost, AllowAnonymous]
-        new public async Task<ActionResult<MiningRequestCommandResult>> Request(MiningRequestCommand command) => await Mediator.Send(command);
+        new public async Task<ActionResult<MiningRequestCommandResult>> Request(MiningRequestCommand command) 
+            => await Mediator.Send(command);
     }
 }

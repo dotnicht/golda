@@ -22,8 +22,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var user = await _identityService.GetUser(_currentUserService.UserId);
                 if (user == null) throw new NotFoundException(nameof(User), _currentUserService.UserId);
 
-                var status = _identityService.GetTwoFactorEnabled(user.Id);
-                if (status.Result) return Unit.Value;//TODO:clarify the behavior with Nicholas
+                var status = await _identityService.GetTwoFactorEnabled(user.Id);
+                if (status) return Unit.Value;//TODO:clarify the behavior with Nicholas
 
                 await _identityService.EnableTwoFactorAuthentication(_currentUserService.UserId, false);
 

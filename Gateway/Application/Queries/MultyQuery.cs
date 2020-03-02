@@ -27,6 +27,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
                 if (status.Result) return await Task.FromResult(new MultyQueryResult { Status = status.Result });
 
                 var key = await _identityService.GetAuthenticatorKey(_currentUserService.UserId);
+
                 if (string.IsNullOrEmpty(key))
                 {
                     await _identityService.ResetAuthenticatorKey(_currentUserService.UserId);
@@ -35,6 +36,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
 
                 var result = new StringBuilder();
                 var index = 0;
+
                 while (index + 4 < key.Length)
                 {
                     result.Append(key.Substring(index, 4)).Append(" ");
