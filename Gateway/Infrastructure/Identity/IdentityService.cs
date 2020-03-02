@@ -126,8 +126,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<bool> VerifyTwoFactorToken(Guid userId, string token)
         {
-            var result = await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);
-            return result;
+            return await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);          
+        }
+        public async Task<bool> CheckUserPassword(Guid userId, string password)
+        {
+            return await _userManager.CheckPasswordAsync(_userManager.Users.Single(u => u.Id == userId), password);
         }
 
         public async Task<string> GenerateAuthToken(User user)
