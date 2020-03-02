@@ -626,12 +626,12 @@
         ]
       }
     },
-    "/api/Mining/Daily": {
+    "/api/Mining/Bonus": {
       "post": {
         "tags": [
           "Mining"
         ],
-        "operationId": "Mining_Daily",
+        "operationId": "Mining_Bonus",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -651,6 +651,43 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MiningBonusCommandResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Mining/Instant": {
+      "post": {
+        "tags": [
+          "Mining"
+        ],
+        "operationId": "Mining_Instant",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MiningInstantCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiningInstantCommandResult"
                 }
               }
             }
@@ -1129,6 +1166,62 @@
       "MiningBonusCommand": {
         "type": "object",
         "additionalProperties": false
+      },
+      "MiningInstantCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "index": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "promotion": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PromotionItem"
+              }
+            ]
+          }
+        }
+      },
+      "PromotionItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "tokenAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "currencyAmount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "MiningInstantCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "boost": {
+            "type": "boolean"
+          }
+        }
       },
       "MiningRequestCommandResult": {
         "type": "object",

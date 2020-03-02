@@ -1,7 +1,5 @@
-using Binebase.Exchange.Common.Api.Common;
+using Binebase.Exchange.Common.Api;
 using Binebase.Exchange.Common.Application;
-using Binebase.Exchange.Common.Infrastructure.Services;
-using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Account;

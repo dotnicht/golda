@@ -9,7 +9,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
     public interface ICalculationService
     {
         Task<decimal> GenerateDefaultReward();
-        Task<(decimal Amount, TransactionType Type)> GenerateSimpleMiningReward();
+        Task<(decimal Amount, TransactionType Type)> GenerateBonusMiningReward();
         Task<decimal> GenerateInstantMiningReward();
         Task<Promotion> GeneratePromotion(decimal reward);
         Task<TimeSpan> GetMiningRequestWindow();

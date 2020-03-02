@@ -1,4 +1,4 @@
-using Binebase.Exchange.Common.Api.Common;
+using Binebase.Exchange.Common.Api;
 using Binebase.Exchange.CryptoService.Application;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Infrastructure;

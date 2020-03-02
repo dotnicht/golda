@@ -28,7 +28,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var timeout = await _calculationService.GetBonusTimeout();
                 if (timeout > default(TimeSpan)) throw new NotSupportedException();
 
-                var (amount, type) = await _calculationService.GenerateSimpleMiningReward();
+                var (amount, type) = await _calculationService.GenerateBonusMiningReward();
                 var result = new MiningBonusCommandResult
                 {
                     Amount = amount,

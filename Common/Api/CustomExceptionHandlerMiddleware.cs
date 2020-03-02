@@ -1,20 +1,23 @@
 ﻿using Binebase.Exchange.Common.Application.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Binebase.Exchange.Common.Api.Common
+namespace Binebase.Exchange.Common.Api
 {
     public class CustomExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger _logger;
 
-        public CustomExceptionHandlerMiddleware(RequestDelegate next)
+        public CustomExceptionHandlerMiddleware(RequestDelegate next, ILogger logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -29,7 +32,7 @@ namespace Binebase.Exchange.Common.Api.Common
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var code = HttpStatusCode.InternalServerError;
             var result = string.Empty;
@@ -57,10 +60,12 @@ namespace Binebase.Exchange.Common.Api.Common
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
 
-            if (string.IsNullOrEmpty(result))
+            if (string.IsNullOrWhiteSpace(result))
             {
                 result = JsonConvert.SerializeObject(new { Error = new[] { exception.Message } });
             }
+
+            _logger.LogError(exception, $"Unhandled exception is mapped to status code {context.Response.StatusCode}.");
 
             return context.Response.WriteAsync(result);
         }
@@ -69,8 +74,6 @@ namespace Binebase.Exchange.Common.Api.Common
     public static class CustomExceptionHandlerMiddlewareExtensions
     {
         public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<CustomExceptionHandlerMiddleware>();
-        }
+            => builder.UseMiddleware<CustomExceptionHandlerMiddleware>();
     }
 }
