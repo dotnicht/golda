@@ -1025,7 +1025,17 @@
       },
       "DisableMultyCommand": {
         "type": "object",
-        "additionalProperties": false
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "AddressQueryResult": {
         "type": "object",

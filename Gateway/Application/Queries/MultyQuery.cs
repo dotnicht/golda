@@ -23,33 +23,19 @@ namespace Binebase.Exchange.Gateway.Application.Queries
                 var user = await _identityService.GetUser(_currentUserService.UserId);
                 if (user == null) throw new NotFoundException(nameof(User), _currentUserService.UserId);
 
-                var status = _identityService.GetTwoFactorEnabled(user.Id);
-                if (status.Result) return await Task.FromResult(new MultyQueryResult { Status = status.Result });
+                var status = await _identityService.GetTwoFactorEnabled(user.Id);
+                if (status) return await Task.FromResult(new MultyQueryResult { Status = status });
 
                 var key = await _identityService.GetAuthenticatorKey(_currentUserService.UserId);
-
                 if (string.IsNullOrEmpty(key))
                 {
                     await _identityService.ResetAuthenticatorKey(_currentUserService.UserId);
                     key = await _identityService.GetAuthenticatorKey(_currentUserService.UserId);
                 }
 
-                var result = new StringBuilder();
-                var index = 0;
+                var authenticatorUri = await _identityService.GenerateAuthenticatorUrl(user, key);
 
-                while (index + 4 < key.Length)
-                {
-                    result.Append(key.Substring(index, 4)).Append(" ");
-                    index += 4;
-                }
-
-                if (index < key.Length)
-                    result.Append(key.Substring(index));
-
-                var SharedKey = result.ToString().ToLowerInvariant();
-                var AuthenticatorUriResul = _identityService.GenerateAuthenticatorUrl(user, key);
-
-                return await Task.FromResult(new MultyQueryResult { Status = false, Code = SharedKey, Url = AuthenticatorUriResul.Result });
+                return await Task.FromResult(new MultyQueryResult { Status = false, Code = key, Url = authenticatorUri });
             }
         }
     }

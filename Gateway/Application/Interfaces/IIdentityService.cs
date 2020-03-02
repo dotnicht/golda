@@ -24,7 +24,8 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<string> GetAuthenticatorKey(Guid userId);
         Task<Result> ResetAuthenticatorKey(Guid userId);
         Task<bool> GetTwoFactorEnabled(Guid userId);
-        Task<Result> EnableTwoFactorAuthentication(Guid userId, bool isEnable);
+        Task<Result> SetTwoFactorAuthentication(Guid userId, bool isEnabled);
         Task<bool> VerifyTwoFactorToken(Guid userId, string token);
+        Task<bool> CheckUserPassword(Guid userId, string password);
     }
 }

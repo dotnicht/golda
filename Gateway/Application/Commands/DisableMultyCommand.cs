@@ -3,6 +3,7 @@ using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,6 +11,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 {
     public class DisableMultyCommand : IRequest
     {
+        public string Password { get; set; }
+        public string Code { get; set; }
+
         public class DisableMultyCommandHandler : IRequestHandler<DisableMultyCommand>
         {
             private readonly IIdentityService _identityService;
@@ -23,9 +27,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 if (user == null) throw new NotFoundException(nameof(User), _currentUserService.UserId);
 
                 var status = await _identityService.GetTwoFactorEnabled(user.Id);
-                if (status) return Unit.Value;//TODO:clarify the behavior with Nicholas
+                if (!status) throw new NotSupportedException();
 
-                await _identityService.EnableTwoFactorAuthentication(_currentUserService.UserId, false);
+                var passStatus = await _identityService.CheckUserPassword(user.Id, request.Password);
+                if (!passStatus) throw new NotSupportedException();
+
+                var isTfaValid = await _identityService.VerifyTwoFactorToken(user.Id, request.Code);
+                if (!isTfaValid)
+                    throw new SecurityException();
+
+                await _identityService.SetTwoFactorAuthentication(_currentUserService.UserId, false);
 
                 return Unit.Value;
             }

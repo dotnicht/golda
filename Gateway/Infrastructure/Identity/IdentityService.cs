@@ -91,7 +91,20 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<string> GetAuthenticatorKey(Guid userId)
         {
-            return await _userManager.GetAuthenticatorKeyAsync(_userManager.Users.Single(u => u.Id == userId));
+            string key = await _userManager.GetAuthenticatorKeyAsync(_userManager.Users.Single(u => u.Id == userId));
+
+            var result = new StringBuilder();
+            var index = 0;
+            while (index + 4 < key.Length)
+            {
+                result.Append(key.Substring(index, 4)).Append(" ");
+                index += 4;
+            }
+
+            if (index < key.Length)
+                result.Append(key.Substring(index));
+
+            return result.ToString().ToLowerInvariant();
         }
 
         public async Task<Result> ResetAuthenticatorKey(Guid userId)
@@ -105,16 +118,19 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             return await _userManager.GetTwoFactorEnabledAsync(_userManager.Users.Single(u => u.Id == userId));
         }
 
-        public async Task<Result> EnableTwoFactorAuthentication(Guid userId, bool isEnable)
+        public async Task<Result> SetTwoFactorAuthentication(Guid userId, bool isEnabled)
         {
-            var result = await _userManager.SetTwoFactorEnabledAsync(_userManager.Users.Single(u => u.Id == userId), isEnable);
+            var result = await _userManager.SetTwoFactorEnabledAsync(_userManager.Users.Single(u => u.Id == userId), isEnabled);
             return result.ToApplicationResult();
         }
 
         public async Task<bool> VerifyTwoFactorToken(Guid userId, string token)
         {
-            var result = await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);
-            return result;
+            return await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);          
+        }
+        public async Task<bool> CheckUserPassword(Guid userId, string password)
+        {
+            return await _userManager.CheckPasswordAsync(_userManager.Users.Single(u => u.Id == userId), password);
         }
 
         public async Task<string> GenerateAuthToken(User user)
