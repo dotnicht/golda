@@ -23,7 +23,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
             => await Mediator.Send(command);
 
         [HttpPost, AllowAnonymous]
-        new public async Task<ActionResult<MiningRequestCommandResult>> Request(MiningRequestCommand command) 
+        new public async Task<ActionResult<RequestMiningCommandResult>> Request(RequestMiningCommand command) 
             => await Mediator.Send(command);
     }
 }

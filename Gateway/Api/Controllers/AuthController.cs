@@ -26,7 +26,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         public async Task<IActionResult> Resend(ResendCommand command) => Convert(await Mediator.Send(command));
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> SendPasswordReset(SendPasswordResetCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> RequestResetPassword(RequestResetPasswordCommand command) => Convert(await Mediator.Send(command));
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ResetPassword(ResetPasswordCommand command) => Convert(await Mediator.Send(command));

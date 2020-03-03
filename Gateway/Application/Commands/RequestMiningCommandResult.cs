@@ -4,7 +4,7 @@ using System;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class MiningRequestCommandResult : IMapFrom<MiningRequest>
+    public class RequestMiningCommandResult : IMapFrom<MiningRequest>
     {
         public Guid Id { get; set; }
         public decimal Amount { get; set; }

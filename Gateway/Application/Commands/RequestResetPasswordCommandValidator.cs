@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-   public class SendPasswordResetCommandValidator : AbstractValidator<SendPasswordResetCommand>
+   public class RequestResetPasswordCommandValidator : AbstractValidator<RequestResetPasswordCommand>
     {
-        public SendPasswordResetCommandValidator()
+        public RequestResetPasswordCommandValidator()
         {
             RuleFor(x => x.Email).EmailAddress();
         }

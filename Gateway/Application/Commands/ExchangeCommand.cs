@@ -10,7 +10,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using IApplicationDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IApplicationDbContext;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -40,10 +39,17 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<Unit> Handle(ExchangeCommand request, CancellationToken cancellationToken)
             {
-                if (request.ReferenceId == null) throw new NotSupportedException();
+                if (request.ReferenceId == null)
+                {
+                    throw new NotSupportedException();
+                }
 
                 var promotion = _context.Promotions.SingleOrDefault(x => x.Id == request.ReferenceId.Value && x.Created > _dateTime.UtcNow - TimeSpan.FromDays(1) && !x.IsExchanged);
-                if (promotion == null) throw new NotFoundException(nameof(Promotion), request.ReferenceId);
+
+                if (promotion == null)
+                {
+                    throw new NotFoundException(nameof(Promotion), request.ReferenceId);
+                }
 
                 var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency));
                 await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, TransactionSource.Exchange);
