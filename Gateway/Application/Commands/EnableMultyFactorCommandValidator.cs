@@ -2,9 +2,9 @@
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class MultyCommandValidator : AbstractValidator<MultyCommand>
+    public class EnableMultyFactorCommandValidator : AbstractValidator<EnableMultyFactorCommand>
     {
-        public MultyCommandValidator()
+        public EnableMultyFactorCommandValidator()
         {
             RuleFor(x => x.Code).NotEmpty();
         }

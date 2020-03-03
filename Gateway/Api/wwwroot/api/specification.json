@@ -184,7 +184,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MultySignInCommand"
+                "$ref": "#/components/schemas/SignInMultyFactorCommand"
               }
             }
           },
@@ -312,12 +312,12 @@
         }
       }
     },
-    "/api/Auth/Multy": {
+    "/api/Auth/MultyFactorStatus": {
       "get": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_Multy",
+        "operationId": "Auth_MultyFactorStatus",
         "parameters": [
           {
             "name": "query",
@@ -326,7 +326,7 @@
               "nullable": true,
               "oneOf": [
                 {
-                  "$ref": "#/components/schemas/MultyQuery"
+                  "$ref": "#/components/schemas/MultyFactorStatusQuery"
                 }
               ]
             },
@@ -339,7 +339,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MultyQueryResult"
+                  "$ref": "#/components/schemas/MultyFactorStatusQueryResult"
                 }
               }
             }
@@ -350,18 +350,20 @@
             "JWT": []
           }
         ]
-      },
+      }
+    },
+    "/api/Auth/EnableMultyFactor": {
       "post": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_Multy2",
+        "operationId": "Auth_EnableMultyFactor",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MultyCommand"
+                "$ref": "#/components/schemas/EnableMultyFactorCommand"
               }
             }
           },
@@ -378,18 +380,20 @@
             "JWT": []
           }
         ]
-      },
+      }
+    },
+    "/api/Auth/DisableMultyFactor": {
       "delete": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_Multy3",
+        "operationId": "Auth_DisableMultyFactor",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DisableMultyCommand"
+                "$ref": "#/components/schemas/DisableMultyFactorCommand"
               }
             }
           },
@@ -904,7 +908,7 @@
           }
         }
       },
-      "MultySignInCommand": {
+      "SignInMultyFactorCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -992,7 +996,7 @@
           }
         }
       },
-      "MultyQueryResult": {
+      "MultyFactorStatusQueryResult": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1009,11 +1013,11 @@
           }
         }
       },
-      "MultyQuery": {
+      "MultyFactorStatusQuery": {
         "type": "object",
         "additionalProperties": false
       },
-      "MultyCommand": {
+      "EnableMultyFactorCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1023,7 +1027,7 @@
           }
         }
       },
-      "DisableMultyCommand": {
+      "DisableMultyFactorCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

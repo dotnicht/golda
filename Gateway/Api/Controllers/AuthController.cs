@@ -16,7 +16,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         [HttpPost, ProducesResponseType(typeof(SignInCommandResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<SignInCommandResult>> SignIn(SignInCommand command) => await Mediator.Send(command);
         [HttpPost, ProducesResponseType(typeof(SignInCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<SignInCommandResult>> MultySignIn(MultySignInCommand command) => await Mediator.Send(command);
+        public async Task<ActionResult<SignInCommandResult>> MultySignIn(SignInMultyFactorCommand command) => await Mediator.Send(command);
 
         [HttpPost, ProducesResponseType(typeof(ConfirmCommandResult), StatusCodes.Status200OK)]
         public async Task<ConfirmCommandResult> Confirm(ConfirmCommand command) => await Mediator.Send(command);
@@ -30,10 +30,10 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ResetPassword(ResetPasswordCommand command) => Convert(await Mediator.Send(command));
         [HttpGet, Authorize]
-        public async Task<ActionResult<MultyQueryResult>> Multy([FromQuery]MultyQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<MultyFactorStatusQueryResult>> MultyFactorStatus([FromQuery]MultyFactorStatusQuery query) => await Mediator.Send(query);
         [HttpPost, Authorize, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Multy(MultyCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> EnableMultyFactor(EnableMultyFactorCommand command) => Convert(await Mediator.Send(command));
         [HttpDelete, Authorize, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Multy(DisableMultyCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> DisableMultyFactor(DisableMultyFactorCommand command) => Convert(await Mediator.Send(command));
     }
 }

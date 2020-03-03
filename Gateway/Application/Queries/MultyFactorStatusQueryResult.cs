@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Binebase.Exchange.Gateway.Application.Queries
 {
-    public class MultyQueryResult
+    public class MultyFactorStatusQueryResult
     {
         public string Code { get; set; }
         public bool Status { get; set; }
