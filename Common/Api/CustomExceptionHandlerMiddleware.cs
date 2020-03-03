@@ -14,7 +14,7 @@ namespace Binebase.Exchange.Common.Api
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
 
-        public CustomExceptionHandlerMiddleware(RequestDelegate next, ILogger logger)
+        public CustomExceptionHandlerMiddleware(RequestDelegate next, ILogger<CustomExceptionHandlerMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -65,7 +65,7 @@ namespace Binebase.Exchange.Common.Api
                 result = JsonConvert.SerializeObject(new { Error = new[] { exception.Message } });
             }
 
-            _logger.LogError(exception, $"Unhandled exception is mapped to status code {context.Response.StatusCode}.");
+            _logger.LogError(exception, $"Unhanded exception is mapped to status code {context.Response.StatusCode}.");
 
             return context.Response.WriteAsync(result);
         }
