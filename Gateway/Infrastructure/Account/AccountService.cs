@@ -70,21 +70,24 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Account
             return (await _accountClient.CreditAsync(cmd)).Id;
         }
 
-        public async Task<Domain.Entities.Transaction[]> GetTransactions(Guid id, Common.Domain.Currency currency)
+        public async Task<Domain.Entities.Transaction[]> GetTransactions(Guid id)
         {
-            var txs = await _accountClient.TransactionsAsync(id, (Currency)currency);
+            TransactionsQueryResult txs = await _accountClient.TransactionsAsync(id);
             var result = new List<Domain.Entities.Transaction>();
 
             foreach (var tx in txs.Transactions)
             {
-                var payload = JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);
+                TransactionPayload payload = new TransactionPayload { Source = TransactionSource.Exchange, Type = TransactionType.Default };
+                //TransactionPayload payload = JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);
+                ///TODO : Check with normal transactions
+
                 var item = new Domain.Entities.Transaction
                 {
                     Id = tx.Id,
                     DateTime = tx.DateTime.DateTime,
                     Amount = tx.Amount,
                     Balance = tx.Balance,
-                    Currency = currency,
+                    Currency = (Common.Domain.Currency) tx.Currency,
                     Source = payload.Source,
                     Type = payload.Type
                 };

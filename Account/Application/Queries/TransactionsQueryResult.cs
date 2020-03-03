@@ -1,4 +1,5 @@
 ﻿using Binebase.Exchange.AccountService.Domain.Common;
+using Binebase.Exchange.AccountService.Domain.Enums;
 using System;
 
 namespace Binebase.Exchange.AccountService.Application.Queries
@@ -14,6 +15,7 @@ namespace Binebase.Exchange.AccountService.Application.Queries
             public decimal Balance { get; set; }
             public DateTime DateTime { get; set; }  
             public string Payload { get; set; }
+            public Currency Currency { get; set; }
         }
     }
 }
