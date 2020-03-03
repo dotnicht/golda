@@ -1,16 +1,15 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using IDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IDbContext;
 
 namespace Binebase.Exchange.Gateway.Persistence
 {
-    public class DbContext : Microsoft.EntityFrameworkCore.DbContext, IDbContext, IScoped<IDbContext>
+    public class ApplicationDbContext : DbContext, IApplicationDbContext, IScoped<IApplicationDbContext>
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTime _dateTime;
@@ -18,7 +17,7 @@ namespace Binebase.Exchange.Gateway.Persistence
         public DbSet<MiningRequest> MiningRequests { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
 
-        public DbContext(DbContextOptions<DbContext> options, ICurrentUserService currentUserService, IDateTime dateTime)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUserService, IDateTime dateTime)
             : base(options)
               => (_currentUserService, _dateTime) = (currentUserService, dateTime);
 

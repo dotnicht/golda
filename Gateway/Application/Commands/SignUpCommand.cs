@@ -8,7 +8,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using IDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IDbContext;
+using IApplicationDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IApplicationDbContext;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -28,7 +28,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IAccountService _accountService;
             private readonly ICryptoService _cryptoService;
             private readonly IDateTime _dateTime;
-            private readonly IDbContext _context;
+            private readonly IApplicationDbContext _context;
             private readonly ILogger _logger;
 
             public SignUpCommandHandler(
@@ -38,7 +38,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IAccountService accountService,
                 ICryptoService cryptoService,
                 IDateTime dateTime,
-                IDbContext context,
+                IApplicationDbContext context,
                 ILogger<SignUpCommandHandler> logger)
                 => (_identityService, _emailService, _calculationService, _accountService, _cryptoService, _dateTime, _context, _logger)
                     = (identityService, emailService, calculationService, accountService, cryptoService, dateTime, context, logger);

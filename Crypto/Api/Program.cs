@@ -21,7 +21,7 @@ namespace Binebase.Exchange.CryptoService.Api
 
                 try
                 {
-                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    var context = services.GetRequiredService<Infrastructure.Persistence.ApplicationDbContext>();
                     context.Database.Migrate();
                 }
                 catch (Exception ex)

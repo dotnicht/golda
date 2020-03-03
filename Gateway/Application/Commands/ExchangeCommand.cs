@@ -10,7 +10,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using IDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IDbContext;
+using IApplicationDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IApplicationDbContext;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -23,14 +23,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
         public class ExchangeCommandHandler : IRequestHandler<ExchangeCommand>
         {
-            private readonly IDbContext _context;
+            private readonly IApplicationDbContext _context;
             private readonly IAccountService _accountService;
             private readonly IExchangeRateService _exchangeRateService;
             private readonly ICurrentUserService _currentUserService;
             private readonly IDateTime _dateTime;
 
             public ExchangeCommandHandler(
-                IDbContext context,
+                IApplicationDbContext context,
                 IAccountService accountService,
                 IExchangeRateService exchangeRateService,
                 ICurrentUserService currentUserService,

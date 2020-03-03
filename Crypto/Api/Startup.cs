@@ -41,7 +41,7 @@ namespace Binebase.Exchange.CryptoService.Api
                 .AddDbContextCheck<ApplicationDbContext>();
 
             services.AddControllers()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<IDbContext>())
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<IApplicationDbContext>())
                 .AddNewtonsoftJson();
 
             services.AddRazorPages();

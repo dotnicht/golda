@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : DbContext, IDbContext
+    public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext, Binebase.Exchange.CryptoService.Application.Interfaces.IApplicationDbContext
     {
-        public ApplicationDbContext(
-            DbContextOptions options) : base(options)
+        public ApplicationDbContext(DbContextOptions options) : base(options)
         {
         }
 
@@ -21,7 +20,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
             base.OnModelCreating(builder);
         }
     }

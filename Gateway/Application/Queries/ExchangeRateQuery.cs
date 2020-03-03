@@ -17,9 +17,9 @@ namespace Binebase.Exchange.Gateway.Application.Queries
         public class ExchangeRateQueryHandler : IRequestHandler<ExchangeRateQuery, ExchangeRateQueryResult>
         {
             private readonly IExchangeRateService _exchangeRateService;
-            private readonly IDbContext _context;
+            private readonly IApplicationDbContext _context;
 
-            public ExchangeRateQueryHandler(IExchangeRateService exchangeRateService, IDbContext context)
+            public ExchangeRateQueryHandler(IExchangeRateService exchangeRateService, IApplicationDbContext context)
                 => (_exchangeRateService, _context) = (exchangeRateService, context);
 
             public async Task<ExchangeRateQueryResult> Handle(ExchangeRateQuery request, CancellationToken cancellationToken)

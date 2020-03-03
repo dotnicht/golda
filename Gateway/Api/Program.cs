@@ -23,7 +23,7 @@ namespace Binebase.Exchange.Gateway.Api
                 {
                     var identity = services.GetRequiredService<IdentityDbContext>();
                     await identity.Database.MigrateAsync();
-                    var context = services.GetRequiredService<Persistence.DbContext>();
+                    var context = services.GetRequiredService<Persistence.ApplicationDbContext>();
                     await context.Database.MigrateAsync();
                     //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                     //var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();

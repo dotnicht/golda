@@ -19,7 +19,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly ICalculationService _calculationService;
             private readonly IAccountService _accountService;
             private readonly ICurrentUserService _currentUserService;
-            private readonly IDbContext _context;
+            private readonly IApplicationDbContext _context;
             private readonly IMapper _mapper;
             private readonly ILogger _logger;
 
@@ -27,7 +27,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 ICalculationService calculationService,
                 IAccountService accountService,
                 ICurrentUserService currentUserService,
-                IDbContext context,
+                IApplicationDbContext context,
                 IMapper mapper,
                 ILogger<MiningInstantCommandHandler> logger)
                 => (_calculationService, _accountService, _currentUserService, _context, _mapper, _logger)

@@ -13,10 +13,10 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+            services.AddDbContext<DbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                    b => b.MigrationsAssembly(typeof(DbContext).Assembly.FullName)));
 
-            services.AddScoped<IDbContext>(provider => provider.GetService<ApplicationDbContext>());
+            services.AddScoped((System.Func<System.IServiceProvider, IDbContext>)(provider => provider.GetService<Persistence.ApplicationDbContext>()));
 
             if (environment.IsEnvironment("Test"))
             {

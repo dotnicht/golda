@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Binebase.Exchange.Gateway.Persistence.Migrations
 {
-    public partial class Mining : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,8 +12,11 @@ namespace Binebase.Exchange.Gateway.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<Guid>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
-                    Value = table.Column<decimal>(nullable: false)
+                    LastModifiedBy = table.Column<Guid>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    Amount = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -21,7 +24,7 @@ namespace Binebase.Exchange.Gateway.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Transactions",
+                name: "Promotions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -29,12 +32,14 @@ namespace Binebase.Exchange.Gateway.Persistence.Migrations
                     Created = table.Column<DateTime>(nullable: false),
                     LastModifiedBy = table.Column<Guid>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
-                    Source = table.Column<int>(nullable: false),
-                    Value = table.Column<decimal>(type: "decimal(18,8)", nullable: false)
+                    Currency = table.Column<int>(nullable: false),
+                    TokenAmount = table.Column<decimal>(nullable: false),
+                    CurrencyAmount = table.Column<decimal>(nullable: false),
+                    IsExchanged = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.PrimaryKey("PK_Promotions", x => x.Id);
                 });
         }
 
@@ -44,7 +49,7 @@ namespace Binebase.Exchange.Gateway.Persistence.Migrations
                 name: "MiningRequests");
 
             migrationBuilder.DropTable(
-                name: "Transactions");
+                name: "Promotions");
         }
     }
 }

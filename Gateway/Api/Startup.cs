@@ -43,13 +43,13 @@ namespace Binebase.Exchange.Gateway.Api
             services.AddHttpContextAccessor();
             services.AddHttpClient<IAccountService, AccountService>();
 
-            services.AddHealthChecks().AddDbContextCheck<DbContext>("Persistence");
+            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>("Persistence");
             services.AddHealthChecks().AddDbContextCheck<IdentityDbContext>("Identity");
 
             services.AddControllers()
                 .AddFluentValidation(fv =>
                 {
-                    fv.RegisterValidatorsFromAssemblyContaining<IDbContext>();
+                    fv.RegisterValidatorsFromAssemblyContaining<IApplicationDbContext>();
                     fv.ImplicitlyValidateChildProperties = true;
                 })
                 .AddNewtonsoftJson();
