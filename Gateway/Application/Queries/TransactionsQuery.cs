@@ -4,6 +4,7 @@ using Binebase.Exchange.Common.Domain;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Binebase.Exchange.Gateway.Application.Queries
 {
@@ -23,7 +24,9 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             public async Task<TransactionsQueryResult> Handle(TransactionsQuery request, CancellationToken cancellationToken)
                 => new TransactionsQueryResult
                 {
-                    Transactions = _mapper.Map<TransactionsQueryResult.Transaction[]>(await _accountService.GetTransactions(_currentUserService.UserId, request.Currency))
+                    Transactions = (await _accountService.GetTransactions(_currentUserService.UserId, request.Currency))
+                        .Select(x => new TransactionsQueryResult.Transaction { Id = x.Id, DateTime = x.DateTime, Amount = x.Amount, Currency = x.Currency, Balance = x.Balance, Source = x.Source })
+                        .ToArray()
                 };
         }
     }

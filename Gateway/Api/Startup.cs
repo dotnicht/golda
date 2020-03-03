@@ -1,5 +1,6 @@
 using Binebase.Exchange.Common.Api;
 using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Account;
@@ -31,11 +32,13 @@ namespace Binebase.Exchange.Gateway.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationCommon();
             services.AddApplication();
+
             services.AddMediatR(typeof(IAccountService).Assembly);
+
             services.AddServices(Assembly.GetExecutingAssembly());
             services.AddServices(typeof(IAccountService).Assembly);
-            //services.AddServices(typeof(DateTimeService).Assembly);
 
             services.AddInfrastructure(Configuration);
             services.AddPersistence(Configuration);
