@@ -15,10 +15,7 @@ namespace Binebase.Exchange.Common.Api
         private readonly ILogger _logger;
 
         public CustomExceptionHandlerMiddleware(RequestDelegate next, ILogger<CustomExceptionHandlerMiddleware> logger)
-        {
-            _next = next;
-            _logger = logger;
-        }
+            => (_next, _logger) = (next, logger);
 
         public async Task Invoke(HttpContext context)
         {

@@ -4,15 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Binebase.Exchange.CryptoService.Api</RootNamespace>
     <AssemblyName>Binebase.Exchange.CryptoService.Api</AssemblyName>
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>true</IsPackable>
     <!--<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>-->
-    <SpaRoot>ClientApp\</SpaRoot>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-
-    <!-- Set this to true if you enable server-side prerendering -->
-    <BuildServerSideRenderer>false</BuildServerSideRenderer>
   </PropertyGroup>
 
   <ItemGroup>
