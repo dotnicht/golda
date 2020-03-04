@@ -91,14 +91,6 @@
               "format": "guid"
             },
             "x-position": 1
-          },
-          {
-            "name": "Currency",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Currency"
-            },
-            "x-position": 2
           }
         ],
         "responses": {
@@ -334,6 +326,9 @@
           "payload": {
             "type": "string",
             "nullable": true
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
           }
         }
       },

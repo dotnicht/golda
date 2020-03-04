@@ -36,7 +36,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task<(decimal Amount, TransactionType Type)> GenerateBonusMiningReward()
         {
-            var txs = (await _accountService.GetTransactions(_currentUserService.UserId, Currency.BINE)).OrderByDescending(x => x.DateTime);
+            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x=>x.Currency == Currency.BINE).OrderByDescending(x => x.DateTime);
             var bonus = txs.FirstOrDefault(x => x.Type == TransactionType.Bonus);
 
             if (bonus != null && bonus.DateTime < _dateTime.UtcNow - _configuration.BonusTimeout)
@@ -122,7 +122,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task<int> GetCurrentMiningCount()
         {
-            var txs = await _accountService.GetTransactions(_currentUserService.UserId, Currency.BINE);
+            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x=>x.Currency == Currency.BINE);
             return txs.Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
         }
 
@@ -137,7 +137,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         private async Task<TimeSpan> GetTimeout(TransactionType type, TimeSpan timeout)
         {
-            var txs = await _accountService.GetTransactions(_currentUserService.UserId, Currency.BINE);
+            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x=>x.Currency == Currency.BINE);
             var last = txs.OrderByDescending(x => x.DateTime).FirstOrDefault(x => x.Type == type && x.Source == TransactionSource.Mining);
             return last == null || last.DateTime <= _dateTime.UtcNow - timeout ? default : _dateTime.UtcNow - last.DateTime;
         }

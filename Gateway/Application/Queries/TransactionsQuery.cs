@@ -4,6 +4,7 @@ using Binebase.Exchange.Common.Domain;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 using System.Linq;
 
 namespace Binebase.Exchange.Gateway.Application.Queries
@@ -11,6 +12,10 @@ namespace Binebase.Exchange.Gateway.Application.Queries
     public class TransactionsQuery : IRequest<TransactionsQueryResult>
     {
         public Currency Currency { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int PageNumber { get; set; }
+        public int ItemsPerPage { get; set; }
 
         public class TransactionsQueryHandler : IRequestHandler<TransactionsQuery, TransactionsQueryResult>
         {
@@ -22,12 +27,23 @@ namespace Binebase.Exchange.Gateway.Application.Queries
                 => (_accountService, _currentUserService, _mapper) = (accountService, currentUserService, mapper);
 
             public async Task<TransactionsQueryResult> Handle(TransactionsQuery request, CancellationToken cancellationToken)
-                => new TransactionsQueryResult
+            {
+
+                var trans = await _accountService.GetTransactions(_currentUserService.UserId);
+                ///TODO:Fix Mapper
+                var transactions = _mapper.Map<TransactionsQueryResult.Transaction[]>(trans);
+                var filteredTransactions = transactions.Where(x => x.DateTime > request.StartDate && x.DateTime < request.EndDate && x.Currency == request.Currency);
+
+                if (request.PageNumber > 0 && request.ItemsPerPage > 0)
                 {
-                    Transactions = (await _accountService.GetTransactions(_currentUserService.UserId, request.Currency))
-                        .Select(x => new TransactionsQueryResult.Transaction { Id = x.Id, DateTime = x.DateTime, Amount = x.Amount, Currency = x.Currency, Balance = x.Balance, Source = x.Source })
-                        .ToArray()
-                };
+                    var startIndex = (request.PageNumber - 1) * request.ItemsPerPage + 1;
+                    var endIndex = request.PageNumber * request.ItemsPerPage;
+                    var resTrans = filteredTransactions.Skip(startIndex).Take(endIndex - startIndex);
+
+                    return new TransactionsQueryResult { Transactions = resTrans.ToArray() };
+                }
+                return new TransactionsQueryResult { Transactions = filteredTransactions.ToArray() };
+            }
         }
     }
 }
