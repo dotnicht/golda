@@ -7,7 +7,7 @@ namespace Binebase.Exchange.Common.Application.Mappings
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile() => ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+        public MappingProfile() => AppDomain.CurrentDomain.GetAssemblies().ToList().ForEach(ApplyMappingsFromAssembly);
 
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
