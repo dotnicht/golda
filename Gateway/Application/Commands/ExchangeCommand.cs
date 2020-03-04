@@ -18,7 +18,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         public Currency Base { get; set; }
         public Currency Quote { get; set; }
         public decimal Amount { get; set; }
-        public Guid? ReferenceId { get; set; }
 
         public class ExchangeCommandHandler : IRequestHandler<ExchangeCommand>
         {
@@ -39,26 +38,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<Unit> Handle(ExchangeCommand request, CancellationToken cancellationToken)
             {
-                if (request.ReferenceId == null)
-                {
-                    throw new NotSupportedException();
-                }
-
-                var promotion = _context.Promotions.SingleOrDefault(x => x.Id == request.ReferenceId.Value && x.Created > _dateTime.UtcNow - TimeSpan.FromDays(1) && !x.IsExchanged);
-
-                if (promotion == null)
-                {
-                    throw new NotFoundException(nameof(Promotion), request.ReferenceId);
-                }
-
-                var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency));
-
-                await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, TransactionSource.Exchange);
-                await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, TransactionSource.Exchange);
-
-                promotion.IsExchanged = true;
-                await _context.SaveChangesAsync();
-
                 return Unit.Value;
             }
         }

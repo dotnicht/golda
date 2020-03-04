@@ -5,9 +5,7 @@
     <RootNamespace>Binebase.Exchange.AccountService.Api</RootNamespace>
     <AssemblyName>Binebase.Exchange.AccountService.Api</AssemblyName>
     <IsPackable>true</IsPackable>
-    <!--<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>-->
   </PropertyGroup>
-
 
     <ItemGroup>
         <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.1" />

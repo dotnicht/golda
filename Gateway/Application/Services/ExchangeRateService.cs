@@ -68,14 +68,23 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task Subscribe()
         {
-            await _exchangeRateProvider.Subscribe(new Pair(Currency.BTC, Currency.EUR), x => _cacheClient.AddToList(new Pair(Currency.BTC, Currency.EURB).ToString(), x));
-            await _exchangeRateProvider.Subscribe(new Pair(Currency.ETH, Currency.EUR), x => _cacheClient.AddToList(new Pair(Currency.ETH, Currency.EURB).ToString(), x));
+            await _exchangeRateProvider.Subscribe(new Pair(Currency.BTC, Currency.EUR), SaveExchangeRate);
+            await _exchangeRateProvider.Subscribe(new Pair(Currency.ETH, Currency.EUR), SaveExchangeRate);
 
             _timer = new Timer(Refresh, null, TimeSpan.Zero, _configuration.BineRefreshRate);
         }
 
+        private void SaveExchangeRate(ExchangeRate rate)
+        {
+            _cacheClient.AddToList(new Pair(rate.Pair.Base, Currency.EURB).ToString(), rate);
+            var symbol = new Pair(Currency.EURB, rate.Pair.Base);
+            _cacheClient.AddToList(symbol.ToString(), new ExchangeRate { Pair = symbol, DateTime = rate.DateTime, Rate = rate.Rate * (1 + _configuration.ExchangeFee) });
+        }
+
         private void Refresh(object state)
         {
+            // TODO: move BINE exchange rate numbers to config.
+
             var rate = new ExchangeRate
             {
                 Pair = new Pair(Currency.BINE, Currency.EURB),
@@ -124,6 +133,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             public decimal BineBaseValue { get; set; }
             public decimal[] BineRange { get; set; }
             public TimeSpan BineRefreshRate { get; set; }
+            public decimal ExchangeFee { get; set; }
         }
     }
 }

@@ -5,7 +5,6 @@
     <RootNamespace>Binebase.Exchange.CryptoService.Api</RootNamespace>
     <AssemblyName>Binebase.Exchange.CryptoService.Api</AssemblyName>
     <IsPackable>true</IsPackable>
-    <!--<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>-->
   </PropertyGroup>
 
   <ItemGroup>

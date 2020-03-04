@@ -4,8 +4,6 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Binebase.Exchange.Gateway.Api</RootNamespace>
         <AssemblyName>Binebase.Exchange.Gateway.Api</AssemblyName>
-        <IsPackable>true</IsPackable>
-        <!--<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>-->
     </PropertyGroup>
 
     <ItemGroup>
