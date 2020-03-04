@@ -76,11 +76,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Account
             var result = new List<Domain.Entities.Transaction>();
 
             foreach (var tx in txs.Transactions)
-            {
-                TransactionPayload payload = new TransactionPayload { Source = TransactionSource.Exchange, Type = TransactionType.Default };
-                //TransactionPayload payload = JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);
-                ///TODO : Check with normal transactions
-
+            {              
+                TransactionPayload payload = JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);            
                 var item = new Domain.Entities.Transaction
                 {
                     Id = tx.Id,
