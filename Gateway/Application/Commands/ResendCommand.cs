@@ -31,8 +31,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<Unit> Handle(ResendCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(request.Email);
-                if (user == null) throw new NotFoundException(nameof(User), request.Email);
-                if (user.Confirmed) throw new NotSupportedException($"User with email: {request.Email} already confirmed");
+
+                if (user == null)
+                {
+                    throw new NotFoundException(nameof(User), request.Email);
+                }
+
+                if (user.Confirmed)
+                {
+                    throw new NotSupportedException($"User with email {request.Email} already confirmed.");
+                }
                 
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(user.Id));
 
