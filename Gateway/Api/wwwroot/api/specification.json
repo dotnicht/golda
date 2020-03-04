@@ -92,7 +92,12 @@
             "name": "Currency",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/Currency"
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Currency"
+                }
+              ]
             },
             "x-position": 1
           },
@@ -101,7 +106,8 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "format": "date-time"
+              "format": "date-time",
+              "nullable": true
             },
             "x-position": 2
           },
@@ -110,7 +116,8 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "format": "date-time"
+              "format": "date-time",
+              "nullable": true
             },
             "x-position": 3
           },

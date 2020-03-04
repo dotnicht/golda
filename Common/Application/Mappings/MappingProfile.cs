@@ -7,18 +7,23 @@ namespace Binebase.Exchange.Common.Application.Mappings
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile() => AppDomain.CurrentDomain.GetAssemblies().ToList().ForEach(ApplyMappingsFromAssembly);
+        public MappingProfile() 
+            => AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Where(x => !x.IsDynamic)
+                .ToList()
+                .ForEach(ApplyMappingsFromAssembly);
 
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
-            // TODO: fix mapping loading.
             ApplyMapping(assembly, typeof(IMapFrom<>), "MappingFrom");
             ApplyMapping(assembly, typeof(IMapTo<>), "MappingTo");
         }
 
         private void ApplyMapping(Assembly assembly, Type type, string method)
         {
-            var types = assembly.GetExportedTypes()
+            var types = assembly
+                .GetExportedTypes()
                 .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type))
                 .ToList();
 

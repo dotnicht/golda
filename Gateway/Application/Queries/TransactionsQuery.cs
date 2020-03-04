@@ -11,9 +11,9 @@ namespace Binebase.Exchange.Gateway.Application.Queries
 {
     public class TransactionsQuery : IRequest<TransactionsQueryResult>
     {
-        public Currency Currency { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public Currency? Currency { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public int PageNumber { get; set; }
         public int ItemsPerPage { get; set; }
 
@@ -28,11 +28,14 @@ namespace Binebase.Exchange.Gateway.Application.Queries
 
             public async Task<TransactionsQueryResult> Handle(TransactionsQuery request, CancellationToken cancellationToken)
             {
-
                 var trans = await _accountService.GetTransactions(_currentUserService.UserId);
                 ///TODO:Fix Mapper
                 var transactions = _mapper.Map<TransactionsQueryResult.Transaction[]>(trans);
-                var filteredTransactions = transactions.Where(x => x.DateTime > request.StartDate && x.DateTime < request.EndDate && x.Currency == request.Currency);
+
+                var filteredTransactions = transactions.Where(
+                    x => (request.StartDate == null || x.DateTime > request.StartDate) 
+                    && (request.EndDate == null || x.DateTime < request.EndDate) 
+                    && (request.Currency == null || x.Currency == request.Currency));
 
                 if (request.PageNumber > 0 && request.ItemsPerPage > 0)
                 {
