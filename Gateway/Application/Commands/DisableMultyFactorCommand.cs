@@ -2,7 +2,6 @@
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,19 +22,21 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<Unit> Handle(DisableMultyFactorCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(_currentUserService.UserId);
-                if (user == null) throw new NotFoundException(nameof(User), _currentUserService.UserId);
 
-                var status = await _identityService.GetTwoFactorEnabled(user.Id);
-                if (!status) throw new NotSupportedException();
+                if (user == null)
+                {
+                    throw new NotFoundException(nameof(User), _currentUserService.UserId);
+                }
 
-                var passStatus = await _identityService.CheckUserPassword(user.Id, request.Password);
-                if (!passStatus) throw new NotSupportedException();
+                if (await _identityService.GetTwoFactorEnabled(user.Id))
+                {
+                    if (!await _identityService.CheckUserPassword(user.Id, request.Password) || !await _identityService.VerifyTwoFactorToken(user.Id, request.Code))
+                    {
+                        throw new SecurityException();
+                    }
 
-                var isTfaValid = await _identityService.VerifyTwoFactorToken(user.Id, request.Code);
-                if (!isTfaValid)
-                    throw new SecurityException();
-
-                await _identityService.SetTwoFactorAuthentication(_currentUserService.UserId, false);
+                    await _identityService.SetTwoFactorAuthentication(_currentUserService.UserId, false);
+                }
 
                 return Unit.Value;
             }

@@ -22,12 +22,19 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<ConfirmCommandResult> Handle(ConfirmCommand request, CancellationToken cancellationToken)
             {
                 var confirmResult = await _identityService.ConfirmToken(request.Id, request.Code);
-                if (!confirmResult.Succeeded) throw confirmResult.ToValidationException(nameof(ConfirmCommandHandler));
+
+                if (!confirmResult.Succeeded) 
+                { 
+                    throw confirmResult.ToValidationException(nameof(ConfirmCommandHandler)); 
+                }
 
                 var user = await _identityService.GetUser(request.Id);
-
                 var authResult = await _identityService.Authenticate(user);
-                if (!authResult.Succeeded) throw authResult.ToSecurityException();
+
+                if (!authResult.Succeeded)
+                {
+                    throw authResult.ToSecurityException();
+                }
 
                 var token = await _identityService.GenerateAuthToken(user);
                 return new ConfirmCommandResult { Id = user.Id, Email = user.Email, Token = token };
