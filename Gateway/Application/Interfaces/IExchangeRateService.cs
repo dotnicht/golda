@@ -7,7 +7,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
 {
     public interface IExchangeRateService
     {
-        Task<ExchangeRate> GetExchangeRate(Pair pair);
+        Task<ExchangeRate> GetExchangeRate(Pair pair, bool forceSupported = true);
         Task<Dictionary<Pair, ExchangeRate>> GetExchangeRates();
         Task Subscribe();
     }

@@ -745,12 +745,12 @@
         ]
       }
     },
-    "/api/Mining/Request": {
+    "/api/Mining/RequestMining": {
       "post": {
         "tags": [
           "Mining"
         ],
-        "operationId": "Mining_Request",
+        "operationId": "Mining_RequestMining",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -775,6 +775,36 @@
             }
           }
         }
+      }
+    },
+    "/api/Mining/Promotion": {
+      "post": {
+        "tags": [
+          "Mining"
+        ],
+        "operationId": "Mining_Promotion",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExchangePromotionCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     }
   },
@@ -1153,11 +1183,6 @@
           "amount": {
             "type": "number",
             "format": "decimal"
-          },
-          "referenceId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
           }
         }
       },
@@ -1295,6 +1320,16 @@
       "RequestMiningCommand": {
         "type": "object",
         "additionalProperties": false
+      },
+      "ExchangePromotionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
       }
     },
     "securitySchemes": {

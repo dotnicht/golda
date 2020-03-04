@@ -33,14 +33,14 @@ namespace Binebase.Exchange.Gateway.Application.Services
             => (_configuration, _logger, _dateTime, _cacheClient, _exchangeRateProvider, _supportedPairs)
                 = (options.Value, logger, dateTime, cacheClient, exchangeRateProvider, options.Value.SupportedPairs.Select(x => Pair.Parse(x)).ToArray());
 
-        public async Task<ExchangeRate> GetExchangeRate(Pair pair)
+        public async Task<ExchangeRate> GetExchangeRate(Pair pair, bool forceSupported = true)
         {
             if (pair is null)
             {
                 throw new ArgumentNullException(nameof(pair));
             }
 
-            if (!_supportedPairs.Contains(pair))
+            if (forceSupported && !_supportedPairs.Contains(pair))
             {
                 throw new NotSupportedException($"Supported currency pairs: {string.Join(' ', _supportedPairs.AsEnumerable())}");
             }
