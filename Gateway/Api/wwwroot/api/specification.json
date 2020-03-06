@@ -960,6 +960,10 @@
           "code": {
             "type": "string",
             "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
