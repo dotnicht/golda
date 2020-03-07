@@ -1,16 +1,14 @@
-﻿using Binebase.Exchange.AccountService.Domain.Aggregates;
-using Binebase.Exchange.AccountService.Domain.Common;
-using Binebase.Exchange.AccountService.Domain.Enums;
+﻿using AutoMapper;
+using Binebase.Exchange.AccountService.Domain.Aggregates;
 using Binebase.Exchange.AccountService.Domain.Events;
 using Binebase.Exchange.Common.Application.Exceptions;
+using Binebase.Exchange.Common.Application.Interfaces;
 using MediatR;
 using NEventStore;
 using NEventStore.Domain.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,48 +22,35 @@ namespace Binebase.Exchange.AccountService.Application.Queries
         {
             private readonly IStoreEvents _storeEvents;
             private readonly IRepository _repository;
+            private readonly IMapper _mapper;
 
-            public TransactionsQueryHandler(IStoreEvents storeEvents, IRepository repository)
-            {
-                _storeEvents = storeEvents;
-                _repository = repository;
-            }
+            public TransactionsQueryHandler(IStoreEvents storeEvents, IRepository repository, IMapper mapper)
+                => (_storeEvents, _repository, _mapper) = (storeEvents, repository, mapper);
 
             public async Task<TransactionsQueryResult> Handle(TransactionsQuery request, CancellationToken cancellationToken)
             {
                 var account = _repository.GetById<Account>(request.Id, int.MaxValue);
-                if (!account.Created) throw new NotFoundException(nameof(Account), request.Id);
+
+                if (!account.Created)
+                {
+                    throw new NotFoundException(nameof(Account), request.Id);
+                }
 
                 using var stream = _storeEvents.OpenStream(request.Id, 0, int.MaxValue);
                 var trx = new List<TransactionsQueryResult.Transaction>();
                 var balance = 0M;
 
-                foreach (var commited in stream.CommittedEvents.Where(x => x.Body is ITransaction t))
+                foreach (var commited in stream.CommittedEvents.Where(x => x.Body is AccountDebitedEvent || x.Body is AccountCreditedEvent))
                 {
-                    var tx = new TransactionsQueryResult.Transaction
-                    {
-                        Id = ((IIdContainer)commited.Body).Id,
-                        DateTime = ((IDateTimeContainer)commited.Body).DateTime
-                    };
+                    var tx = _mapper.Map<TransactionsQueryResult.Transaction>(commited.Body);
 
-                    switch (commited.Body)
+                    if (commited.Body is AccountCreditedEvent)
                     {
-                        case AccountDebitedEvent debit:
-                            tx.Amount = debit.Amount;
-                            balance += debit.Amount;
-                            tx.Balance = balance;
-                            tx.Payload = debit.Payload;
-                            tx.Currency = debit.Currency;
-                            break;
-                        case AccountCreditedEvent credit:
-                            tx.Amount = -credit.Amount;
-                            balance -= credit.Amount;
-                            tx.Balance = balance;
-                            tx.Payload = credit.Payload;
-                            tx.Currency = credit.Currency;
-                            break;
-                        default: throw new NotSupportedException();
+                        tx.Amount = -tx.Amount;
                     }
+
+                    balance += tx.Amount;
+                    tx.Balance = balance;
 
                     trx.Add(tx);
                 }

@@ -1,7 +1,5 @@
-﻿using Binebase.Exchange.AccountService.Domain.Common;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Binebase.Exchange.AccountService.Application.Commands
 {

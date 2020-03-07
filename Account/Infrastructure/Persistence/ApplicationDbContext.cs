@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.AccountService.Domain.Common;
-using Binebase.Exchange.Common.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Threading;
@@ -9,10 +8,7 @@ namespace Binebase.Exchange.AccountService.Infrastructure.Persistence
 {
     public class ApplicationDbContext : DbContext, IDbContext
     {
-        public ApplicationDbContext(
-            DbContextOptions options) : base(options)
-        {
-        }
+        public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

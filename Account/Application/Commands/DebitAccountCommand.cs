@@ -1,6 +1,6 @@
 ﻿using Binebase.Exchange.AccountService.Domain.Aggregates;
-using Binebase.Exchange.AccountService.Domain.Common;
 using Binebase.Exchange.AccountService.Domain.Enums;
+using Binebase.Exchange.Common.Application.Interfaces;
 using MediatR;
 using NEventStore.Domain.Persistence;
 using System;
