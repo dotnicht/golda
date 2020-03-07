@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Binebase.Exchange.Gateway.Application.Services
 {
@@ -32,7 +33,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 = (accountService, exchangeRateService, identityService, currentUserService, dateTime, options.Value);
 
         public Task<decimal> GenerateDefaultReward()
-            => Task.FromResult((decimal)new Random().NextDouble() * (_configuration.DefaultRange[1] - _configuration.DefaultRange[0]) + _configuration.DefaultRange[0]);
+            => Task.FromResult(RandomInRange(_configuration.DefaultRange[0], _configuration.DefaultRange[1]));
 
         public async Task<(decimal Amount, TransactionType Type)> GenerateWeeklyMiningReward()
         {
@@ -44,8 +45,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 throw new InvalidOperationException($"Weekly timeout is active.");
             }
 
-            decimal balance = await GetBalance();
-
+            var balance = await GetBalance();
             var amount = await GenerateDefaultReward();
             var type = TransactionType.Default;
 
@@ -98,12 +98,25 @@ namespace Binebase.Exchange.Gateway.Application.Services
             {
                 var rate = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, Currency.EURB));
                 bine = _configuration.Instant.Fee / rate.Rate;
+                var rnd = new Random().NextDouble();
 
-                foreach (var range in _configuration.Instant.Ranges.OrderBy(x => x.Key))
+                foreach (var range in _configuration.Instant.Categories.OrderBy(x => x.Value))
                 {
-                    //if (new Random().NextDouble() <= range.Key)
+                    if (rnd <= range.Value)
                     {
-                        bine *= (decimal)new Random().NextDouble() * (range.Value[1] - range.Value[0]) + range.Value[0];
+                        switch (range.Key)
+                        {
+                            case Configuration.InstantItem.Category.x2: bine *= 2;
+                                break;
+                            case Configuration.InstantItem.Category.x2x5: bine *= RandomInRange(2, 5);
+                                break;
+                            case Configuration.InstantItem.Category.x5x10: bine *= RandomInRange(5, 10);
+                                break;
+                            case Configuration.InstantItem.Category.x10x100: bine *= RandomInRange(10, 100);
+                                break;
+                            default: throw new NotSupportedException();
+                        }
+
                         break;
                     }
                 }
@@ -152,6 +165,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var last = txs.OrderByDescending(x => x.DateTime).FirstOrDefault(x => x.Type == type && x.Source == TransactionSource.Mining);
             return last == null || last.DateTime <= _dateTime.UtcNow - timeout ? default : _dateTime.UtcNow - last.DateTime;
         }
+
         private async Task<decimal> GetBalance()
         {
             var bine = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
@@ -161,6 +175,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var balance = eurb * (1 / ex.Rate) + bine;
             return balance;
         }
+
+        private decimal RandomInRange(decimal start, decimal end)
+            => (decimal)new Random().NextDouble() * (end - start) + start;
 
         public class Configuration
         {
@@ -191,10 +208,15 @@ namespace Binebase.Exchange.Gateway.Application.Services
             public class InstantItem
             {
                 public TimeSpan Timeout { get; set; }
-                public Dictionary<double[], int[]> Ranges { get; set; }
                 public Dictionary<int, int> BoostMapping { get; set; }
                 public double Probability { get; set; }
                 public decimal Fee { get; set; }
+                public Dictionary<Category, double> Categories { get; set; }
+
+                public enum Category
+                {
+                    x2, x2x5, x5x10, x10x100
+                }
             }
 
             public class PromotionItem
