@@ -72,12 +72,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Account
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(Guid id)
         {
-            TransactionsQueryResult txs = await _accountClient.TransactionsAsync(id);
+            var txs = await _accountClient.TransactionsAsync(id);
             var result = new List<Domain.Entities.Transaction>();
 
             foreach (var tx in txs.Transactions)
             {              
-                TransactionPayload payload = JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);            
+                var payload = JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);            
                 var item = new Domain.Entities.Transaction
                 {
                     Id = tx.Id,

@@ -11,7 +11,15 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
     public class Account : AggregateBase
     {
         public bool Created { get; private set; }
-        public IEnumerable<(Currency Currency, decimal Amount)> Portfolio => PortfolioInternal.Select(x => (x.Key, x.Value));
+
+        public IEnumerable<(Currency Currency, decimal Amount)> Portfolio  
+        { 
+            get 
+            { 
+                EnsureCreated(); 
+                return PortfolioInternal.Select(x => (x.Key, x.Value));
+            } 
+        }
 
         private Dictionary<Currency, decimal> PortfolioInternal { get; } = new Dictionary<Currency, decimal>();
 
