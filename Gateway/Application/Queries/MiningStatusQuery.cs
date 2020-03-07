@@ -17,7 +17,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             public async Task<MiningStatusQueryResult> Handle(MiningStatusQuery request, CancellationToken cancellationToken)
                 => new MiningStatusQueryResult
                     {
-                        DailyTimeout = await _calculationService.GetBonusTimeout(),
+                        WeeklyTimeout = await _calculationService.GetWeeklyTimeout(),
                         InstantTimeout = await _calculationService.GetInstantTimeout(),
                         CurrentMiningCount = await _calculationService.GetCurrentMiningCount(),
                         BoostMapping = await _calculationService.GetInstantBoostMapping()

@@ -1169,7 +1169,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "dailyTimeout": {
+          "weeklyTimeout": {
             "type": "string",
             "format": "time-span"
           },
@@ -1213,11 +1213,13 @@
         "description": "",
         "x-enumNames": [
           "Default",
+          "Weekly",
           "Bonus",
           "Instant"
         ],
         "enum": [
           "Default",
+          "Weekly",
           "Bonus",
           "Instant"
         ]

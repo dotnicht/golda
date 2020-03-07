@@ -7,7 +7,8 @@ namespace Binebase.Exchange.Gateway.Domain.Enums
     public enum TransactionType
     {
         Default = 0,
-        Bonus = 1,
-        Instant = 2
+        Weekly = 1,
+        Bonus = 2,
+        Instant = 3
     }
 }

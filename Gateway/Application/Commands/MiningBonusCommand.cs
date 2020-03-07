@@ -1,8 +1,7 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Domain;
+﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,10 +24,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<MiningBonusCommandResult> Handle(MiningBonusCommand request, CancellationToken cancellationToken)
             {
-                var timeout = await _calculationService.GetBonusTimeout();
-                if (timeout > default(TimeSpan)) throw new NotSupportedException();
+                var (amount, type) = await _calculationService.GenerateWeeklyMiningReward();
 
-                var (amount, type) = await _calculationService.GenerateBonusMiningReward();
                 var result = new MiningBonusCommandResult
                 {
                     Amount = amount,
@@ -36,6 +33,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 };
 
                 await _accountService.Debit(_currentUserService.UserId, Currency.BINE, result.Amount, TransactionSource.Mining, result.Type);
+                (amount, type) = await _calculationService.GenerateBonusMiningReward();
+
+                if (type != TransactionType.Default && amount > 0)
+                {
+                    result.Type = type;
+                    result.Amount += amount;
+                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, TransactionSource.Mining, type);
+                }
 
                 return result;
             }
