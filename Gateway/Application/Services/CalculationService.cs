@@ -126,6 +126,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task<Promotion> GeneratePromotion()
         {
+            // TODO: remove magic numbers.
             var promotion = null as Promotion;
             var probability = _configuration.Promotion.Probability - (await GetCurrentMiningCount() % 5) * 0.01M;
 
@@ -151,16 +152,17 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 rnd = Random();
 
                 var balance = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
-                var last = await _accountService.GetTransactions(_currentUserService.UserId);
+                var last = (await _accountService.GetTransactions(_currentUserService.UserId)).OrderByDescending(x => x.DateTime).First().Amount;
 
                 foreach (var category in _configuration.Promotion.Categories.OrderBy(x => x.Value))
                 {
                     if (rnd <= category.Value)
                     {
-                        promotion.TokenAmount = category.Value switch
+                        promotion.TokenAmount = category.Key switch
                         {
-                            //Configuration.PromotionItem.Category.LastRange => balance * RandomInRange(0.4, 0.75),
-
+                            Configuration.PromotionItem.Category.LastRange => last * RandomInRange(0.4M, 0.75M),
+                            Configuration.PromotionItem.Category.LastAll => last,
+                            Configuration.PromotionItem.Category.AllRange => balance * RandomInRange(0.1M, 05M),
                             _ => throw new NotSupportedException(),
                         };
 
