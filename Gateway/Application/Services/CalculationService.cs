@@ -8,8 +8,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Services
@@ -205,9 +203,8 @@ namespace Binebase.Exchange.Gateway.Application.Services
         {
             var bine = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
             var eurb = await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB);
-
             var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, Currency.EURB));
-            var balance = eurb * (1 / ex.Rate) + bine;
+            var balance = eurb + bine * ex.Rate;
             return balance;
         }
 
