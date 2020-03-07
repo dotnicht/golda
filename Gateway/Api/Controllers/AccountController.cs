@@ -10,12 +10,15 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
     public class AccountController : ApiController
     {
         [HttpGet]
-        public async Task<ActionResult<BalanceQueryResult>> Balance([FromQuery]BalanceQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<BalanceQueryResult>> Balance([FromQuery]BalanceQuery query) 
+            => await Mediator.Send(query);
 
         [HttpGet]
-        public async Task<ActionResult<PortfolioQueryResult>> Portfolio([FromQuery]PortfolioQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<PortfolioQueryResult>> Portfolio([FromQuery]PortfolioQuery query) 
+            => await Mediator.Send(query);
 
         [HttpGet]
-        public async Task<ActionResult<TransactionsQueryResult>> Transactions([FromQuery]TransactionsQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<TransactionsQueryResult>> Transactions([FromQuery]TransactionsQuery query) 
+            => await Mediator.Send(query);
     }
 }
