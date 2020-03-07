@@ -29,7 +29,6 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             public async Task<TransactionsQueryResult> Handle(TransactionsQuery request, CancellationToken cancellationToken)
             {
                 var trans = await _accountService.GetTransactions(_currentUserService.UserId);
-                ///TODO:Fix Mapper
                 var transactions = _mapper.Map<TransactionsQueryResult.Transaction[]>(trans);
 
                 var filteredTransactions = transactions.Where(

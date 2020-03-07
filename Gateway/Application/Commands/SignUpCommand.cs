@@ -48,7 +48,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 // TODO: handle referral.
 
                 var (result, userId) = await _identityService.CreateUser(request.Email, request.Password);
-                if (!result.Succeeded) throw result.ToValidationException(nameof(SignUpCommandHandler));
+                if (!result.Succeeded)
+                {
+                    throw result.ToValidationException(nameof(SignUpCommandHandler));
+                }
 
                 var ticket = await _identityService.GenerateConfirmationToken(userId);
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(userId));
@@ -69,7 +72,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     if (mining != null && mining.Created + await _calculationService.GetMiningRequestWindow() <= _dateTime.UtcNow)
                     {
                         await _accountService.Debit(userId, Currency.BINE, mining.Amount, TransactionSource.Mining, TransactionType.Default);
-                        _logger.LogInformation($"Account {userId} debited {mining.Amount} {Currency.BINE}.");
                     }
                 }
 

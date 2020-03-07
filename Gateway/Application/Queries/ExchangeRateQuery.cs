@@ -26,7 +26,11 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             {
                 var pair = new Pair(request.Base, request.Quote);
                 var rate = await _exchangeRateService.GetExchangeRate(pair);
-                if (rate == null) throw new NotFoundException(nameof(ExchangeRate), pair);
+                if (rate == null) 
+                {
+                    throw new NotFoundException(nameof(ExchangeRate), pair);
+                }
+
                 return new ExchangeRateQueryResult { Rate = rate.Rate };
             }
         }

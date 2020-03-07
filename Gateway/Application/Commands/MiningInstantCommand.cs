@@ -36,10 +36,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<MiningInstantCommandResult> Handle(MiningInstantCommand request, CancellationToken cancellationToken)
             {
                 var timeout = await _calculationService.GetInstantTimeout();
-                if (timeout > default(TimeSpan)) throw new NotSupportedException();
+                if (timeout > default(TimeSpan)) 
+                {
+                    throw new NotSupportedException();
+                }
 
                 var result = new MiningInstantCommandResult();
-
                 var mapping = await _calculationService.GetInstantBoostMapping();
                 var index = await _calculationService.GetCurrentMiningCount();
 
@@ -47,15 +49,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     var fee = await _calculationService.GetInstantMiningFee();
                     await _accountService.Credit(_currentUserService.UserId, Currency.EURB, fee, TransactionSource.Fee, TransactionType.Instant);
-                    _logger.LogInformation($"Account {_currentUserService.UserId} credited {fee} {Currency.EURB}.");
                     result.Amount += await _calculationService.GenerateInstantMiningReward();
                 }
 
                 if (result.Amount > 0)
                 {
                     await _accountService.Debit(_currentUserService.UserId, Currency.BINE, result.Amount, TransactionSource.Mining, TransactionType.Instant);
-                    _logger.LogInformation($"Account {_currentUserService.UserId} debited {result.Amount} {Currency.BINE}.");
-
                     var promotion = await _calculationService.GeneratePromotion();
                     if (promotion != null)
                     {
