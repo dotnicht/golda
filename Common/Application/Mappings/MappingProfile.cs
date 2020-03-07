@@ -7,7 +7,7 @@ namespace Binebase.Exchange.Common.Application.Mappings
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile() 
+        public MappingProfile()
             => AppDomain.CurrentDomain
                 .GetAssemblies()
                 .Where(x => !x.IsDynamic)
@@ -16,12 +16,14 @@ namespace Binebase.Exchange.Common.Application.Mappings
 
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
-            ApplyMapping(assembly, typeof(IMapFrom<>), "MappingFrom");
-            ApplyMapping(assembly, typeof(IMapTo<>), "MappingTo");
+            ApplyMapping(assembly, typeof(IMapFrom<>));
+            ApplyMapping(assembly, typeof(IMapTo<>));
         }
 
-        private void ApplyMapping(Assembly assembly, Type type, string method)
+        private void ApplyMapping(Assembly assembly, Type type)
         {
+            var method = type.GetMethods().Single().Name;
+
             var types = assembly
                 .GetExportedTypes()
                 .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type))
@@ -30,8 +32,10 @@ namespace Binebase.Exchange.Common.Application.Mappings
             foreach (var t in types)
             {
                 var instance = Activator.CreateInstance(t);
-                var methodInfo = t.GetMethod(method) ?? t.GetInterface(type.Name).GetMethod(method);
-                methodInfo?.Invoke(instance, new object[] { this });
+                foreach (var m in t.GetMethods().Where(x => x.Name == method).Union(t.GetInterfaces().Where(x => x.Name == type.Name).SelectMany(x => x.GetMethods().Where(y => y.Name == method))))
+                {
+                    m.Invoke(instance, new object[] { this });
+                }
             }
         }
     }

@@ -271,13 +271,15 @@
           "BINE",
           "EURB",
           "BTC",
-          "ETH"
+          "ETH",
+          "EUR"
         ],
         "enum": [
           "BINE",
           "EURB",
           "BTC",
-          "ETH"
+          "ETH",
+          "EUR"
         ]
       },
       "BalanceQueryResult": {

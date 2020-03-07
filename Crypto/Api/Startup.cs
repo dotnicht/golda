@@ -1,4 +1,5 @@
 using Binebase.Exchange.Common.Api;
+using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.CryptoService.Application;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Infrastructure;
@@ -33,6 +34,7 @@ namespace Binebase.Exchange.CryptoService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
+            services.AddApplicationCommon();
             services.AddInfrastructure(Configuration, Environment);
 
             services.AddHttpContextAccessor();
@@ -50,12 +52,6 @@ namespace Binebase.Exchange.CryptoService.Api
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
-            });
-
-            // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/dist";
             });
 
             services.AddOpenApiDocument(configure =>
@@ -92,10 +88,6 @@ namespace Binebase.Exchange.CryptoService.Api
             app.UseHealthChecks("/health");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            if (!env.IsDevelopment())
-            {
-                app.UseSpaStaticFiles();
-            }
 
             app.UseSwaggerUi3(settings =>
             {
@@ -106,8 +98,8 @@ namespace Binebase.Exchange.CryptoService.Api
             app.UseRouting();
 
             app.UseAuthentication();
-            app.UseIdentityServer();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -116,18 +108,6 @@ namespace Binebase.Exchange.CryptoService.Api
                 endpoints.MapRazorPages();
             });
 
-            app.UseSpa(spa =>
-            {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,
-                // see https://go.microsoft.com/fwlink/?linkid=864501
-
-                spa.Options.SourcePath = "ClientApp";
-
-                if (env.IsDevelopment())
-                {
-                    spa.UseAngularCliServer(npmScript: "start");
-                }
-            });
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Binebase.Exchange.AccountService.Domain.Enums;
-using Binebase.Exchange.AccountService.Domain.Events;
+﻿using Binebase.Exchange.AccountService.Domain.Events;
 using Binebase.Exchange.AccountService.Domain.Exceptions;
+using Binebase.Exchange.Common.Domain;
 using NEventStore.Domain.Core;
 using System;
 using System.Collections.Generic;

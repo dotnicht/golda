@@ -81,9 +81,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             if (context.Principal.Identity is ClaimsIdentity claims 
                 && Guid.TryParse(claims.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value, out var userId))
             {
-                var user = context.HttpContext.RequestServices
+                var user = await context.HttpContext.RequestServices
                     .GetRequiredService<IIdentityService>()
-                    .GetUser(userId).Result;
+                    .GetUser(userId);
 
                 if (user == null)
                 {

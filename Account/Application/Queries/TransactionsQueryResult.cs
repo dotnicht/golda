@@ -1,6 +1,6 @@
-﻿using Binebase.Exchange.AccountService.Domain.Enums;
-using Binebase.Exchange.AccountService.Domain.Events;
+﻿using Binebase.Exchange.AccountService.Domain.Events;
 using Binebase.Exchange.Common.Application.Mappings;
+using Binebase.Exchange.Common.Domain;
 using System;
 
 namespace Binebase.Exchange.AccountService.Application.Queries
