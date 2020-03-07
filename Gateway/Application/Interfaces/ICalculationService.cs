@@ -12,7 +12,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<(decimal Amount, TransactionType Type)> GenerateWeeklyMiningReward();
         Task<(decimal Amount, TransactionType Type)> GenerateBonusMiningReward();
         Task<decimal> GenerateInstantMiningReward();
-        Task<Promotion> GeneratePromotion(decimal reward);
+        Task<Promotion> GeneratePromotion();
         Task<TimeSpan> GetMiningRequestWindow();
         Task<TimeSpan> GetWeeklyTimeout();
         Task<TimeSpan> GetInstantTimeout();

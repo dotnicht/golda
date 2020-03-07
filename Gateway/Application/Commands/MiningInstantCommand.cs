@@ -55,15 +55,15 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     await _accountService.Debit(_currentUserService.UserId, Currency.BINE, result.Amount, TransactionSource.Mining, TransactionType.Instant);
                     _logger.LogInformation($"Account {_currentUserService.UserId} debited {result.Amount} {Currency.BINE}.");
-                }
 
-                var promotion = await _calculationService.GeneratePromotion(result.Amount);
-                if (promotion != null)
-                {
-                    _context.Promotions.Add(promotion);
-                    await _context.SaveChangesAsync();
-                    result.Promotion = _mapper.Map<MiningInstantCommandResult.PromotionItem>(promotion);
-                    _logger.LogInformation($"Promotion item {promotion.Id} created.");
+                    var promotion = await _calculationService.GeneratePromotion();
+                    if (promotion != null)
+                    {
+                        _context.Promotions.Add(promotion);
+                        await _context.SaveChangesAsync();
+                        result.Promotion = _mapper.Map<MiningInstantCommandResult.PromotionItem>(promotion);
+                        _logger.LogInformation($"Promotion item {promotion.Id} created.");
+                    }
                 }
 
                 return result;

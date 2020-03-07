@@ -1,6 +1,6 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
@@ -8,8 +8,9 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Services
 {
@@ -45,7 +46,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 throw new InvalidOperationException($"Weekly timeout is active.");
             }
 
-            var balance = await GetBalance();
+            var balance = await GetInternalBalance();
             var amount = await GenerateDefaultReward();
             var type = TransactionType.Default;
 
@@ -53,7 +54,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             {
                 type = TransactionType.Bonus;
 
-                if (new Random().NextDouble() > _configuration.Weekly.Probability)
+                if (Random() > _configuration.Weekly.Probability)
                 {
                     var user = await _identityService.GetUser(_currentUserService.UserId);
                     amount = balance * _configuration.Weekly.Coefficients[(int)Math.Floor((_dateTime.UtcNow - user.Registered).TotalDays / 7)];
@@ -68,7 +69,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var amount = 0M;
             var type = TransactionType.Default;
 
-            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x => x.Currency == Currency.BINE).OrderByDescending(x => x.DateTime);
+            var txs = (await _accountService.GetTransactions(_currentUserService.UserId))
+                .Where(x => x.Currency == Currency.BINE)
+                .OrderByDescending(x => x.DateTime);
 
             var target = txs
                 .Where(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Weekly)
@@ -81,11 +84,11 @@ namespace Binebase.Exchange.Gateway.Application.Services
             if (target.Count >= _configuration.Bonus.StackTimes
                 && target.All(x => x.Key == 0 || x.Value.DateTime - target[x.Key - 1].DateTime <= _configuration.Bonus.Window * 2)
                 && (bonus == null || bonus.DateTime < _dateTime.UtcNow - _configuration.Bonus.Timeout)
-                && new Random().NextDouble() > _configuration.Bonus.Probability)
+                && Random() > _configuration.Bonus.Probability)
             {
                 type = TransactionType.Bonus;
                 var part = RandomInRange(_configuration.Bonus.Range[0], _configuration.Bonus.Range[1]);
-                amount = part * await GetBalance();
+                amount = part * await GetInternalBalance();
             }
 
             return (amount, type);
@@ -94,11 +97,11 @@ namespace Binebase.Exchange.Gateway.Application.Services
         public async Task<decimal> GenerateInstantMiningReward()
         {
             var bine = 0M;
-            if (new Random().NextDouble() < _configuration.Instant.Probability)
+            if (Random() < _configuration.Instant.Probability)
             {
                 var rate = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, Currency.EURB));
                 bine = _configuration.Instant.Fee / rate.Rate;
-                var rnd = new Random().NextDouble();
+                var rnd = Random();
 
                 foreach (var range in _configuration.Instant.Categories.OrderBy(x => x.Value))
                 {
@@ -112,6 +115,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                             Configuration.InstantItem.Category.x10x100 => RandomInRange(10, 100),
                             _ => throw new NotSupportedException(),
                         };
+
                         break;
                     }
                 }
@@ -120,14 +124,48 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return bine;
         }
 
-        public async Task<Promotion> GeneratePromotion(decimal reward)
+        public async Task<Promotion> GeneratePromotion()
         {
             var promotion = null as Promotion;
+            var probability = _configuration.Promotion.Probability - (await GetCurrentMiningCount() % 5) * 0.01;
+            if (probability < 0.1)
+            {
+                probability = 0.1;
+            }
 
-            if (reward > 0 && new Random().NextDouble() < _configuration.Promotion.Probability)
+            if (Random() < probability)
             {
                 promotion = new Promotion { Id = Guid.NewGuid() };
-                // TODO: promotion.
+                var rnd = Random();
+
+                foreach (var currency in _configuration.Promotion.Currencies.OrderBy(x => x.Value))
+                {
+                    if (rnd <= currency.Value)
+                    {
+                        promotion.Currency = currency.Key;
+                        break;
+                    }
+                }
+
+                rnd = Random();
+
+                var balance = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
+                var last = await _accountService.GetTransactions(_currentUserService.UserId);
+
+                foreach (var category in _configuration.Promotion.Categories.OrderBy(x => x.Value))
+                {
+                    if (rnd <= category.Value)
+                    {
+                        promotion.TokenAmount = category.Value switch
+                        {
+                            //Configuration.PromotionItem.Category.LastRange => balance * RandomInRange(0.4, 0.75),
+
+                            _ => throw new NotSupportedException(),
+                        };
+
+                        break;
+                    }
+                }
             }
 
             return await Task.FromResult(promotion);
@@ -140,10 +178,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
             => await GetTimeout(TransactionType.Instant, _configuration.Instant.Timeout);
 
         public async Task<int> GetCurrentMiningCount()
-        {
-            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x => x.Currency == Currency.BINE);
-            return txs.Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
-        }
+            => (await _accountService.GetTransactions(_currentUserService.UserId))
+                .Where(x => x.Currency == Currency.BINE)
+                .Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
 
         public Task<Dictionary<int, int>> GetInstantBoostMapping()
             => Task.FromResult(_configuration.Instant.BoostMapping);
@@ -161,7 +198,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return last == null || last.DateTime <= _dateTime.UtcNow - timeout ? default : _dateTime.UtcNow - last.DateTime;
         }
 
-        private async Task<decimal> GetBalance()
+        private async Task<decimal> GetInternalBalance()
         {
             var bine = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
             var eurb = await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB);
@@ -172,7 +209,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
         }
 
         private decimal RandomInRange(decimal start, decimal end)
-            => (decimal)new Random().NextDouble() * (end - start) + start;
+            => (decimal)Random() * (end - start) + start;
+
+        private double Random() => new Random().NextDouble();
 
         public class Configuration
         {
@@ -196,7 +235,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 public TimeSpan Timeout { get; set; }
                 public TimeSpan Window { get; set; }
                 public int StackTimes { get; set; }
-                public double Probability { get;  set; }
+                public double Probability { get; set; }
                 public decimal[] Range { get; set; }
             }
 
@@ -217,8 +256,15 @@ namespace Binebase.Exchange.Gateway.Application.Services
             public class PromotionItem
             {
                 public double Probability { get; set; }
-                public decimal[] ExchangeRange { get; set; }
-                public Dictionary<Currency, double[]> Currencies { get; set; }
+                public Dictionary<Currency, double> Currencies { get; set; }
+                public Dictionary<Category, double> Categories { get; set; }
+
+                public enum Category
+                {
+                    LastRange,
+                    LastAll,
+                    AllRange
+                }
             }
         }
     }
