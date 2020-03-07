@@ -127,10 +127,11 @@ namespace Binebase.Exchange.Gateway.Application.Services
         public async Task<Promotion> GeneratePromotion()
         {
             var promotion = null as Promotion;
-            var probability = _configuration.Promotion.Probability - (await GetCurrentMiningCount() % 5) * 0.01;
-            if (probability < 0.1)
+            var probability = _configuration.Promotion.Probability - (await GetCurrentMiningCount() % 5) * 0.01M;
+
+            if (probability < 0.1M)
             {
-                probability = 0.1;
+                probability = 0.1M;
             }
 
             if (Random() < probability)
@@ -209,9 +210,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
         }
 
         private decimal RandomInRange(decimal start, decimal end)
-            => (decimal)Random() * (end - start) + start;
+            => Random() * (end - start) + start;
 
-        private double Random() => new Random().NextDouble();
+        private decimal Random() => (decimal)new Random().NextDouble();
 
         public class Configuration
         {
@@ -227,7 +228,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             {
                 public TimeSpan Timeout { get; set; }
                 public decimal[] Coefficients { get; set; }
-                public double Probability { get; set; }
+                public decimal Probability { get; set; }
             }
 
             public class BonusItem
@@ -235,7 +236,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 public TimeSpan Timeout { get; set; }
                 public TimeSpan Window { get; set; }
                 public int StackTimes { get; set; }
-                public double Probability { get; set; }
+                public decimal Probability { get; set; }
                 public decimal[] Range { get; set; }
             }
 
@@ -243,9 +244,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
             {
                 public TimeSpan Timeout { get; set; }
                 public Dictionary<int, int> BoostMapping { get; set; }
-                public double Probability { get; set; }
+                public decimal Probability { get; set; }
                 public decimal Fee { get; set; }
-                public Dictionary<Category, double> Categories { get; set; }
+                public Dictionary<Category, decimal> Categories { get; set; }
 
                 public enum Category
                 {
@@ -255,9 +256,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             public class PromotionItem
             {
-                public double Probability { get; set; }
-                public Dictionary<Currency, double> Currencies { get; set; }
-                public Dictionary<Category, double> Categories { get; set; }
+                public decimal Probability { get; set; }
+                public Dictionary<Currency, decimal> Currencies { get; set; }
+                public Dictionary<Category, decimal> Categories { get; set; }
 
                 public enum Category
                 {
