@@ -150,7 +150,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 }
 
                 rnd = Random();
-
                 var balance = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
                 var last = (await _accountService.GetTransactions(_currentUserService.UserId)).OrderByDescending(x => x.DateTime).First().Amount;
 
@@ -166,6 +165,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                             _ => throw new NotSupportedException(),
                         };
 
+                        promotion.CurrencyAmount =  promotion.TokenAmount * (await _exchangeRateService.GetExchangeRate(new Pair(promotion.Currency, Currency.BINE))).Rate;
                         break;
                     }
                 }
