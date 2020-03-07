@@ -29,13 +29,14 @@ namespace Binebase.Exchange.Common.Application.Mappings
                 .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type))
                 .ToList();
 
-            foreach (var t in types)
+            foreach (var profile in types)
             {
-                var instance = Activator.CreateInstance(t);
-                foreach (var m in t.GetMethods().Where(x => x.Name == method).Union(t.GetInterfaces().Where(x => x.Name == type.Name).SelectMany(x => x.GetMethods().Where(y => y.Name == method))))
-                {
-                    m.Invoke(instance, new object[] { this });
-                }
+                var instance = Activator.CreateInstance(profile);
+                profile.GetMethods()
+                    .Where(x => x.Name == method)
+                    .Union(profile.GetInterfaces().Where(x => x.Name == type.Name).SelectMany(x => x.GetMethods().Where(y => y.Name == method)))
+                    .ToList()
+                    .ForEach(x => x.Invoke(instance, new object[] { this }));
             }
         }
     }

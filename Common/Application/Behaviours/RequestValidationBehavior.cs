@@ -14,9 +14,7 @@ namespace Binebase.Exchange.Common.Application.Behaviours
         private readonly IEnumerable<IValidator<TRequest>> _validators;
 
         public RequestValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
-        {
-            _validators = validators;
-        }
+            => _validators = validators;
 
         public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
