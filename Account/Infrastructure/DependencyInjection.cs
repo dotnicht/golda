@@ -41,8 +41,8 @@ namespace Binebase.Exchange.AccountService.Infrastructure
 
             services.AddSingleton(x => Wireup
                 .Init()
-                .LogToOutputWindow(LogLevel.Verbose)
-                .LogToConsoleWindow(LogLevel.Verbose)
+                .LogToOutputWindow(LogLevel.Info)
+                .LogToConsoleWindow(LogLevel.Info)
                 //.UsingInMemoryPersistence()
                 .UsingSqlPersistence(SqlClientFactory.Instance, configuration.GetConnectionString("EventStoreConnection"))
                 .WithDialect(new MsSqlDialect())

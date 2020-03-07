@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Binebase.Exchange.CryptoService.Application.Interfaces
 {
-    public interface IDbContext
+    public interface IApplicationDbContext : Binebase.Exchange.Common.Application.Interfaces.IDbContext
     {
     }
 }

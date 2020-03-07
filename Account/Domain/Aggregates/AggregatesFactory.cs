@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.AccountService.Domain.Common;
-using NEventStore.Domain;
+﻿using NEventStore.Domain;
 using NEventStore.Domain.Persistence;
 using System;
 using System.Reflection;

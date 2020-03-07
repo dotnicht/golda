@@ -21,7 +21,7 @@ namespace Binebase.Exchange.Gateway.Persistence
                 throw new ArgumentNullException(nameof(configuration));
             }
             
-            services.AddDbContext<DbContext>(x => x.UseSqlServer(configuration.GetConnectionString("PersistenceConnection"), b => b.MigrationsAssembly(typeof(DbContext).Assembly.FullName)));
+            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("PersistenceConnection"), b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
                 
             services.AddServices(Assembly.GetExecutingAssembly());
 

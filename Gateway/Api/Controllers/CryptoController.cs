@@ -12,18 +12,23 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
     public class CryptoController : ApiController
     {
         [HttpGet]
-        public async Task<ActionResult<AddressQueryResult>> Address([FromQuery]AddressQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<AddressQueryResult>> Address([FromQuery]AddressQuery query) 
+            => await Mediator.Send(query);
 
         [HttpGet]
-        public async Task<ActionResult<AddressesQueryResult>> Addresses([FromQuery]AddressesQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<AddressesQueryResult>> Addresses([FromQuery]AddressesQuery query) 
+            => await Mediator.Send(query);
 
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<ExchangeRateQueryResult>> ExchnageRate([FromQuery]ExchangeRateQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<ExchangeRateQueryResult>> ExchnageRate([FromQuery]ExchangeRateQuery query) 
+            => await Mediator.Send(query);
 
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<ExchangeRatesQueryResult>> ExchnageRates([FromQuery]ExchangeRatesQuery query) => await Mediator.Send(query);
+        public async Task<ActionResult<ExchangeRatesQueryResult>> ExchnageRates([FromQuery]ExchangeRatesQuery query) 
+            => await Mediator.Send(query);
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Exchange(ExchangeCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> Exchange(ExchangeCommand command) 
+            => Convert(await Mediator.Send(command));
     }
 }

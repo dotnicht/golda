@@ -92,9 +92,52 @@
             "name": "Currency",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/Currency"
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Currency"
+                }
+              ]
             },
             "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 4
+          },
+          {
+            "name": "ItemsPerPage",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 5
           }
         ],
         "responses": {
@@ -173,6 +216,38 @@
         }
       }
     },
+    "/api/Auth/SignInMultyFactor": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_SignInMultyFactor",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInMultyFactorCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Auth/Confirm": {
       "post": {
         "tags": [
@@ -230,18 +305,18 @@
         }
       }
     },
-    "/api/Auth/SendPasswordReset": {
+    "/api/Auth/RequestResetPassword": {
       "post": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_SendPasswordReset",
+        "operationId": "Auth_RequestResetPassword",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SendPasswordResetCommand"
+                "$ref": "#/components/schemas/RequestResetPasswordCommand"
               }
             }
           },
@@ -278,6 +353,104 @@
             "description": ""
           }
         }
+      }
+    },
+    "/api/Auth/MultyFactorStatus": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_MultyFactorStatus",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/MultyFactorStatusQuery"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultyFactorStatusQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Auth/MultyFactor": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_MultyFactor",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableMultyFactorCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_MultyFactor2",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisableMultyFactorCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Crypto/Address": {
@@ -498,18 +671,18 @@
         ]
       }
     },
-    "/api/Mining/Daily": {
+    "/api/Mining/Bonus": {
       "post": {
         "tags": [
           "Mining"
         ],
-        "operationId": "Mining_Daily",
+        "operationId": "Mining_Bonus",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MiningDailyCommand"
+                "$ref": "#/components/schemas/MiningBonusCommand"
               }
             }
           },
@@ -522,7 +695,44 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MiningDailyCommandResult"
+                  "$ref": "#/components/schemas/MiningBonusCommandResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Mining/Instant": {
+      "post": {
+        "tags": [
+          "Mining"
+        ],
+        "operationId": "Mining_Instant",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MiningInstantCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiningInstantCommandResult"
                 }
               }
             }
@@ -546,7 +756,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MiningRequestCommand"
+                "$ref": "#/components/schemas/RequestMiningCommand"
               }
             }
           },
@@ -559,7 +769,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MiningRequestCommandResult"
+                  "$ref": "#/components/schemas/RequestMiningCommandResult"
                 }
               }
             }
@@ -739,6 +949,24 @@
           }
         }
       },
+      "SignInMultyFactorCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "ConfirmCommandResult": {
         "type": "object",
         "additionalProperties": false,
@@ -781,7 +1009,7 @@
           }
         }
       },
-      "SendPasswordResetCommand": {
+      "RequestResetPasswordCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -808,6 +1036,51 @@
             "nullable": true
           },
           "confirmation": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MultyFactorStatusQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MultyFactorStatusQuery": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EnableMultyFactorCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "DisableMultyFactorCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
             "type": "string",
             "nullable": true
           }
@@ -922,7 +1195,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "MiningDailyCommandResult": {
+      "MiningBonusCommandResult": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -949,11 +1222,67 @@
           "Instant"
         ]
       },
-      "MiningDailyCommand": {
+      "MiningBonusCommand": {
         "type": "object",
         "additionalProperties": false
       },
-      "MiningRequestCommandResult": {
+      "MiningInstantCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "index": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "promotion": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PromotionItem"
+              }
+            ]
+          }
+        }
+      },
+      "PromotionItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "tokenAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "currencyAmount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "MiningInstantCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "boost": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RequestMiningCommandResult": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -967,7 +1296,7 @@
           }
         }
       },
-      "MiningRequestCommand": {
+      "RequestMiningCommand": {
         "type": "object",
         "additionalProperties": false
       }

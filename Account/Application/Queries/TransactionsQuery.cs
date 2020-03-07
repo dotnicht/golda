@@ -11,13 +11,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Binebase.Exchange.AccountService.Application.Queries
 {
     public class TransactionsQuery : IRequest<TransactionsQueryResult>,  IIdContainer
     {
         public Guid Id { get; set; }
-        public Currency Currency { get; set; }
 
         public class TransactionsQueryHandler : IRequestHandler<TransactionsQuery, TransactionsQueryResult>
         {
@@ -39,7 +40,7 @@ namespace Binebase.Exchange.AccountService.Application.Queries
                 var trx = new List<TransactionsQueryResult.Transaction>();
                 var balance = 0M;
 
-                foreach (var commited in stream.CommittedEvents.Where(x => x.Body is ITransaction t && t.Currency == request.Currency))
+                foreach (var commited in stream.CommittedEvents.Where(x => x.Body is ITransaction t))
                 {
                     var tx = new TransactionsQueryResult.Transaction
                     {
@@ -54,12 +55,14 @@ namespace Binebase.Exchange.AccountService.Application.Queries
                             balance += debit.Amount;
                             tx.Balance = balance;
                             tx.Payload = debit.Payload;
+                            tx.Currency = debit.Currency;
                             break;
                         case AccountCreditedEvent credit:
                             tx.Amount = -credit.Amount;
                             balance -= credit.Amount;
                             tx.Balance = balance;
                             tx.Payload = credit.Payload;
+                            tx.Currency = credit.Currency;
                             break;
                         default: throw new NotSupportedException();
                     }

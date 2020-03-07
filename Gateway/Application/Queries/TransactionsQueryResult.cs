@@ -2,6 +2,7 @@
 using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using System;
+using Binebase.Exchange.Common.Application.Mappings;
 
 namespace Binebase.Exchange.Gateway.Application.Queries
 {
@@ -9,7 +10,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
     {
         public Transaction[] Transactions { get; set; }
 
-        public class Transaction : IIdContainer
+        public class Transaction : IIdContainer, IMapFrom<Domain.Entities.Transaction>
         {
             public Guid Id { get; set; }
             public DateTime DateTime { get; set; }

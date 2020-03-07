@@ -35,8 +35,15 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             {
                 var user = await _identityService.GetUser(request.Id);
 
-                if (user == null) throw new NotFoundException(nameof(User), request.Id);
-                if (!user.Confirmed) throw new NotSupportedException($"User with email {user.Email} not confirmed.");
+                if (user == null)
+                {
+                    throw new NotFoundException(nameof(User), request.Id);
+                }
+
+                if (!user.Confirmed)
+                {
+                    throw new NotSupportedException($"User with email {user.Email} not confirmed.");
+                }
 
                 await _identityService.ResetPassword(request.Id, request.Code, request.Password);
                 return Unit.Value;

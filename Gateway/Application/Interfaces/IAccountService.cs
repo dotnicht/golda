@@ -16,6 +16,6 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task RemoveCurrency(Guid id, Currency currency);
         Task<Guid> Debit(Guid id, Currency currency, decimal amount, TransactionSource source, TransactionType? type = null);
         Task<Guid> Credit(Guid id, Currency currency, decimal amount, TransactionSource source, TransactionType? type = null);
-        Task<Transaction[]> GetTransactions(Guid id, Currency currency);
+        Task<Transaction[]> GetTransactions(Guid id);
     }
 }

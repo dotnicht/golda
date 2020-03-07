@@ -1,7 +1,7 @@
 using Binebase.Exchange.AccountService.Application;
 using Binebase.Exchange.AccountService.Application.Commands;
 using Binebase.Exchange.AccountService.Infrastructure;
-using Binebase.Exchange.Common.Api.Common;
+using Binebase.Exchange.Common.Api;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

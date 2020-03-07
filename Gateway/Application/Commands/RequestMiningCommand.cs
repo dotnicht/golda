@@ -8,23 +8,23 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class MiningRequestCommand : IRequest<MiningRequestCommandResult>
+    public class RequestMiningCommand : IRequest<RequestMiningCommandResult>
     {
-        public class MiningRequestCommandHandler : IRequestHandler<MiningRequestCommand, MiningRequestCommandResult>
+        public class RequestMiningCommandHandler : IRequestHandler<RequestMiningCommand, RequestMiningCommandResult>
         {
             private readonly ICalculationService _calculationService;
-            private readonly IDbContext _context;
+            private readonly IApplicationDbContext _context;
             private readonly IMapper _mapper;
 
-            public MiningRequestCommandHandler(ICalculationService calculationService, IDbContext context, IMapper mapper)
+            public RequestMiningCommandHandler(ICalculationService calculationService, IApplicationDbContext context, IMapper mapper)
                 => (_calculationService, _context, _mapper) = (calculationService, context, mapper);
 
-            public async Task<MiningRequestCommandResult> Handle(MiningRequestCommand request, CancellationToken cancellationToken)
+            public async Task<RequestMiningCommandResult> Handle(RequestMiningCommand request, CancellationToken cancellationToken)
             {
                 var item = new MiningRequest { Id = Guid.NewGuid(), Amount = await _calculationService.GenerateDefaultReward() };
                 _context.MiningRequests.Add(item);
                 await _context.SaveChangesAsync();
-                return _mapper.Map<MiningRequestCommandResult>(item);
+                return _mapper.Map<RequestMiningCommandResult>(item);
             }
         }
     }
