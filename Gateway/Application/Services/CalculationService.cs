@@ -84,7 +84,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 && new Random().NextDouble() > _configuration.Bonus.Probability)
             {
                 type = TransactionType.Bonus;
-                var part =  (decimal)new Random().NextDouble() * (_configuration.Bonus.Range[1] - _configuration.Bonus.Range[0]) + _configuration.Bonus.Range[0];
+                var part = RandomInRange(_configuration.Bonus.Range[0], _configuration.Bonus.Range[1]);
                 amount = part * await GetBalance();
             }
 
@@ -104,19 +104,14 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 {
                     if (rnd <= range.Value)
                     {
-                        switch (range.Key)
+                        bine *= range.Key switch
                         {
-                            case Configuration.InstantItem.Category.x2: bine *= 2;
-                                break;
-                            case Configuration.InstantItem.Category.x2x5: bine *= RandomInRange(2, 5);
-                                break;
-                            case Configuration.InstantItem.Category.x5x10: bine *= RandomInRange(5, 10);
-                                break;
-                            case Configuration.InstantItem.Category.x10x100: bine *= RandomInRange(10, 100);
-                                break;
-                            default: throw new NotSupportedException();
-                        }
-
+                            Configuration.InstantItem.Category.x2 => 2,
+                            Configuration.InstantItem.Category.x2x5 => RandomInRange(2, 5),
+                            Configuration.InstantItem.Category.x5x10 => RandomInRange(5, 10),
+                            Configuration.InstantItem.Category.x10x100 => RandomInRange(10, 100),
+                            _ => throw new NotSupportedException(),
+                        };
                         break;
                     }
                 }
