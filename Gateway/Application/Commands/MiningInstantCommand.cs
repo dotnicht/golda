@@ -8,6 +8,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -21,6 +23,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IAccountService _accountService;
             private readonly ICurrentUserService _currentUserService;
             private readonly IApplicationDbContext _context;
+            private readonly IDateTime _dateTime;
             private readonly IMapper _mapper;
             private readonly ILogger _logger;
 
@@ -29,33 +32,48 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IAccountService accountService,
                 ICurrentUserService currentUserService,
                 IApplicationDbContext context,
+                IDateTime dateTime,
                 IMapper mapper,
                 ILogger<MiningInstantCommandHandler> logger)
-                => (_calculationService, _accountService, _currentUserService, _context, _mapper, _logger)
-                    = (calculationService, accountService, currentUserService, context, mapper, logger);
+                => (_calculationService, _accountService, _currentUserService, _context, _dateTime, _mapper, _logger)
+                    = (calculationService, accountService, currentUserService, context, dateTime, mapper, logger);
 
             public async Task<MiningInstantCommandResult> Handle(MiningInstantCommand request, CancellationToken cancellationToken)
             {
-                var timeout = await _calculationService.GetInstantTimeout();
-                if (timeout > default(TimeSpan))
+                var mining = _context.MiningRequests
+                    .OrderByDescending(x => x.Created)
+                    .FirstOrDefault(
+                        x => x.Type == TransactionType.Instant
+                        && new[] { x.CreatedBy, x.LastModifiedBy }.Contains(_currentUserService.UserId)
+                        && x.Created > _dateTime.UtcNow - _calculationService.InstantTimeout);
+
+                if (mining != null)
                 {
-                    throw new NotSupportedException("Instant mining timeout is active.");
+                    throw new NotSupportedException("Timeout active.");
                 }
 
-                var result = new MiningInstantCommandResult();
-                var mapping = (await _calculationService.GetInstantBoostMapping()).Select(x => new { x.Key, x.Value }).OrderBy(x => x.Key);
+                var mapping = _calculationService.InstantBoostMapping.Select(x => new { x.Key, x.Value }).OrderBy(x => x.Key);
                 var index = await _calculationService.GetCurrentMiningCount();
+
+                mining = new MiningRequest
+                {
+                    Id = Guid.NewGuid()
+                };
 
                 for (var i = 0; i < (request.Boost ? mapping.FirstOrDefault(x => x.Value <= index)?.Value ?? 1 : 1); i++)
                 {
-                    var fee = await _calculationService.GetInstantMiningFee();
-                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, fee, TransactionSource.Fee, TransactionType.Instant);
-                    result.Amount += await _calculationService.GenerateInstantMiningReward();
+                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionSource.Fee, TransactionType.Instant);
+                    mining.Amount += await _calculationService.GenerateInstantReward();
                 }
 
-                if (result.Amount > 0)
+                _context.MiningRequests.Add(mining);
+                await _context.SaveChangesAsync();
+
+                var result = _mapper.Map<MiningInstantCommandResult>(mining);
+
+                if (mining.Amount > 0)
                 {
-                    result.Id = await _accountService.Debit(_currentUserService.UserId, Currency.BINE, result.Amount, TransactionSource.Mining, TransactionType.Instant);
+                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Instant);
                     var promotion = await _calculationService.GeneratePromotion();
                     if (promotion != null)
                     {

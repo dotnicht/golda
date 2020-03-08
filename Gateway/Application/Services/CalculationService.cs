@@ -21,6 +21,12 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private readonly IDateTime _dateTime;
         private readonly Configuration _configuration;
 
+        public TimeSpan MiningRequestWindow => _configuration.MiningRequestWindow;
+        public TimeSpan WeeklyTimeout => _configuration.Weekly.Timeout;
+        public TimeSpan InstantTimeout => _configuration.Instant.Timeout;
+        public decimal InstantMiningFee => _configuration.Instant.Fee;
+        public Dictionary<int, int> InstantBoostMapping => _configuration.Instant.BoostMapping.ToDictionary(x => int.Parse(x.Key), x => x.Value);
+
         public CalculationService(
             IAccountService accountService,
             IExchangeRateService exchangeRateService,
@@ -34,7 +40,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         public Task<decimal> GenerateDefaultReward()
             => Task.FromResult(RandomInRange(_configuration.DefaultRange[0], _configuration.DefaultRange[1]));
 
-        public async Task<(decimal Amount, TransactionType Type)> GenerateWeeklyMiningReward()
+        public async Task<(decimal Amount, TransactionType Type)> GenerateWeeklyReward()
         {
             var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x => x.Currency == Currency.BINE).OrderByDescending(x => x.DateTime);
             var bonus = txs.FirstOrDefault(x => x.Type == TransactionType.Bonus);
@@ -62,7 +68,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return (amount, type);
         }
 
-        public async Task<(decimal Amount, TransactionType Type)> GenerateBonusMiningReward()
+        public async Task<(decimal Amount, TransactionType Type)> GenerateBonusReward()
         {
             var amount = 0M;
             var type = TransactionType.Default;
@@ -92,7 +98,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return (amount, type);
         }
 
-        public async Task<decimal> GenerateInstantMiningReward()
+        public async Task<decimal> GenerateInstantReward()
         {
             var bine = 0M;
             if (Random() < _configuration.Instant.Probability)
@@ -172,32 +178,16 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return await Task.FromResult(promotion);
         }
 
-        public async Task<TimeSpan> GetWeeklyTimeout()
-            => await GetTimeout(TransactionType.Weekly, _configuration.Weekly.Timeout);
-
-        public async Task<TimeSpan> GetInstantTimeout()
-            => await GetTimeout(TransactionType.Instant, _configuration.Instant.Timeout);
-
         public async Task<int> GetCurrentMiningCount()
             => (await _accountService.GetTransactions(_currentUserService.UserId))
                 .Where(x => x.Currency == Currency.BINE)
                 .Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
-
-        public Task<Dictionary<int, int>> GetInstantBoostMapping()
-            => Task.FromResult(_configuration.Instant.BoostMapping.ToDictionary(x => int.Parse(x.Key), x => x.Value));
 
         public Task<decimal> GetInstantMiningFee()
             => Task.FromResult(_configuration.Instant.Fee);
 
         public Task<TimeSpan> GetMiningRequestWindow()
             => Task.FromResult(_configuration.MiningRequestWindow);
-
-        private async Task<TimeSpan> GetTimeout(TransactionType type, TimeSpan timeout)
-        {
-            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x => x.Currency == Currency.BINE);
-            var last = txs.OrderByDescending(x => x.DateTime).FirstOrDefault(x => x.Type == type && x.Source == TransactionSource.Mining);
-            return last == null || last.DateTime <= _dateTime.UtcNow - timeout ? default : _dateTime.UtcNow - last.DateTime;
-        }
 
         private async Task<decimal> GetInternalBalance()
         {

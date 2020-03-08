@@ -44,7 +44,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException();
                 }
 
-                var promotion = _context.Promotions.SingleOrDefault(x => x.Id == request.ReferenceId.Value && x.Created > _dateTime.UtcNow - TimeSpan.FromDays(1) && !x.IsExchanged);
+                var promotion = _context.Promotions.SingleOrDefault(
+                    x => x.Id == request.ReferenceId.Value 
+                    && x.Created > _dateTime.UtcNow - TimeSpan.FromDays(1) 
+                    && !x.IsExchanged
+                    && x.CreatedBy == _currentUserService.UserId);
 
                 if (promotion == null)
                 {
@@ -53,8 +57,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency));
 
-                await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, TransactionSource.Exchange);
-                await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, TransactionSource.Exchange);
+                await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, promotion.Id, TransactionSource.Exchange);
+                await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, promotion.Id, TransactionSource.Exchange);
 
                 promotion.IsExchanged = true;
                 await _context.SaveChangesAsync();

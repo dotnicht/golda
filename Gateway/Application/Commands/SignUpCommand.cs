@@ -64,9 +64,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 if (request.ReferenceId != null)
                 {
                     var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.ReferenceId.Value);
-                    if (mining != null && mining.Created + await _calculationService.GetMiningRequestWindow() <= _dateTime.UtcNow)
+                    if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow)
                     {
-                        await _accountService.Debit(userId, Currency.BINE, mining.Amount, TransactionSource.Mining, TransactionType.Default);
+                        await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
                     }
                 }
 
