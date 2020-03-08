@@ -3,6 +3,7 @@ using Binebase.Exchange.AccountService.Domain.Aggregates;
 using Binebase.Exchange.AccountService.Domain.Events;
 using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Domain;
 using MediatR;
 using NEventStore;
 using NEventStore.Domain.Persistence;
@@ -38,7 +39,7 @@ namespace Binebase.Exchange.AccountService.Application.Queries
 
                 using var stream = _storeEvents.OpenStream(request.Id, 0, int.MaxValue);
                 var trx = new List<TransactionsQueryResult.Transaction>();
-                var balance = 0M;
+                var balance = Enum.GetNames(typeof(Currency)).Select(x => Enum.Parse<Currency>(x)).ToDictionary(x => x, x => 0M);
 
                 foreach (var commited in stream.CommittedEvents.Where(x => x.Body is AccountDebitedEvent || x.Body is AccountCreditedEvent))
                 {
@@ -49,8 +50,10 @@ namespace Binebase.Exchange.AccountService.Application.Queries
                         tx.Amount = -tx.Amount;
                     }
 
-                    balance += tx.Amount;
-                    tx.Balance = balance;
+                    // TODO: split balance fix.
+
+                    balance[tx.Currency] += tx.Amount;
+                    tx.Balance = balance[tx.Currency];
 
                     trx.Add(tx);
                 }

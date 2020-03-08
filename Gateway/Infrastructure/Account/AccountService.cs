@@ -76,17 +76,17 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Account
             var result = new List<Domain.Entities.Transaction>();
 
             foreach (var tx in txs.Transactions)
-            {              
-                var payload = JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);            
+            {
+                var payload = string.IsNullOrWhiteSpace(tx.Payload) ? null : JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);
                 var item = new Domain.Entities.Transaction
                 {
                     Id = tx.Id,
                     DateTime = tx.DateTime.DateTime,
                     Amount = tx.Amount,
                     Balance = tx.Balance,
-                    Currency = (Common.Domain.Currency) tx.Currency,
-                    Source = payload.Source,
-                    Type = payload.Type
+                    Currency = (Common.Domain.Currency)tx.Currency,
+                    Source = payload?.Source,
+                    Type = payload?.Type
                 };
 
                 result.Add(item);
