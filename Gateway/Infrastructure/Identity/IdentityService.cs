@@ -37,17 +37,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             => (_httpContextAccessor, _userManager, _signInManager, _dateTime, _mapper, _configuration)
                 = (httpContextAccessor, userManager, signInManager, dateTime, mapper, options.Value);
 
-        public async Task<string> GetUserName(Guid userId)
-        {
-            if (userId == default)
-            {
-                return "Anonymous";
-            }
-
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            return user?.UserName;
-        }
-
         public async Task<User> GetUser(string userName)
             => MapToUser(await _userManager.FindByNameAsync(userName));
 
@@ -128,6 +117,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         {
             return await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);          
         }
+
         public async Task<bool> CheckUserPassword(Guid userId, string password)
         {
             return await _userManager.CheckPasswordAsync(_userManager.Users.Single(u => u.Id == userId), password);
@@ -135,7 +125,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<string> GenerateAuthToken(User user)
         {
-            if (user is null) throw new ArgumentNullException(nameof(user));
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration.AuthSecret);
@@ -165,7 +158,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         public async Task<Result> Authenticate(string userName, string password)
         {
             var user = await _userManager.FindByNameAsync(userName);
-            if (user == null) throw new NotFoundException(nameof(ApplicationUser), userName);
+            if (user == null)
+            {
+                throw new NotFoundException(nameof(ApplicationUser), userName);
+            }
 
             var result = await _signInManager.PasswordSignInAsync(user, password, true, true);
             return result.ToApplicationResult();
@@ -173,7 +169,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<Result> Authenticate(User user)
         {
-            if (user is null) throw new ArgumentNullException(nameof(user));
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
 
             var app = await _userManager.FindByNameAsync(user.Email);
             if (!await _signInManager.CanSignInAsync(app))
