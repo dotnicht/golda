@@ -39,7 +39,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     .OrderByDescending(x => x.Created)
                     .FirstOrDefault(
                         x => x.Type == TransactionType.Weekly
-                        && new[] { x.CreatedBy, x.LastModifiedBy }.Contains(_currentUserService.UserId)
+                        && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
                         && x.Created > _dateTime.UtcNow - _calculationService.WeeklyTimeout);
 
                 if (mining != null)
