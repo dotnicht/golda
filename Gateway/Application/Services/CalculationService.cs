@@ -184,7 +184,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 .Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
 
         public Task<Dictionary<int, int>> GetInstantBoostMapping()
-            => Task.FromResult(_configuration.Instant.BoostMapping);
+            => Task.FromResult(_configuration.Instant.BoostMapping.ToDictionary(x => int.Parse(x.Key), x => x.Value));
 
         public Task<decimal> GetInstantMiningFee()
             => Task.FromResult(_configuration.Instant.Fee);
@@ -242,7 +242,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             public class InstantItem
             {
                 public TimeSpan Timeout { get; set; }
-                public Dictionary<int, int> BoostMapping { get; set; }
+                public Dictionary<string, int> BoostMapping { get; set; }
                 public decimal Probability { get; set; }
                 public decimal Fee { get; set; }
                 public Dictionary<Category, decimal> Categories { get; set; }
