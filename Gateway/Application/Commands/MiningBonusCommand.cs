@@ -18,7 +18,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public MiningBonusCommandHandler(
                 ICurrentUserService currentUserService,
                 ICalculationService calculationService,
-                IAccountService accountService)
+                IAccountService accountService,
+                IApplicationDbContext context)
                 => (_currentUserService, _calculationService, _accountService)
                     = (currentUserService, calculationService, accountService);
 
