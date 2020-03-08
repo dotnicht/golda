@@ -50,8 +50,6 @@ namespace Binebase.Exchange.AccountService.Application.Queries
                         tx.Amount = -tx.Amount;
                     }
 
-                    // TODO: split balance fix.
-
                     balance[tx.Currency] += tx.Amount;
                     tx.Balance = balance[tx.Currency];
 
