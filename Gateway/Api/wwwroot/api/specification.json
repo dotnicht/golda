@@ -874,6 +874,7 @@
         "type": "string",
         "description": "",
         "x-enumNames": [
+          "Internal",
           "Mining",
           "Exchange",
           "Deposit",
@@ -882,6 +883,7 @@
           "Fee"
         ],
         "enum": [
+          "Internal",
           "Mining",
           "Exchange",
           "Deposit",
@@ -899,10 +901,6 @@
             "nullable": true
           },
           "password": {
-            "type": "string",
-            "nullable": true
-          },
-          "confirmation": {
             "type": "string",
             "nullable": true
           },

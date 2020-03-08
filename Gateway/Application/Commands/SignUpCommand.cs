@@ -16,7 +16,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public string Email { get; set; }
         public string Password { get; set; }
-        public string Confirmation { get; set; }
         public string Referral { get; set; }
         public Guid? ReferenceId { get; set; }
 
@@ -45,8 +44,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<Unit> Handle(SignUpCommand request, CancellationToken cancellationToken)
             {
-                // TODO: handle referral.
-
                 var (result, userId) = await _identityService.CreateUser(request.Email, request.Password);
                 if (!result.Succeeded)
                 {
@@ -58,13 +55,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 await _accountService.Create(userId);
 
-                await _accountService.AddCurrency(userId, Currency.BINE);
-                await _accountService.AddCurrency(userId, Currency.EURB);
-                await _accountService.AddCurrency(userId, Currency.BTC);
-                await _accountService.AddCurrency(userId, Currency.ETH);
-
-                await _cryptoService.GenerateAddress(userId, Currency.BTC);
-                await _cryptoService.GenerateAddress(userId, Currency.ETH);
+                Enum.GetNames(typeof(Currency)).Select(x => Enum.Parse<Currency>(x)).ToList().ForEach(async x =>
+                {
+                    await _accountService.AddCurrency(userId, x);
+                    await _cryptoService.GenerateAddress(userId, x);
+                });
 
                 if (request.ReferenceId != null)
                 {

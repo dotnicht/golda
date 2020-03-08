@@ -85,7 +85,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Account
                     Amount = tx.Amount,
                     Balance = tx.Balance,
                     Currency = (Common.Domain.Currency)tx.Currency,
-                    Source = payload?.Source,
+                    Source = payload?.Source ?? TransactionSource.Internal,
                     Type = payload?.Type
                 };
 

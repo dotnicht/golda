@@ -8,7 +8,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         {
             RuleFor(x => x.Email).EmailAddress();
             RuleFor(x => x.Password).NotEmpty();
-            RuleFor(x => x.Confirmation).Equal(x => x.Password);
         }
     }
 }
