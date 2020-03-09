@@ -9,7 +9,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
     public class CryptoService : ICryptoService, IConfigurationProvider<CryptoService.Configuration>, ITransient<ICryptoService>
     {
-        private static readonly Dictionary<Currency, string> _addresses = new Dictionary<Currency, string> 
+        private static readonly Dictionary<Currency, string> _addresses = new Dictionary<Currency, string>
         {
             [Currency.BTC] = "bc1q8g7qt8wkls2drqtvxtewdxxwzrtfm5ar44jqcu",
             [Currency.ETH] = "0x40947142eAB3C89fEbb3800E4F6fdc34c503A2C5"
@@ -27,7 +27,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public Task<string> GenerateAddress(Guid id, Currency currency)
         {
-            return Task.FromResult(_addresses[currency]);
+            return _addresses.ContainsKey(currency) ? Task.FromResult(_addresses[currency]) : null;
         }
 
         public class Configuration

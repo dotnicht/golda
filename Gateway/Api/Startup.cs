@@ -118,17 +118,6 @@ namespace Binebase.Exchange.Gateway.Api
             app.UseAuthorization();
             app.UseCors();
 
-            if (env.IsDevelopment())
-            {
-                app.Use(async (context, next) => 
-                {
-                    var identity = context.RequestServices.GetRequiredService<IIdentityService>();
-                    var user = await identity.GetUser(Guid.Parse("97e49bc5-aa0d-472e-42a4-08d7bd42719f"));
-                    await identity.Authenticate(user);
-                    await next();
-                });
-            }
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");

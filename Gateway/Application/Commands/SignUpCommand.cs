@@ -54,12 +54,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(userId));
 
                 await _accountService.Create(userId);
-
-                Enum.GetNames(typeof(Currency)).Select(x => Enum.Parse<Currency>(x)).ToList().ForEach(async x =>
-                {
-                    await _accountService.AddCurrency(userId, x);
-                    await _cryptoService.GenerateAddress(userId, x);
-                });
+                await _accountService.AddCurrency(userId, Currency.BINE);
+                await _accountService.AddCurrency(userId, Currency.EURB);
+                await _accountService.AddCurrency(userId, Currency.BTC);
+                await _accountService.AddCurrency(userId, Currency.ETH);
 
                 if (request.ReferenceId != null)
                 {
