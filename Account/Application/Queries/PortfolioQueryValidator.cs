@@ -8,7 +8,7 @@ namespace Binebase.Exchange.AccountService.Application.Queries
     public class PortfolioQueryValidator : AbstractValidator<PortfolioQuery>
     {
         public PortfolioQueryValidator()
-        {
+        {   
             RuleFor(x => x.Id).NotEmpty();
         }
     }

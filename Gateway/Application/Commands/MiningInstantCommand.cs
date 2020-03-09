@@ -57,7 +57,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 mining = new MiningRequest
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.NewGuid(),
+                    Type = TransactionType.Instant
                 };
 
                 for (var i = 0; i < (request.Boost ? mapping.FirstOrDefault(x => x.Value <= index)?.Value ?? 1 : 1); i++)
@@ -80,7 +81,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                         _context.Promotions.Add(promotion);
                         await _context.SaveChangesAsync();
                         result.Promotion = _mapper.Map<MiningInstantCommandResult.PromotionItem>(promotion);
-                        _logger.LogInformation($"Promotion item {promotion.Id} created.");
                     }
                 }
 

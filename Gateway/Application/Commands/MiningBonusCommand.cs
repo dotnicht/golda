@@ -38,7 +38,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var mining =_context.MiningRequests
                     .OrderByDescending(x => x.Created)
                     .FirstOrDefault(
-                        x => x.Type == TransactionType.Weekly
+                        x => x.Type == TransactionType.Weekly || x.Type == TransactionType.Bonus || x.Type == TransactionType.Default
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
                         && x.Created > _dateTime.UtcNow - _calculationService.WeeklyTimeout);
 
