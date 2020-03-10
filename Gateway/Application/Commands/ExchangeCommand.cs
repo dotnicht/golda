@@ -42,7 +42,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException($"Conversions from {request.Base} to {request.Quote} not supported.");
                 }
 
-                var id = Guid.NewGuid();
+                var id = Guid.NewGuid(); // TODO: log exchange operation.
                 await _accountService.Credit(_currentUserService.UserId, request.Quote, request.Amount * ex.Rate, id, TransactionSource.Exchange);
                 await _accountService.Debit(_currentUserService.UserId, request.Base, request.Amount, id, TransactionSource.Exchange);
 
