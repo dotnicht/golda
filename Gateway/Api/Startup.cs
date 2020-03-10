@@ -27,7 +27,7 @@ namespace Binebase.Exchange.Gateway.Api
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Environment { get; }
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment) 
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
             => (Configuration, Environment) = (configuration, environment);
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -94,6 +94,11 @@ namespace Binebase.Exchange.Gateway.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                app.Use(async (context, next) =>
+                {
+                    //context.Request.Headers.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODk3MThhNS04YmZmLTQyMzgtNTk0MC0wOGQ3YmY4Mjc4MTgiLCJlbWFpbCI6ImRvdG5pY2h0QGxpdmUuY29tIiwibmJmIjoxNTgzODM5NzM1LCJleHAiOjE1ODQ0NDQ1MzUsImlhdCI6MTU4MzgzOTczNX0._jy-hCUFLYVXhE4fNCMxgIbu6i5MSJeza7pZHS7sWyA");
+                    await next();
+                });
             }
             else
             {

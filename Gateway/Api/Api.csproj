@@ -4,8 +4,6 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Binebase.Exchange.Gateway.Api</RootNamespace>
         <AssemblyName>Binebase.Exchange.Gateway.Api</AssemblyName>
-        <IsPackable>true</IsPackable>
-        <!--<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>-->
     </PropertyGroup>
 
     <ItemGroup>
@@ -37,6 +35,26 @@
         <ProjectReference Include="..\..\Common\Api\Api.csproj" />
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
         <ProjectReference Include="..\Persistence\Persistence.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.Development.json">
+          <DependentUpon>appsettings.json</DependentUpon>
+
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="appsettings.Production.json">
+          <DependentUpon>appsettings.json</DependentUpon>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="appsettings.Test.json">
+          <DependentUpon>appsettings.json</DependentUpon>
+
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
     <Target Name="NSwag" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">

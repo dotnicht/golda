@@ -7,6 +7,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
 {
     public interface IIdentityService
     {
+        // TODO: reduce contract methods amount. 
         Task<User> GetUser(string userName);
         Task<User> GetUser(Guid userId);
         Task<(Result Result, Guid UserId)> CreateUser(string userName, string password);

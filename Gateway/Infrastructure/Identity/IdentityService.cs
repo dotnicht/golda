@@ -84,6 +84,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
             var result = new StringBuilder();
             var index = 0;
+
             while (index + 4 < key.Length)
             {
                 result.Append(key.Substring(index, 4)).Append(" ");
@@ -91,7 +92,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             }
 
             if (index < key.Length)
+            {
                 result.Append(key.Substring(index));
+            }
 
             return result.ToString().ToLowerInvariant();
         }
@@ -115,7 +118,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<bool> VerifyTwoFactorToken(Guid userId, string token)
         {
-            return await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);          
+            return await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);
         }
 
         public async Task<bool> CheckUserPassword(Guid userId, string password)

@@ -2,7 +2,6 @@
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,7 +24,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
                 if (user == null)
                 {
                     throw new NotFoundException(nameof(User), _currentUserService.UserId);
-                }                  
+                }
 
                 var status = await _identityService.GetTwoFactorEnabled(user.Id);
                 var key = null as string;
