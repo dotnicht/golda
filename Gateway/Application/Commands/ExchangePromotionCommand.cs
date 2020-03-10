@@ -45,8 +45,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency));
 
-                await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, TransactionSource.Exchange);
-                await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, TransactionSource.Exchange);
+                await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, promotion.Id, TransactionSource.Exchange);
+                await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, promotion.Id, TransactionSource.Exchange);
 
                 promotion.IsExchanged = true;
                 await _context.SaveChangesAsync();
