@@ -165,7 +165,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return await Task.FromResult(promotion);
         }
 
-        public async Task<int> GetCurrentMiningCount() // TODO: recheck.
+        public async Task<int> GetCurrentMiningCount() // TODO: change to appropriate mining request check.
             => (await _accountService.GetTransactions(_currentUserService.UserId))
                 .Where(x => x.Currency == Currency.BINE)
                 .Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
