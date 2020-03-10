@@ -40,6 +40,14 @@ namespace Binebase.Exchange.Gateway.Api
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-            => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+            => WebHost.CreateDefaultBuilder(args)
+             .ConfigureLogging(logging =>
+             {
+                 logging.ClearProviders();
+                 logging.AddConsole();
+                 logging.AddAzureWebAppDiagnostics();
+                 logging.AddEventSourceLogger();
+             })
+            .UseStartup<Startup>();
     }
 }
