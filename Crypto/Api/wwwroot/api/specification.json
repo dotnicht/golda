@@ -5,7 +5,84 @@
     "title": "Binebase.Exchange.CryptoService API",
     "version": "1.0.0"
   },
+  "paths": {
+    "/api/Crypto/Address": {
+      "post": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Address",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateAddressCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateAddressCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
+    "schemas": {
+      "GenerateAddressCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GenerateAddressCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          }
+        }
+      },
+      "Currency": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH",
+          "EUR"
+        ],
+        "enum": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH",
+          "EUR"
+        ]
+      }
+    },
     "securitySchemes": {
       "JWT": {
         "type": "apiKey",

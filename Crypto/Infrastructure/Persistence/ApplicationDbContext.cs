@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.Common.Application.Interfaces;
+﻿using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Threading;
@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext, Binebase.Exchange.CryptoService.Application.Interfaces.IApplicationDbContext
+    public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {

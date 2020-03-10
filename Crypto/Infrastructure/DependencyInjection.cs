@@ -1,11 +1,14 @@
-﻿using Binebase.Exchange.Common.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Infrastructure.Services;
+using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Reflection;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure
 {
@@ -16,7 +19,10 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
             services.AddDbContext<DbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly(typeof(DbContext).Assembly.FullName)));
 
-            services.AddScoped((System.Func<System.IServiceProvider, IDbContext>)(provider => provider.GetService<Persistence.ApplicationDbContext>()));
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+
+            services.AddServices(Assembly.GetExecutingAssembly());
+            services.AddServices(typeof(DateTimeService).Assembly);
 
             if (environment.IsEnvironment("Test"))
             {
@@ -24,7 +30,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
             }
             else
             {
-                services.AddTransient<IDateTime, DateTimeService>();
+
             }
 
             return services;
