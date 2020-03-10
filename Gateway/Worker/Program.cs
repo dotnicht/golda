@@ -8,6 +8,7 @@ using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Binebase.Exchange.Common.Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Worker
 {
@@ -31,6 +32,15 @@ namespace Worker
                         services.AddTransient<IBinanceClient, BinanceClient>();
 
                         services.AddConfigurationProviders(hostContext.Configuration);
-                    });
+                    })
+             .ConfigureLogging((hostngContext, logging) =>
+                     {
+                         logging.AddConfiguration(hostngContext.Configuration.GetSection("Logging"));
+                         logging.ClearProviders();
+                         logging.AddConsole();
+                         logging.AddAzureWebAppDiagnostics();
+                         logging.AddEventSourceLogger();
+
+                     });
     }
 }

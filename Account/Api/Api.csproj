@@ -24,6 +24,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.2" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
         <PackageReference Include="NSwag.AspNetCore" Version="13.2.3" />
         <PackageReference Include="NSwag.MSBuild" Version="13.2.3">
