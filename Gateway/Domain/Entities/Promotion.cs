@@ -1,4 +1,5 @@
 ﻿using Binebase.Exchange.Common.Domain;
+using System;
 
 namespace Binebase.Exchange.Gateway.Domain.Entities
 {
@@ -8,5 +9,6 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public decimal TokenAmount { get; set; }
         public decimal CurrencyAmount { get; set; }
         public bool IsExchanged { get; set; }
+        public Guid MiningRequestId { get; set; }
     }
 }

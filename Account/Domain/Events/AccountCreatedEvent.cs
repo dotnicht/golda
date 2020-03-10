@@ -1,11 +1,8 @@
-﻿using Binebase.Exchange.AccountService.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace Binebase.Exchange.AccountService.Domain.Events
 {
-    public class AccountCreatedEvent : IIdContainer, IDateTimeContainer
+    public class AccountCreatedEvent
     {  
         public Guid Id { get; set; }
         public DateTime DateTime { get; set; }

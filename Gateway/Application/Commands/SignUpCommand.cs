@@ -16,7 +16,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public string Email { get; set; }
         public string Password { get; set; }
-        public string Confirmation { get; set; }
         public string Referral { get; set; }
         public Guid? ReferenceId { get; set; }
 
@@ -45,31 +44,27 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<Unit> Handle(SignUpCommand request, CancellationToken cancellationToken)
             {
-                // TODO: handle referral.
-
                 var (result, userId) = await _identityService.CreateUser(request.Email, request.Password);
-                if (!result.Succeeded) throw result.ToValidationException(nameof(SignUpCommandHandler));
+                if (!result.Succeeded)
+                {
+                    throw result.ToValidationException(nameof(SignUpCommandHandler));
+                }
 
                 var ticket = await _identityService.GenerateConfirmationToken(userId);
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(userId));
 
                 await _accountService.Create(userId);
-
                 await _accountService.AddCurrency(userId, Currency.BINE);
                 await _accountService.AddCurrency(userId, Currency.EURB);
                 await _accountService.AddCurrency(userId, Currency.BTC);
                 await _accountService.AddCurrency(userId, Currency.ETH);
 
-                await _cryptoService.GenerateAddress(userId, Currency.BTC);
-                await _cryptoService.GenerateAddress(userId, Currency.ETH);
-
                 if (request.ReferenceId != null)
                 {
                     var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.ReferenceId.Value);
-                    if (mining != null && mining.Created + await _calculationService.GetMiningRequestWindow() <= _dateTime.UtcNow)
+                    if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow)
                     {
-                        await _accountService.Debit(userId, Currency.BINE, mining.Amount, TransactionSource.Mining, TransactionType.Default);
-                        _logger.LogInformation($"Account {userId} debited {mining.Amount} {Currency.BINE}.");
+                        await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
                     }
                 }
 

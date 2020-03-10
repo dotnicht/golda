@@ -1,6 +1,6 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
@@ -21,6 +21,12 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private readonly IDateTime _dateTime;
         private readonly Configuration _configuration;
 
+        public TimeSpan MiningRequestWindow => _configuration.MiningRequestWindow;
+        public TimeSpan WeeklyTimeout => _configuration.Weekly.Timeout;
+        public TimeSpan InstantTimeout => _configuration.Instant.Timeout;
+        public decimal InstantMiningFee => _configuration.Instant.Fee;
+        public Dictionary<int, int> InstantBoostMapping => _configuration.Instant.BoostMapping.ToDictionary(x => int.Parse(x.Key), x => x.Value);
+
         public CalculationService(
             IAccountService accountService,
             IExchangeRateService exchangeRateService,
@@ -32,67 +38,75 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 = (accountService, exchangeRateService, identityService, currentUserService, dateTime, options.Value);
 
         public Task<decimal> GenerateDefaultReward()
-            => Task.FromResult((decimal)new Random().NextDouble() * (_configuration.DefaultRange[1] - _configuration.DefaultRange[0]) + _configuration.DefaultRange[0]);
+            => Task.FromResult(RandomInRange(_configuration.DefaultRange[0], _configuration.DefaultRange[1]));
 
-        public async Task<(decimal Amount, TransactionType Type)> GenerateBonusMiningReward()
+        public async Task<(decimal Amount, TransactionType Type)> GenerateWeeklyReward()
         {
-            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x=>x.Currency == Currency.BINE).OrderByDescending(x => x.DateTime);
-            var bonus = txs.FirstOrDefault(x => x.Type == TransactionType.Bonus);
-
-            if (bonus != null && bonus.DateTime < _dateTime.UtcNow - _configuration.BonusTimeout)
-            {
-                throw new InvalidOperationException();
-            }
-
-            var bine = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
-            var eurb = await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB);
-            var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, Currency.EURB));
-            var balance = eurb * (1 / ex.Rate) + bine;
-
+            var balance = await GetInternalBalance();
             var amount = await GenerateDefaultReward();
             var type = TransactionType.Default;
 
-            if (balance > _configuration.BalanceTreshold)
+            if (balance > _configuration.BalanceTreshold && Random() > _configuration.Weekly.Probability)
             {
-                type = TransactionType.Bonus;
-
-                if (new Random().NextDouble() > _configuration.Probability.Bonus)
-                {
-                    var target = txs
-                        .Where(x => x.Source == TransactionSource.Mining && (x.Type == TransactionType.Bonus || x.Type == TransactionType.Default))
-                        .Take(_configuration.BonusStackTimes)
-                        .Select((x, i) => new { Index = i, Target = x })
-                        .ToDictionary(x => x.Index, x => x.Target);
-
-                    if (target.Count >= _configuration.BonusStackTimes
-                        && target.All(x => x.Key == 0 || x.Value.DateTime - target[x.Key - 1].DateTime <= _configuration.BonusTimeout * 2))
-                    {
-
-                    }
-                }
-                else
-                {
-                    var user = await _identityService.GetUser(_currentUserService.UserId);
-                    amount = balance * _configuration.WeeklyCoefficients[(int)Math.Floor((_dateTime.UtcNow - user.Registered).TotalDays / 7)];
-                }
+                type = TransactionType.Weekly;
+                var user = await _identityService.GetUser(_currentUserService.UserId);
+                amount = balance * _configuration.Weekly.Coefficients[(int)Math.Floor((_dateTime.UtcNow - user.Registered).TotalDays / 7)] / 100;
             }
 
             return (amount, type);
         }
 
-        public async Task<decimal> GenerateInstantMiningReward()
+        public async Task<(decimal Amount, TransactionType Type)> GenerateBonusReward()
+        {
+            var amount = 0M;
+            var type = TransactionType.Default;
+
+            var txs = (await _accountService.GetTransactions(_currentUserService.UserId))
+                .Where(x => x.Currency == Currency.BINE)
+                .OrderByDescending(x => x.DateTime);
+
+            var target = txs
+                .Where(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Weekly)
+                .Take(_configuration.Bonus.StackTimes)
+                .Select((x, i) => new { Index = i, Target = x })
+                .ToDictionary(x => x.Index, x => x.Target);
+
+            var bonus = txs.FirstOrDefault(x => x.Type == TransactionType.Bonus);
+
+            if (target.Count >= _configuration.Bonus.StackTimes
+                && target.All(x => x.Key == 0 || x.Value.DateTime - target[x.Key - 1].DateTime <= _configuration.Bonus.Window * 2)
+                && (bonus == null || bonus.DateTime < _dateTime.UtcNow - _configuration.Bonus.Timeout)
+                && Random() > _configuration.Bonus.Probability)
+            {
+                type = TransactionType.Bonus;
+                amount = RandomInRange(_configuration.Bonus.Range[0], _configuration.Bonus.Range[1]) * await GetInternalBalance();
+            }
+
+            return (amount, type);
+        }
+
+        public async Task<decimal> GenerateInstantReward()
         {
             var bine = 0M;
-            if (new Random().NextDouble() < _configuration.Probability.Instant)
+            if (Random() < _configuration.Instant.Probability)
             {
                 var rate = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, Currency.EURB));
-                bine = _configuration.InstantMiningFee / rate.Rate;
+                bine = _configuration.Instant.Fee * rate.Rate;
+                var rnd = Random();
 
-                foreach (var range in _configuration.Probability.InstantMiningRanges.OrderBy(x => x.Key))
+                foreach (var range in _configuration.Instant.Categories.OrderBy(x => x.Value))
                 {
-                    //if (new Random().NextDouble() <= range.Key)
+                    if (rnd <= range.Value)
                     {
-                        bine *= (decimal)new Random().NextDouble() * (range.Value[1] - range.Value[0]) + range.Value[0];
+                        bine *= range.Key switch
+                        {
+                            Configuration.InstantItem.Category.x2 => 2,
+                            Configuration.InstantItem.Category.x2x5 => RandomInRange(2, 5),
+                            Configuration.InstantItem.Category.x5x10 => RandomInRange(5, 10),
+                            Configuration.InstantItem.Category.x10x100 => RandomInRange(10, 100),
+                            _ => throw new NotSupportedException(),
+                        };
+
                         break;
                     }
                 }
@@ -101,76 +115,133 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return bine;
         }
 
-        public async Task<Promotion> GeneratePromotion(decimal reward)
+        public async Task<Promotion> GeneratePromotion()
         {
+            // TODO: remove magic numbers.
             var promotion = null as Promotion;
+            var probability = _configuration.Promotion.Probability - (await GetCurrentMiningCount() % 5) * 0.01M;
 
-            if (reward > 0 && new Random().NextDouble() < _configuration.Promotion.Probability)
+            if (probability < 0.1M)
+            {
+                probability = 0.1M;
+            }
+
+            if (Random() < probability)
             {
                 promotion = new Promotion { Id = Guid.NewGuid() };
-                // TODO: promotion.
+                var rnd = Random();
+
+                foreach (var currency in _configuration.Promotion.Currencies.OrderBy(x => x.Value))
+                {
+                    if (rnd <= currency.Value)
+                    {
+                        promotion.Currency = currency.Key;
+                        break;
+                    }
+                }
+
+                rnd = Random();
+                var balance = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
+                var last = (await _accountService.GetTransactions(_currentUserService.UserId)).OrderByDescending(x => x.DateTime).First().Amount;
+
+                foreach (var category in _configuration.Promotion.Categories.OrderBy(x => x.Value))
+                {
+                    if (rnd <= category.Value)
+                    {
+                        promotion.TokenAmount = category.Key switch
+                        {
+                            Configuration.PromotionItem.Category.LastRange => last * RandomInRange(0.4M, 0.75M),
+                            Configuration.PromotionItem.Category.LastAll => last,
+                            Configuration.PromotionItem.Category.AllRange => balance * RandomInRange(0.1M, 05M),
+                            _ => throw new NotSupportedException(),
+                        };
+
+                        promotion.CurrencyAmount = promotion.TokenAmount * (await _exchangeRateService.GetExchangeRate(new Pair(promotion.Currency, Currency.BINE))).Rate;
+                        break;
+                    }
+                }
             }
 
             return await Task.FromResult(promotion);
         }
 
-        public async Task<TimeSpan> GetBonusTimeout()
-            => await GetTimeout(TransactionType.Bonus, _configuration.BonusTimeout);
-
-        public async Task<TimeSpan> GetInstantTimeout()
-            => await GetTimeout(TransactionType.Instant, _configuration.InstantTimeout);
-
-        public async Task<int> GetCurrentMiningCount()
-        {
-            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x=>x.Currency == Currency.BINE);
-            return txs.Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
-        }
-
-        public Task<Dictionary<int, int>> GetInstantBoostMapping()
-            => Task.FromResult(_configuration.InstantBoostMapping);
+        public async Task<int> GetCurrentMiningCount() // TODO: recheck.
+            => (await _accountService.GetTransactions(_currentUserService.UserId))
+                .Where(x => x.Currency == Currency.BINE)
+                .Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
 
         public Task<decimal> GetInstantMiningFee()
-            => Task.FromResult(_configuration.InstantMiningFee);
+            => Task.FromResult(_configuration.Instant.Fee);
 
         public Task<TimeSpan> GetMiningRequestWindow()
             => Task.FromResult(_configuration.MiningRequestWindow);
 
-        private async Task<TimeSpan> GetTimeout(TransactionType type, TimeSpan timeout)
+        private async Task<decimal> GetInternalBalance()
         {
-            var txs = (await _accountService.GetTransactions(_currentUserService.UserId)).Where(x=>x.Currency == Currency.BINE);
-            var last = txs.OrderByDescending(x => x.DateTime).FirstOrDefault(x => x.Type == type && x.Source == TransactionSource.Mining);
-            return last == null || last.DateTime <= _dateTime.UtcNow - timeout ? default : _dateTime.UtcNow - last.DateTime;
+            var bine = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
+            var eurb = await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB);
+            var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, Currency.EURB));
+            var balance = eurb + bine * ex.Rate;
+            return balance;
         }
+
+        private decimal RandomInRange(decimal start, decimal end)
+            => Random() * (end - start) + start;
+
+        private decimal Random() => (decimal)new Random().NextDouble();
 
         public class Configuration
         {
-            public TimeSpan BonusTimeout { get; set; }
-            public TimeSpan InstantTimeout { get; set; }
             public TimeSpan MiningRequestWindow { get; set; }
             public decimal[] DefaultRange { get; set; }
-            public decimal[] WeeklyCoefficients { get; set; }
             public decimal BalanceTreshold { get; set; }
-            public decimal[] BonusRange { get; set; }
-            public TimeSpan BonusTimeThreshold { get; set; }
-            public int BonusStackTimes { get; set; }
-            public Dictionary<int, int> InstantBoostMapping { get; set; }
-            public decimal InstantMiningFee { get; set; }
-            public ProbabilityItem Probability { get; set; }
+            public WeeklyItem Weekly { get; set; }
+            public BonusItem Bonus { get; set; }
+            public InstantItem Instant { get; set; }
             public PromotionItem Promotion { get; set; }
 
-            public class ProbabilityItem
+            public class WeeklyItem
             {
-                public double Default { get; set; }
-                public double Bonus { get; set; }
-                public double Instant { get; set; }
-                public Dictionary<double[], int[]> InstantMiningRanges { get; set; }
+                public TimeSpan Timeout { get; set; }
+                public decimal[] Coefficients { get; set; }
+                public decimal Probability { get; set; }
+            }
+
+            public class BonusItem
+            {
+                public TimeSpan Timeout { get; set; }
+                public TimeSpan Window { get; set; }
+                public int StackTimes { get; set; }
+                public decimal Probability { get; set; }
+                public decimal[] Range { get; set; }
+            }
+
+            public class InstantItem
+            {
+                public TimeSpan Timeout { get; set; }
+                public Dictionary<string, int> BoostMapping { get; set; }
+                public decimal Probability { get; set; }
+                public decimal Fee { get; set; }
+                public Dictionary<Category, decimal> Categories { get; set; }
+
+                public enum Category
+                {
+                    x2, x2x5, x5x10, x10x100
+                }
             }
 
             public class PromotionItem
             {
-                public double Probability { get; set; }
-                public decimal[] ExchangeRange { get; set; }
-                public Dictionary<Currency, double[]> Currencies { get; set; }
+                public decimal Probability { get; set; }
+                public Dictionary<Currency, decimal> Currencies { get; set; }
+                public Dictionary<Category, decimal> Categories { get; set; }
+
+                public enum Category
+                {
+                    LastRange,
+                    LastAll,
+                    AllRange
+                }
             }
         }
     }

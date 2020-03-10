@@ -1,10 +1,9 @@
-﻿using Binebase.Exchange.AccountService.Domain.Common;
-using Binebase.Exchange.AccountService.Domain.Enums;
+﻿using Binebase.Exchange.Common.Domain;
 using System;
 
 namespace Binebase.Exchange.AccountService.Domain.Events
 {
-    public class AccountCurrencyAddedEvent : IDateTimeContainer
+    public class AccountCurrencyAddedEvent
     {
         public DateTime DateTime { get; set; }
         public Currency Currency { get; set; }

@@ -1,8 +1,12 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using AutoMapper;
+using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,29 +19,57 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly ICurrentUserService _currentUserService;
             private readonly ICalculationService _calculationService;
             private readonly IAccountService _accountService;
+            private readonly IApplicationDbContext _context;
+            private readonly IDateTime _dateTime;
+            private readonly IMapper _mapper;
 
             public MiningBonusCommandHandler(
                 ICurrentUserService currentUserService,
                 ICalculationService calculationService,
-                IAccountService accountService)
-                => (_currentUserService, _calculationService, _accountService)
-                    = (currentUserService, calculationService, accountService);
+                IAccountService accountService,
+                IApplicationDbContext context,
+                IDateTime dateTime,
+                IMapper mapper)
+                => (_currentUserService, _calculationService, _accountService, _context, _dateTime, _mapper)
+                    = (currentUserService, calculationService, accountService, context, dateTime, mapper);
 
             public async Task<MiningBonusCommandResult> Handle(MiningBonusCommand request, CancellationToken cancellationToken)
             {
-                var timeout = await _calculationService.GetBonusTimeout();
-                if (timeout > default(TimeSpan)) throw new NotSupportedException();
+                var mining =_context.MiningRequests
+                    .OrderByDescending(x => x.Created)
+                    .FirstOrDefault(
+                        x => x.Type == TransactionType.Weekly || x.Type == TransactionType.Bonus || x.Type == TransactionType.Default
+                        && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
+                        && x.Created > _dateTime.UtcNow - _calculationService.WeeklyTimeout);
 
-                var (amount, type) = await _calculationService.GenerateBonusMiningReward();
-                var result = new MiningBonusCommandResult
+                if (mining != null)
                 {
+                    throw new NotSupportedException("Timeout active.");
+                }
+
+                var (amount, type) = await _calculationService.GenerateWeeklyReward();
+
+                mining = new MiningRequest 
+                { 
+                    Id = Guid.NewGuid(),
                     Amount = amount,
                     Type = type
                 };
 
-                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, result.Amount, TransactionSource.Mining, result.Type);
+                _context.MiningRequests.Add(mining);
+                await _context.SaveChangesAsync();
 
-                return result;
+                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, mining.Type);
+                (amount, type) = await _calculationService.GenerateBonusReward();
+
+                if (type != TransactionType.Default && amount > 0)
+                {
+                    mining.Type = type;
+                    mining.Amount += amount;
+                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionSource.Mining, type);
+                }
+
+                return _mapper.Map<MiningBonusCommandResult>(mining);
             }
         }
     }

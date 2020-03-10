@@ -15,7 +15,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly ILogger _logger;
         private readonly IOptions<Configuration> _options;
 
-        public EmailService(ILogger<EmailService> logger, IOptions<Configuration> options) => (_logger, _options) = (logger, options);
+        public EmailService(ILogger<EmailService> logger, IOptions<Configuration> options) 
+            => (_logger, _options) = (logger, options);
 
         public async Task SendEmail(string[] emails, string subject, string message)
         {
@@ -44,7 +45,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             msg.AddTos(emails.Select(x => new EmailAddress(x)).ToList());
 
             var client = new SendGridClient(_options.Value.ApiKey);
-            await client.SendEmailAsync(msg);
+            var result = await client.SendEmailAsync(msg);
+            _logger.LogDebug($"SendGrid response {result.StatusCode}.");
         }
 
         public class Configuration

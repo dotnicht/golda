@@ -18,8 +18,8 @@
         "Binebase.Exchange.Gateway.Api": {
             "commandName": "Project",
             "launchBrowser": true,
-            "launchUrl": "https://localhost:5002/api",
-            "applicationUrl": "https://localhost:5002",
+            "launchUrl": "https://localhost:5000/api",
+            "applicationUrl": "https://localhost:5000",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }

@@ -1,5 +1,8 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,19 +13,25 @@ namespace Binebase.Exchange.Gateway.Application.Queries
         public class MiningStatusQueryHandler : IRequestHandler<MiningStatusQuery, MiningStatusQueryResult>
         {
             private readonly ICalculationService _calculationService;
+            private readonly ICurrentUserService _currentUserService;
+            private readonly IApplicationDbContext _context;
+            private readonly IDateTime _dateTime;
 
-            public MiningStatusQueryHandler(ICalculationService calculationService)
-                => _calculationService = calculationService;
+            public MiningStatusQueryHandler(ICalculationService calculationService, ICurrentUserService currentUserService, IApplicationDbContext context, IDateTime dateTime)
+                => (_calculationService, _currentUserService, _context, _dateTime) = (calculationService, currentUserService, context, dateTime);
 
             public async Task<MiningStatusQueryResult> Handle(MiningStatusQuery request, CancellationToken cancellationToken)
-                => new MiningStatusQueryResult
-                    {
-                        DailyTimeout = await _calculationService.GetBonusTimeout(),
-                        InstantTimeout = await _calculationService.GetInstantTimeout(),
-                        CurrentMiningCount = await _calculationService.GetCurrentMiningCount(),
-                        BoostMapping = await _calculationService.GetInstantBoostMapping()
-                    };
+            {
+                var minings = _context.MiningRequests.Where(x => x.CreatedBy == _currentUserService.UserId).OrderByDescending(x => x.Created);
 
+                return new MiningStatusQueryResult
+                {
+                    WeeklyTimeout = _dateTime.UtcNow - minings.FirstOrDefault(x => x.Type == TransactionType.Weekly)?.Created ?? default,
+                    InstantTimeout = _dateTime.UtcNow - minings.FirstOrDefault(x => x.Type == TransactionType.Bonus)?.Created ?? default,
+                    CurrentMiningCount = await _calculationService.GetCurrentMiningCount(),
+                    BoostMapping = _calculationService.InstantBoostMapping
+                };
+            }
         }
     }
 }

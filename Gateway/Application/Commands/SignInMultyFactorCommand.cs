@@ -11,6 +11,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public Guid Id { get; set; }
         public string Code { get; set; }
+        public string Password { get; set; }
 
         public class MultyFactorSignInCommandHandler : IRequestHandler<SignInMultyFactorCommand, SignInCommandResult>
         {
@@ -21,10 +22,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<SignInCommandResult> Handle(SignInMultyFactorCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(request.Id);
-                var isTfaEnabled = _identityService.GetTwoFactorEnabled(user.Id);
+                var isTfaEnabled = _identityService.GetTwoFactorEnabled(user.Id);            
 
                 if (!isTfaEnabled.Result)
                     throw new NotSupportedException();
+
+                if (!await _identityService.CheckUserPassword(user.Id, request.Password))
+                     throw new SecurityException();
 
                 var iStfaValid = await _identityService.VerifyTwoFactorToken(user.Id, request.Code);
                 if (!iStfaValid)

@@ -904,6 +904,7 @@
         "type": "string",
         "description": "",
         "x-enumNames": [
+          "Internal",
           "Mining",
           "Exchange",
           "Deposit",
@@ -912,6 +913,7 @@
           "Fee"
         ],
         "enum": [
+          "Internal",
           "Mining",
           "Exchange",
           "Deposit",
@@ -929,10 +931,6 @@
             "nullable": true
           },
           "password": {
-            "type": "string",
-            "nullable": true
-          },
-          "confirmation": {
             "type": "string",
             "nullable": true
           },
@@ -988,6 +986,10 @@
             "format": "guid"
           },
           "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
             "type": "string",
             "nullable": true
           }
@@ -1190,7 +1192,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "dailyTimeout": {
+          "weeklyTimeout": {
             "type": "string",
             "format": "time-span"
           },
@@ -1234,11 +1236,13 @@
         "description": "",
         "x-enumNames": [
           "Default",
+          "Weekly",
           "Bonus",
           "Instant"
         ],
         "enum": [
           "Default",
+          "Weekly",
           "Bonus",
           "Instant"
         ]

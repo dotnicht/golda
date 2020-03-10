@@ -36,7 +36,7 @@ namespace Binebase.Exchange.Gateway.Domain.ValueObjects
                 return new Pair(Enum.Parse<Currency>(currencies[0]), Enum.Parse<Currency>(currencies[1]));
             }
 
-            throw new ArgumentException(nameof(symbol), "Invalid symbol format");
+            throw new ArgumentException(nameof(symbol), "Invalid symbol format.");
         }
     }
 }

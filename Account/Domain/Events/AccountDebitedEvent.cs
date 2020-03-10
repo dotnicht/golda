@@ -1,10 +1,9 @@
-﻿using Binebase.Exchange.AccountService.Domain.Common;
-using Binebase.Exchange.AccountService.Domain.Enums;
+﻿using Binebase.Exchange.Common.Domain;
 using System;
 
 namespace Binebase.Exchange.AccountService.Domain.Events
 {
-    public class AccountDebitedEvent : IIdContainer, IDateTimeContainer, ITransaction
+    public class AccountDebitedEvent
     {
         public Guid Id { get; set; }
         public DateTime DateTime { get; set; }

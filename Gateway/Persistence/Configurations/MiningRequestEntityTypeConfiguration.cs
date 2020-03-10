@@ -1,9 +1,8 @@
 ﻿using Binebase.Exchange.Gateway.Domain.Entities;
+using Binebase.Exchange.Gateway.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Binebase.Exchange.Gateway.Persistence.Configurations
 {
@@ -12,6 +11,8 @@ namespace Binebase.Exchange.Gateway.Persistence.Configurations
         public void Configure(EntityTypeBuilder<MiningRequest> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Type).HasConversion(new EnumToStringConverter<TransactionType>());
+            builder.Property(x => x.Amount).HasColumnType("decimal(18,8)");
         }
     }
 }

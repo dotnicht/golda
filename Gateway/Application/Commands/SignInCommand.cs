@@ -20,13 +20,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<SignInCommandResult> Handle(SignInCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(request.Email);
-                var isTfaEnabled = await _identityService.GetTwoFactorEnabled(user.Id);
-
-                if (isTfaEnabled)
+                if (await _identityService.GetTwoFactorEnabled(user.Id))
+                {
                     return new SignInCommandResult { Id = user.Id, Email = user.Email };
+                }
 
                 var result = await _identityService.Authenticate(request.Email, request.Password);
-                if (!result.Succeeded) throw new SecurityException();
+                if (!result.Succeeded) 
+                { 
+                    throw new SecurityException(); 
+                }
 
                 var token = await _identityService.GenerateAuthToken(user);
                 return new SignInCommandResult { Id = user.Id, Email = user.Email, Token = token };

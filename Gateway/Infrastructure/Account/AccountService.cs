@@ -44,27 +44,27 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Account
         public async Task RemoveCurrency(Guid id, Common.Domain.Currency currency)
             => await _accountClient.Currency2Async(new RemoveCurrencyCommand { Id = id, Currency = (Currency)currency });
 
-        public async Task<Guid> Debit(Guid id, Common.Domain.Currency currency, decimal amount, TransactionSource source, TransactionType? type = null)
+        public async Task<Guid> Debit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, TransactionSource source, TransactionType? type = null)
         {
             var cmd = new DebitAccountCommand
             {
                 Id = id,
                 Currency = (Currency)currency,
                 Amount = amount,
-                Payload = JsonConvert.SerializeObject(new TransactionPayload { Source = source, Type = type })
+                Payload = JsonConvert.SerializeObject(new TransactionPayload { ExternalId = externalId, Source = source, Type = type })
             };
 
             return (await _accountClient.DebitAsync(cmd)).Id;
         }
 
-        public async Task<Guid> Credit(Guid id, Common.Domain.Currency currency, decimal amount, TransactionSource source, TransactionType? type = null)
+        public async Task<Guid> Credit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, TransactionSource source, TransactionType? type = null)
         {
             var cmd = new CreditAccountCommand
             {
                 Id = id,
                 Currency = (Currency)currency,
                 Amount = amount,
-                Payload = JsonConvert.SerializeObject(new TransactionPayload { Source = source, Type = type })
+                Payload = JsonConvert.SerializeObject(new TransactionPayload { ExternalId = externalId, Source = source, Type = type })
             };
 
             return (await _accountClient.CreditAsync(cmd)).Id;
@@ -72,21 +72,21 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Account
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(Guid id)
         {
-            TransactionsQueryResult txs = await _accountClient.TransactionsAsync(id);
+            var txs = await _accountClient.TransactionsAsync(id);
             var result = new List<Domain.Entities.Transaction>();
 
             foreach (var tx in txs.Transactions)
-            {              
-                TransactionPayload payload = JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);            
+            {
+                var payload = string.IsNullOrWhiteSpace(tx.Payload) ? null : JsonConvert.DeserializeObject<TransactionPayload>(tx.Payload);
                 var item = new Domain.Entities.Transaction
                 {
                     Id = tx.Id,
                     DateTime = tx.DateTime.DateTime,
                     Amount = tx.Amount,
                     Balance = tx.Balance,
-                    Currency = (Common.Domain.Currency) tx.Currency,
-                    Source = payload.Source,
-                    Type = payload.Type
+                    Currency = (Common.Domain.Currency)tx.Currency,
+                    Source = payload?.Source ?? TransactionSource.Internal,
+                    Type = payload?.Type
                 };
 
                 result.Add(item);
@@ -102,6 +102,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Account
 
         private class TransactionPayload
         {
+            public Guid ExternalId { get; set; }
             public TransactionSource Source { get; set; }
             public TransactionType? Type { get; set; }
         }

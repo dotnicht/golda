@@ -5,7 +5,7 @@ using System;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class MiningInstantCommandResult
+    public class MiningInstantCommandResult : IMapFrom<MiningRequest>
     {
         public Guid Id { get; set; }
         public int Index { get; set; }

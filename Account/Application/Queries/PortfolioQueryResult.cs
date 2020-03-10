@@ -1,4 +1,4 @@
-﻿using Binebase.Exchange.AccountService.Domain.Enums;
+﻿using Binebase.Exchange.Common.Domain;
 using System.Collections.Generic;
 
 namespace Binebase.Exchange.AccountService.Application.Queries

@@ -42,7 +42,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             if (forceSupported && !_supportedPairs.Contains(pair))
             {
-                throw new NotSupportedException($"Supported currency pairs: {string.Join(' ', _supportedPairs.AsEnumerable())}");
+                throw new NotSupportedException($"Supported currency pairs: {string.Join(' ', _supportedPairs.AsEnumerable())}.");
             }
 
             var key = pair.ToString();

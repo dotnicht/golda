@@ -5,8 +5,29 @@
     <RootNamespace>Binebase.Exchange.AccountService.Api</RootNamespace>
     <AssemblyName>Binebase.Exchange.AccountService.Api</AssemblyName>
     <IsPackable>true</IsPackable>
+    <!--<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>-->
   </PropertyGroup>
 
+    <ItemGroup>
+      <Content Update="appsettings.Development.json">
+          <DependentUpon>appsettings.json</DependentUpon>
+
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="appsettings.Production.json">
+          <DependentUpon>appsettings.json</DependentUpon>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Update="appsettings.Test.json">
+          <DependentUpon>appsettings.json</DependentUpon>
+
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+        
     <ItemGroup>
         <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />

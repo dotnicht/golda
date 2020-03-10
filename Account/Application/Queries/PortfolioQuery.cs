@@ -1,6 +1,6 @@
 ﻿using Binebase.Exchange.AccountService.Domain.Aggregates;
-using Binebase.Exchange.AccountService.Domain.Common;
 using Binebase.Exchange.Common.Application.Exceptions;
+using Binebase.Exchange.Common.Application.Interfaces;
 using MediatR;
 using NEventStore.Domain.Persistence;
 using System;
@@ -22,7 +22,7 @@ namespace Binebase.Exchange.AccountService.Application.Queries
 
             public async Task<PortfolioQueryResult> Handle(PortfolioQuery request, CancellationToken cancellationToken)
             {
-                var account = _repository.GetById<Account>(request.Id, int.MaxValue) ?? throw new NotFoundException(nameof(Account), request.Id);
+                var account = _repository.GetById<Account>(request.Id, int.MaxValue);
                 var result = new PortfolioQueryResult { Portfolio = account.Portfolio.ToDictionary(x => x.Currency, x => x.Amount) };
                 return await Task.FromResult(result);
             }

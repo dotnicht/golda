@@ -1,6 +1,6 @@
 ﻿using Binebase.Exchange.AccountService.Domain.Aggregates;
-using Binebase.Exchange.AccountService.Domain.Common;
-using Binebase.Exchange.AccountService.Domain.Enums;
+using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Domain;
 using MediatR;
 using NEventStore.Domain.Persistence;
 using System;
@@ -26,7 +26,7 @@ namespace Binebase.Exchange.AccountService.Application.Commands
             public async Task<CreditAccountCommandResult> Handle(CreditAccountCommand request, CancellationToken cancellationToken)
             {
                 var account = _repository.GetById<Account>(request.Id, int.MaxValue);
-                var id = account.Debit(request.Currency, request.Amount, request.Payload);
+                var id = account.Credit(request.Currency, request.Amount, request.Payload);
                 _repository.Save(account, Guid.NewGuid());
                 return await Task.FromResult(new CreditAccountCommandResult { Id = id });
             }

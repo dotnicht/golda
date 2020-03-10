@@ -2,6 +2,7 @@ using Binebase.Exchange.AccountService.Application;
 using Binebase.Exchange.AccountService.Application.Commands;
 using Binebase.Exchange.AccountService.Infrastructure;
 using Binebase.Exchange.Common.Api;
+using Binebase.Exchange.Common.Application;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,7 @@ namespace Binebase.Exchange.AccountService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
+            services.AddApplicationCommon();
             services.AddInfrastructure(Configuration, Environment);
 
             services.AddHttpContextAccessor();
@@ -60,7 +62,7 @@ namespace Binebase.Exchange.AccountService.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
