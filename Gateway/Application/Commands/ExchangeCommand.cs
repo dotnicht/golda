@@ -35,7 +35,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<Unit> Handle(ExchangeCommand request, CancellationToken cancellationToken)
             {
-                var ex = await _exchangeRateService.GetExchangeRate(new Pair(request.Base, request.Quote));
+                var ex = await _exchangeRateService.GetExchangeRate(new Pair(request.Base, request.Quote), false);
 
                 if (ex == null)
                 {
@@ -43,8 +43,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var id = Guid.NewGuid();
-                await _accountService.Credit(_currentUserService.UserId, request.Base, request.Amount, id, TransactionSource.Exchange);
-                await _accountService.Debit(_currentUserService.UserId, request.Quote, request.Amount * ex.Rate, id, TransactionSource.Exchange);
+                await _accountService.Credit(_currentUserService.UserId, request.Quote, request.Amount * ex.Rate, id, TransactionSource.Exchange);
+                await _accountService.Debit(_currentUserService.UserId, request.Base, request.Amount, id, TransactionSource.Exchange);
 
                 //await _context.SaveChangesAsync();
 
