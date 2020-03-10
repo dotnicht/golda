@@ -78,7 +78,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         {
             _cacheClient.AddToList(new Pair(rate.Pair.Base, Currency.EURB).ToString(), rate);
             var symbol = new Pair(Currency.EURB, rate.Pair.Base);
-            _cacheClient.AddToList(symbol.ToString(), new ExchangeRate { Pair = symbol, DateTime = rate.DateTime, Rate = rate.Rate * (1 + _configuration.ExchangeFee) });
+            _cacheClient.AddToList(symbol.ToString(), new ExchangeRate { Pair = symbol, DateTime = rate.DateTime, Rate = (1 + _configuration.ExchangeFee) / rate.Rate });
         }
 
         private void Refresh(object state)
@@ -110,8 +110,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
                     rate.Rate = _configuration.BineRange[1] - delta;
                 }
             }
-
-            _logger.LogInformation($"Exchange rate {rate.Pair} {rate.Rate} {rate.DateTime}.");
 
             try
             {

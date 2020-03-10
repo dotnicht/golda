@@ -29,6 +29,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 throw new ArgumentNullException(nameof(key));
             }
 
+            _logger.LogDebug($"Cache key {key} item set {value}.");
             await GetDatabase().StringSetAsync(key, value);
         }
 
@@ -55,6 +56,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 throw new ArgumentNullException(nameof(key));
             }
 
+            _logger.LogDebug($"Cache key {key} item added {value}.");
             await GetDatabase().ListRightPushAsync(key, value);
         }
 
