@@ -4,6 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Binebase.Exchange.Gateway.Api</RootNamespace>
         <AssemblyName>Binebase.Exchange.Gateway.Api</AssemblyName>
+        <UserSecretsId>5aa14106-f710-479f-a513-324765627c42</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
