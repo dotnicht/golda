@@ -94,11 +94,6 @@ namespace Binebase.Exchange.Gateway.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                app.Use(async (context, next) =>
-                {
-                    context.Request.Headers.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODk3MThhNS04YmZmLTQyMzgtNTk0MC0wOGQ3YmY4Mjc4MTgiLCJlbWFpbCI6ImRvdG5pY2h0QGxpdmUuY29tIiwibmJmIjoxNTgzODM5NzM1LCJleHAiOjE1ODQ0NDQ1MzUsImlhdCI6MTU4MzgzOTczNX0._jy-hCUFLYVXhE4fNCMxgIbu6i5MSJeza7pZHS7sWyA");
-                    await next();
-                });
             }
             else
             {

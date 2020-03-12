@@ -82,6 +82,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         {
             string key = await _userManager.GetAuthenticatorKeyAsync(_userManager.Users.Single(u => u.Id == userId));
 
+            if (string.IsNullOrEmpty(key))
+            {
+                await _userManager.ResetAuthenticatorKeyAsync(_userManager.Users.Single(u => u.Id == userId));
+                key = await _userManager.GetAuthenticatorKeyAsync(_userManager.Users.Single(u => u.Id == userId));
+            }
+
             var result = new StringBuilder();
             var index = 0;
 
