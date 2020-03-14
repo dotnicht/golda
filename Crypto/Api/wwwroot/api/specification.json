@@ -61,7 +61,39 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenerateAddressCommandResult"
+                  "$ref": "#/components/schemas/AddressesQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Crypto/Publish": {
+      "post": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Publish",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishTransactionCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishTransactionCommandResult"
                 }
               }
             }
@@ -112,6 +144,44 @@
           "ETH",
           "EUR"
         ]
+      },
+      "AddressesQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "addresses": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Address"
+            }
+          }
+        }
+      },
+      "Address": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PublishTransactionCommandResult": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PublishTransactionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
       }
     },
     "securitySchemes": {

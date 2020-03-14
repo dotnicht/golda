@@ -13,8 +13,12 @@ namespace Binebase.Exchange.CryptoService.Api.Controllers
         public async Task<ActionResult<GenerateAddressCommandResult>> Address(GenerateAddressCommand command)
             => await Mediator.Send(command);
 
-        [HttpGet, ProducesResponseType(typeof(GenerateAddressCommandResult), StatusCodes.Status200OK)]
+        [HttpGet, ProducesResponseType(typeof(AddressesQueryResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<AddressesQueryResult>> Addresses([FromQuery]AddressesQuery quary)
             => await Mediator.Send(quary);
+
+        [HttpPost, ProducesResponseType(typeof(PublishTransactionCommandResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PublishTransactionCommandResult>> Publish(PublishTransactionCommand command)
+            => await Mediator.Send(command);
     }
 }
