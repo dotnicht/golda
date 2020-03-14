@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.CryptoService.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Binebase.Exchange.CryptoService.Application.Interfaces
 {
-    public interface IApplicationDbContext : Binebase.Exchange.Common.Application.Interfaces.IDbContext
+    public interface IApplicationDbContext : IDbContext
     {
+        DbSet<Address> Addresses { get; set; }
+        DbSet<Transaction> Transactions { get; set; }
     }
 }

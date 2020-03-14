@@ -8,7 +8,6 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,8 +44,6 @@ namespace Binebase.Exchange.CryptoService.Api
             services.AddControllers()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<IApplicationDbContext>())
                 .AddNewtonsoftJson();
-
-            services.AddRazorPages();
 
             // Customise default API behaviour
             services.Configure<ApiBehaviorOptions>(options =>
@@ -105,7 +102,6 @@ namespace Binebase.Exchange.CryptoService.Api
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
             });
 
         }

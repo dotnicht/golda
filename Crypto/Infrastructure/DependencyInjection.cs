@@ -1,5 +1,4 @@
 ﻿using Binebase.Exchange.Common.Application;
-using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Infrastructure.Persistence;
@@ -16,13 +15,13 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
-            services.AddDbContext<DbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly(typeof(DbContext).Assembly.FullName)));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+            //services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
 
             services.AddServices(Assembly.GetExecutingAssembly());
-            services.AddServices(typeof(DateTimeService).Assembly);
+            //services.AddServices(typeof(DateTimeService).Assembly);
 
             if (environment.IsEnvironment("Test"))
             {

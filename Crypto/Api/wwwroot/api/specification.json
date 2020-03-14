@@ -37,6 +37,37 @@
           }
         }
       }
+    },
+    "/api/Crypto/Addresses": {
+      "get": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Addresses",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateAddressCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
