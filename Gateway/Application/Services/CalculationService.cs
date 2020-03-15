@@ -226,7 +226,10 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
                 public enum Category
                 {
-                    x2, x2x5, x5x10, x10x100
+                    x2,
+                    x2x5,
+                    x5x10,
+                    x10x100
                 }
             }
 
