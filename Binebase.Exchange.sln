@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Common\In
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Common\Api\Api.csproj", "{C81F7568-E01F-447F-B1C2-EA3144E94849}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker", "Common\Binebase.Exchange.Common.Worker\Worker.csproj", "{98723031-80E7-41AA-AA92-8ABC5CB43645}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker", "Common\Worker\Worker.csproj", "{98723031-80E7-41AA-AA92-8ABC5CB43645}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
