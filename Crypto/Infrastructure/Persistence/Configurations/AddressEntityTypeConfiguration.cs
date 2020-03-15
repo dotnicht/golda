@@ -15,7 +15,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence.Configurati
             builder.Property(x => x.Balance).HasConversion(new ValueConverter<BigInteger, string>(x => x.ToString(), x => BigInteger.Parse(x)));
             builder.Property(x => x.Type).HasConversion(new EnumToStringConverter<AddressType>());
             builder.Property(x => x.Public).IsRequired();
-            builder.Property(x => x.Private).IsRequired();
         }
     }
 }
