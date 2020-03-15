@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Binebase.Exchange.CryptoService.Application.Commands
 {
     public class PublishTransactionCommandResult
     {
+        public Guid Id { get; set; }
+        public string Hash { get; set; }
     }
 }

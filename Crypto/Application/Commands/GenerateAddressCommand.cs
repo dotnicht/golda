@@ -2,8 +2,6 @@
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,8 +22,6 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
 
             public async Task<GenerateAddressCommandResult> Handle(GenerateAddressCommand request, CancellationToken cancellationToken)
             {
-                await _bitcoinService.GenerateKeys();
-
                 return new GenerateAddressCommandResult { };
             }
         }

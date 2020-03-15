@@ -164,7 +164,17 @@
       },
       "PublishTransactionCommandResult": {
         "type": "object",
-        "additionalProperties": false
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "hash": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "PublishTransactionCommand": {
         "type": "object",

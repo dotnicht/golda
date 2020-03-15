@@ -14,6 +14,7 @@ namespace Binebase.Exchange.CryptoService.Domain.Entities
         public string Public { get; set; }
         public string Private { get; set; }
         public BigInteger Balance { get; set; }
+        public int Index { get; set; }
         public long Block { get; set; }
         public virtual ICollection<Transaction> Transactions { get; } = new HashSet<Transaction>();
     }
