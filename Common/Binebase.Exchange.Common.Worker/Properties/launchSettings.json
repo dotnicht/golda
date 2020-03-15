@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "Binebase.Exchange.Common.Worker": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
