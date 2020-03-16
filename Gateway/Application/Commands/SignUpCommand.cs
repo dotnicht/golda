@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using IApplicationDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IApplicationDbContext;
+using Binebase.Exchange.Gateway.Domain.Entities;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -54,10 +55,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(userId));
 
                 await _accountService.Create(userId);
+
                 await _accountService.AddCurrency(userId, Currency.BINE);
                 await _accountService.AddCurrency(userId, Currency.EURB);
                 await _accountService.AddCurrency(userId, Currency.BTC);
                 await _accountService.AddCurrency(userId, Currency.ETH);
+
+                await _cryptoService.GenerateAddress(userId, Currency.BTC);
+                await _cryptoService.GenerateAddress(userId, Currency.ETH);
 
                 if (request.ReferenceId != null)
                 {

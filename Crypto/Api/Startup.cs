@@ -60,6 +60,8 @@ namespace Binebase.Exchange.CryptoService.Api
 
                 configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
+
+            services.AddConfigurationProviders(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
