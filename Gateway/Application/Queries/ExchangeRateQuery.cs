@@ -6,6 +6,7 @@ using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace Binebase.Exchange.Gateway.Application.Queries
 {
@@ -18,20 +19,21 @@ namespace Binebase.Exchange.Gateway.Application.Queries
         {
             private readonly IExchangeRateService _exchangeRateService;
             private readonly IApplicationDbContext _context;
+            private readonly IMapper _mapper;
 
-            public ExchangeRateQueryHandler(IExchangeRateService exchangeRateService, IApplicationDbContext context)
-                => (_exchangeRateService, _context) = (exchangeRateService, context);
+            public ExchangeRateQueryHandler(IExchangeRateService exchangeRateService, IApplicationDbContext context, IMapper mapper)
+                => (_exchangeRateService, _context, _mapper) = (exchangeRateService, context, mapper);
 
             public async Task<ExchangeRateQueryResult> Handle(ExchangeRateQuery request, CancellationToken cancellationToken)
             {
                 var pair = new Pair(request.Base, request.Quote);
-                var rate = await _exchangeRateService.GetExchangeRate(pair);
-                if (rate == null) 
+                var rates = await _exchangeRateService.GetExchangeRateHistory(pair);
+                if (rates == null)
                 {
                     throw new NotFoundException(nameof(ExchangeRate), pair);
                 }
 
-                return new ExchangeRateQueryResult { Rate = rate.Rate };
+                return new ExchangeRateQueryResult { Rates = _mapper.Map<ExchangeRateQueryResult.ExchangeRate[]>(rates) };
             }
         }
     }

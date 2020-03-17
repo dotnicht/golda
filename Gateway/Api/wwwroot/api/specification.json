@@ -1148,9 +1148,26 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "rates": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ExchangeRate"
+            }
+          }
+        }
+      },
+      "ExchangeRate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
           "rate": {
             "type": "number",
             "format": "decimal"
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

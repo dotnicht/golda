@@ -81,6 +81,16 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             return range.SingleOrDefault();
         }
 
+        public async Task<T[]> GetList<T>(string key) where T : class
+            => (await GetList(key)).Select(x => JsonConvert.DeserializeObject<T>(x)).ToArray();
+
+        public async Task<string[]> GetList(string key)
+        {
+            var db = GetDatabase();
+            var range = await db.ListRangeAsync(key, 0, db.ListLength(key));
+            return range.Select(x => x.ToString()).ToArray();
+        }
+
         public void Dispose() => _redis?.Dispose();
 
         private IDatabase GetDatabase()
