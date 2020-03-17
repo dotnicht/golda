@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Common\In
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Common\Api\Api.csproj", "{C81F7568-E01F-447F-B1C2-EA3144E94849}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker", "Crypto\Worker\Worker.csproj", "{4CAB8555-1836-4C03-8CF1-1067A939C7BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Worker", "Crypto\Worker\Worker.csproj", "{4CAB8555-1836-4C03-8CF1-1067A939C7BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

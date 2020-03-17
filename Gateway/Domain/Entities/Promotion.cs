@@ -10,5 +10,6 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public decimal CurrencyAmount { get; set; }
         public bool IsExchanged { get; set; }
         public Guid MiningRequestId { get; set; }
+        public MiningRequest MiningRequest { get; set; }
     }
 }
