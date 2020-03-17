@@ -16,6 +16,7 @@ namespace Binebase.Exchange.Gateway.Persistence
 
         public DbSet<MiningRequest> MiningRequests { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<ExchangeOperation> ExchangeOperations { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUserService, IDateTime dateTime)
             : base(options)

@@ -67,12 +67,12 @@
         }
       }
     },
-    "/api/Crypto/Publish": {
+    "/api/Crypto/Transactions": {
       "post": {
         "tags": [
           "Crypto"
         ],
-        "operationId": "Crypto_Publish",
+        "operationId": "Crypto_Transactions",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -92,6 +92,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PublishTransactionCommandResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Transactions2",
+        "requestBody": {
+          "x-name": "query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionsQuery"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionsQueryResult"
                 }
               }
             }
@@ -197,6 +227,67 @@
           "amount": {
             "type": "number",
             "format": "decimal"
+          }
+        }
+      },
+      "TransactionsQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Transaction"
+            }
+          }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/TransactionDirection"
+          },
+          "hash": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "TransactionDirection": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Internal",
+          "Inbound",
+          "Outbound"
+        ],
+        "enum": [
+          "Internal",
+          "Inbound",
+          "Outbound"
+        ]
+      },
+      "TransactionsQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
           }
         }
       }
