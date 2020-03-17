@@ -16,7 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using System;
 using System.Linq;
 using System.Reflection;
 
@@ -58,12 +57,16 @@ namespace Binebase.Exchange.Gateway.Api
                 })
                 .AddNewtonsoftJson();
 
-            services.AddCors(setup => setup.AddDefaultPolicy(policy =>
+            services.AddCors(options =>
             {
-                policy.AllowAnyHeader();
-                policy.AllowAnyMethod();
-                policy.AllowAnyOrigin();
-            }));
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                    .SetIsOriginAllowed(_ => true)
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    );
+            });
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -116,7 +119,7 @@ namespace Binebase.Exchange.Gateway.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors();
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
