@@ -16,7 +16,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="3.1.0" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
-        <PackageReference Include="nbitcoin" Version="5.0.20" />
+        <PackageReference Include="nbitcoin" Version="4.1.1.77" />
         <PackageReference Include="nethereum.hdwallet" Version="3.7.1" />
     </ItemGroup>
 
