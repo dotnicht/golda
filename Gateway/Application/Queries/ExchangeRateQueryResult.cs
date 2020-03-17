@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Binebase.Exchange.Common.Application.Mappings;
+using System;
 
 namespace Binebase.Exchange.Gateway.Application.Queries
 {
     public class ExchangeRateQueryResult
     {
-        public decimal Rate { get; set; }
+        public ExchangeRate[] Rates { get; set; }
+
+        public class ExchangeRate : IMapFrom<Domain.Entities.ExchangeRate>
+        {
+            public decimal Rate { get; set; }
+            public DateTime DateTime { get; set; }
+        }
     }
 }
