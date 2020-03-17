@@ -1,9 +1,11 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using AutoMapper;
+using Binebase.Exchange.Common.Application.Exceptions;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Security;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -16,26 +18,38 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         public class MultyFactorSignInCommandHandler : IRequestHandler<SignInMultyFactorCommand, SignInCommandResult>
         {
             private readonly IIdentityService _identityService;
+            private readonly IMapper _mapper;
 
-            public MultyFactorSignInCommandHandler(IIdentityService identityService) => _identityService = identityService;
+            public MultyFactorSignInCommandHandler(IIdentityService identityService, IMapper mapper)
+                => (_identityService, _mapper) = (identityService, mapper);
 
             public async Task<SignInCommandResult> Handle(SignInMultyFactorCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(request.Id);
-                var isTfaEnabled = _identityService.GetTwoFactorEnabled(user.Id);            
+                if (user == null)
+                {
+                    throw new NotFoundException(nameof(User), request.Id);
+                }
 
-                if (!isTfaEnabled.Result)
+                // TODO: add exception messages.
+                if (!await _identityService.GetTwoFactorEnabled(user.Id))
+                {
                     throw new NotSupportedException();
+                }
 
                 if (!await _identityService.CheckUserPassword(user.Id, request.Password))
-                     throw new SecurityException();
-
-                var iStfaValid = await _identityService.VerifyTwoFactorToken(user.Id, request.Code);
-                if (!iStfaValid)
+                {
                     throw new SecurityException();
+                }
 
-                var token = await _identityService.GenerateAuthToken(user);
-                return new SignInCommandResult { Id = user.Id, Email = user.Email, Token = token };
+                if (!await _identityService.VerifyTwoFactorToken(user.Id, request.Code))
+                {
+                    throw new SecurityException();
+                }
+
+                var result = _mapper.Map<SignInCommandResult>(user);
+                result.Token = await _identityService.GenerateAuthToken(user);
+                return result;
             }
         }
     }

@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Application.Mappings;
+using Binebase.Exchange.Gateway.Domain.Entities;
+using System;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class SignInCommandResult
+    public class SignInCommandResult : IMapFrom<User>, IIdContainer
     {
         public Guid Id { get; set; }
         public string Email { get; set; }
