@@ -1,14 +1,11 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Common.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Binebase.Exchange.Gateway.Infrastructure.Services;
-using Microsoft.Extensions.Options;
-using NBitcoin;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Crypto
 {
@@ -20,8 +17,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Crypto
         public CryptoService(HttpClient client, IOptions<Configuration> options)
         {
             _configuration = options.Value;
-            client.BaseAddress = _configuration.BaseUrl;
-            _cryptoClient = new CryptoClient(_configuration.BaseUrl.ToString(), client);
+            client.BaseAddress = _configuration.Address;
+            _cryptoClient = new CryptoClient(_configuration.Address.ToString(), client);
         }
 
         public async Task<string> GetAddress(Guid id, Common.Domain.Currency currency)
@@ -48,7 +45,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Crypto
 
         public class Configuration
         {
-            public Uri BaseUrl { get; set; }
+            public Uri Address { get; set; }
         }
     }
 }

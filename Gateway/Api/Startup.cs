@@ -4,6 +4,7 @@ using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Account;
+using Binebase.Exchange.Gateway.Infrastructure.Crypto;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Persistence;
 using FluentValidation.AspNetCore;
@@ -44,6 +45,7 @@ namespace Binebase.Exchange.Gateway.Api
 
             services.AddHttpContextAccessor();
             services.AddHttpClient<IAccountService, AccountService>();
+            services.AddHttpClient<ICryptoService, CryptoService>();
 
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>("Persistence");
             services.AddHealthChecks().AddDbContextCheck<IdentityDbContext>("Identity");

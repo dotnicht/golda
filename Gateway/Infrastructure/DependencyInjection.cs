@@ -94,8 +94,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                     context.HttpContext.RequestServices
                         .GetRequiredService<ILogger<IIdentityService>>()
                         .LogInformation($"Token validated. User ID {user.Id} ({user.Email}).");
-
-
                 }
             }
 
