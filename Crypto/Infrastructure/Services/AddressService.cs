@@ -1,9 +1,8 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
-using Microsoft.Extensions.Options;
-using NBitcoin;
-using Nethereum.HdWallet;
+//using NBitcoin;
+//using Nethereum.HdWallet;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,8 +13,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
     {
         private readonly Configuration _configuration;
 
-        public AddressService(IOptions<Configuration> options)
-            => _configuration = options.Value;
+        //public AddressService(IOptions<Configuration> options)
+        //    => _configuration = options.Value;
 
         public async Task<string> GenerateAddress(Currency currency, int index)
             => currency switch
@@ -27,16 +26,18 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         private async Task<string> GenerateBitcoinAddress(int index)
         {
-            var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
-            var key = mnemo.DeriveExtKey(_configuration.Passwords[Currency.BTC]);
-            var address = key.Derive((uint)index).GetPublicKey().GetAddress(ScriptPubKeyType.Legacy, Network.Main);
-            return await Task.FromResult(address.ToString());
+            //var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
+            //var key = mnemo.DeriveExtKey(_configuration.Passwords[Currency.BTC]);
+            //var address = key.Derive((uint)index).GetPublicKey().GetAddress(ScriptPubKeyType.Legacy, Network.Main);
+            //return await Task.FromResult(address.ToString());
+            return await Task.FromResult("test1");
         }
 
         private async Task<string> GenerateEtherumAddress(int index)
         {
-            var wallet = new Wallet(_configuration.Mnemonic, _configuration.Passwords[Currency.ETH]);
-            return await Task.FromResult(wallet.GetAccount(index).Address);
+            //var wallet = new Wallet(_configuration.Mnemonic, _configuration.Passwords[Currency.ETH]);
+            //return await Task.FromResult(wallet.GetAccount(index).Address);
+            return await Task.FromResult("test1");
         }
 
         public class Configuration
