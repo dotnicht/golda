@@ -6,12 +6,12 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/Crypto/Address": {
+    "/api/Crypto/Addresses": {
       "post": {
         "tags": [
           "Crypto"
         ],
-        "operationId": "Crypto_Address",
+        "operationId": "Crypto_Addresses",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -36,14 +36,12 @@
             }
           }
         }
-      }
-    },
-    "/api/Crypto/Addresses": {
+      },
       "get": {
         "tags": [
           "Crypto"
         ],
-        "operationId": "Crypto_Addresses",
+        "operationId": "Crypto_Addresses2",
         "parameters": [
           {
             "name": "Id",

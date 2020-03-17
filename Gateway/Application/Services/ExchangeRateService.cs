@@ -63,6 +63,22 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return value;
         }
 
+        public async Task<ExchangeRate[]> GetExchangeRateHistory(Pair pair)
+        {
+            if (pair is null)
+            {
+                throw new ArgumentNullException(nameof(pair));
+            }
+
+            if (!_supportedPairs.Contains(pair))
+            {
+                throw new NotSupportedException($"Supported currency pairs: {string.Join(' ', _supportedPairs.AsEnumerable())}.");
+            }
+
+            var key = pair.ToString();
+            return await _cacheClient.GetList<ExchangeRate>(key);
+        }
+
         public Task<Dictionary<Pair, ExchangeRate>> GetExchangeRates()
             => Task.FromResult(_supportedPairs.ToDictionary(x => x, x => GetExchangeRate(x).Result));
 

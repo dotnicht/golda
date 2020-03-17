@@ -12,5 +12,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task AddToList(string key, string value);
         Task<T> GetLastFromList<T>(string key) where T : class;
         Task<string> GetLastFromList(string key);
+        Task<T[]> GetList<T>(string key) where T : class;
+        Task<string[]> GetList(string key);
     }
 }
