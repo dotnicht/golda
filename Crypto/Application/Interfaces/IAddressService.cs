@@ -8,6 +8,6 @@ namespace Binebase.Exchange.CryptoService.Application.Interfaces
 {
     public interface IAddressService
     {
-        Task<string> GenerateAddress(Currency currency);
+        Task<string> GenerateAddress(Currency currency, int index);
     }
 }

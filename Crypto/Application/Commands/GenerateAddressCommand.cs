@@ -1,7 +1,9 @@
 ﻿using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
+using Binebase.Exchange.CryptoService.Domain.Entities;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,15 +16,25 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
 
         public class GenerateAddressCommandHandler : IRequestHandler<GenerateAddressCommand, GenerateAddressCommandResult>
         {
-            private readonly IBitcoinService _bitcoinService;
+            private readonly IAddressService _addressService;
             private readonly IApplicationDbContext _context;
 
-            public GenerateAddressCommandHandler(IBitcoinService bitcoinService, IApplicationDbContext context)
-                => (_bitcoinService, _context) = (bitcoinService, context);
+            public GenerateAddressCommandHandler(IAddressService addressService, IApplicationDbContext context)
+                => (_addressService, _context) = (addressService, context);
 
             public async Task<GenerateAddressCommandResult> Handle(GenerateAddressCommand request, CancellationToken cancellationToken)
             {
-                return new GenerateAddressCommandResult { };
+                var index = _context.Addresses.SingleOrDefault(x => x.AccountId == request.Id && x.Currency == request.Currency)?.Index + 1 ?? 0;
+                var address = new Address
+                {
+                    Currency = request.Currency,
+                    Public = await _addressService.GenerateAddress(request.Currency, index),
+                    Index = index
+                };
+
+                _context.Addresses.Add(address);
+                await _context.SaveChangesAsync();
+                return new GenerateAddressCommandResult { Address = address.Public };
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -16,6 +16,7 @@ namespace Binebase.Exchange.Gateway.Persistence
 
         public DbSet<MiningRequest> MiningRequests { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<ExchangeOperation> ExchangeOperations { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUserService, IDateTime dateTime)
             : base(options)

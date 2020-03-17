@@ -4,6 +4,7 @@ using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Account;
+using Binebase.Exchange.Gateway.Infrastructure.Crypto;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Persistence;
 using FluentValidation.AspNetCore;
@@ -16,7 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using System;
 using System.Linq;
 using System.Reflection;
 
@@ -30,7 +30,6 @@ namespace Binebase.Exchange.Gateway.Api
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
             => (Configuration, Environment) = (configuration, environment);
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationCommon();
@@ -46,6 +45,7 @@ namespace Binebase.Exchange.Gateway.Api
 
             services.AddHttpContextAccessor();
             services.AddHttpClient<IAccountService, AccountService>();
+            services.AddHttpClient<ICryptoService, CryptoService>();
 
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>("Persistence");
             services.AddHealthChecks().AddDbContextCheck<IdentityDbContext>("Identity");
@@ -87,7 +87,6 @@ namespace Binebase.Exchange.Gateway.Api
             services.AddConfigurationProviders(Configuration);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -98,7 +97,6 @@ namespace Binebase.Exchange.Gateway.Api
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

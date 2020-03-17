@@ -38,10 +38,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
                 = (httpContextAccessor, userManager, signInManager, dateTime, mapper, options.Value);
 
         public async Task<User> GetUser(string userName)
-            => MapToUser(await _userManager.FindByNameAsync(userName));
+            => _mapper.Map<User>(await _userManager.FindByNameAsync(userName));
 
         public async Task<User> GetUser(Guid userId)
-            => MapToUser(await _userManager.FindByIdAsync(userId.ToString()));
+            => _mapper.Map<User>(await _userManager.FindByIdAsync(userId.ToString()));
 
         public async Task<(Result Result, Guid UserId)> CreateUser(string userName, string password)
         {
@@ -169,7 +169,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                throw new NotFoundException(nameof(ApplicationUser), userName);
+                throw new NotFoundException(nameof(User), userName);
             }
 
             var result = await _signInManager.PasswordSignInAsync(user, password, true, true);
@@ -192,11 +192,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             await _signInManager.SignInAsync(app, true);
             return Result.Success();
         }
-
-        private User MapToUser(ApplicationUser user)
-            => user == null
-                ? null
-                : new User { Id = user.Id, Email = user.Email, Registered = user.Registered, Confirmed = user.EmailConfirmed };
 
         public class Configuration
         {

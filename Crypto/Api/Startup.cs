@@ -19,22 +19,18 @@ namespace Binebase.Exchange.CryptoService.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-        {
-            Configuration = configuration;
-            Environment = environment;
-        }
-
         public IConfiguration Configuration { get; }
-
         public IWebHostEnvironment Environment { get; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+            => (Configuration, Environment) = (configuration, environment);
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
             services.AddApplicationCommon();
-            services.AddInfrastructure(Configuration, Environment);
+            services.AddInfrastructure(Configuration);
 
             services.AddHttpContextAccessor();
 
@@ -64,6 +60,8 @@ namespace Binebase.Exchange.CryptoService.Api
 
                 configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
+
+            services.AddConfigurationProviders(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

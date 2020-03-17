@@ -8,7 +8,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using IApplicationDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IApplicationDbContext;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -17,7 +16,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         public string Email { get; set; }
         public string Password { get; set; }
         public string Referral { get; set; }
-        public Guid? ReferenceId { get; set; }
+        public Guid? MiningRequestId { get; set; }
 
         public class SignUpCommandHandler : IRequestHandler<SignUpCommand>
         {
@@ -59,13 +58,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _accountService.AddCurrency(userId, Currency.BTC);
                 await _accountService.AddCurrency(userId, Currency.ETH);
 
-                if (request.ReferenceId != null)
+                await _cryptoService.GenerateAddress(userId, Currency.BTC);
+                await _cryptoService.GenerateAddress(userId, Currency.ETH);
+
+                var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
+                if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnomymous)
                 {
-                    var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.ReferenceId.Value);
-                    if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow)
-                    {
-                        await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
-                    }
+                    await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
+                    mining.LastModifiedBy = userId;
+                    mining.IsAnomymous = false;
+                    await _context.SaveChangesAsync();
                 }
 
                 return Unit.Value;

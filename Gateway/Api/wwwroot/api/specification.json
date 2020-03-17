@@ -938,7 +938,7 @@
             "type": "string",
             "nullable": true
           },
-          "referenceId": {
+          "miningRequestId": {
             "type": "string",
             "format": "guid",
             "nullable": true
