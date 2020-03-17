@@ -1,13 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>dotnet-Binebase.Exchange.Crypto.Worker-C5C9180D-05C3-4C75-8A61-7590B5250C07</UserSecretsId>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <UserSecretsId>dotnet-Binebase.Exchange.Crypto.Worker-C5C9180D-05C3-4C75-8A61-7590B5250C07</UserSecretsId>
+        <RootNamespace>Binebase.Exchange.Crypto.Worker</RootNamespace>
+        <AssemblyName>Binebase.Exchange.Crypto.Worker</AssemblyName>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.2" />
+    </ItemGroup>
 
     <ItemGroup>
         <Content Update="appsettings.Development.json">
