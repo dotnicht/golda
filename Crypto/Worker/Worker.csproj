@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-Binebase.Exchange.Crypto.Worker-C5C9180D-05C3-4C75-8A61-7590B5250C07</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.2" />
+  </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.Development.json">
+            <DependentUpon>appsettings.json</DependentUpon>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="appsettings.Production.json">
+            <DependentUpon>appsettings.json</DependentUpon>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="appsettings.Test.json">
+            <DependentUpon>appsettings.json</DependentUpon>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+</Project>
