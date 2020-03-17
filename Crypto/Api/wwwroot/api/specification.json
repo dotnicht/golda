@@ -158,7 +158,16 @@
       },
       "Address": {
         "type": "object",
-        "additionalProperties": false
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "public": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "PublishTransactionCommandResult": {
         "type": "object",
