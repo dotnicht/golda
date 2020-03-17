@@ -53,7 +53,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(userId));
 
                 await _accountService.Create(userId);
-
                 await _accountService.AddCurrency(userId, Currency.BINE);
                 await _accountService.AddCurrency(userId, Currency.EURB);
                 await _accountService.AddCurrency(userId, Currency.BTC);
@@ -62,13 +61,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _cryptoService.GenerateAddress(userId, Currency.BTC);
                 await _cryptoService.GenerateAddress(userId, Currency.ETH);
 
-                if (request.MiningRequestId != null)
+                var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
+                if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow)
                 {
-                    var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId.Value);
-                    if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow)
-                    {
-                        await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
-                    }
+                    await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
                 }
 
                 return Unit.Value;
