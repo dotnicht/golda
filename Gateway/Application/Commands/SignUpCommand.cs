@@ -62,9 +62,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _cryptoService.GenerateAddress(userId, Currency.ETH);
 
                 var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
-                if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow)
+                if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnomymous)
                 {
                     await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
+                    mining.LastModifiedBy = userId;
+                    mining.IsAnomymous = false;
+                    await _context.SaveChangesAsync();
                 }
 
                 return Unit.Value;
