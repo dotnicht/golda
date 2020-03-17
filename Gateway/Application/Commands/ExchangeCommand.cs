@@ -23,16 +23,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IAccountService _accountService;
             private readonly IExchangeRateService _exchangeRateService;
             private readonly ICurrentUserService _currentUserService;
-            private readonly IDateTime _dateTime;
 
             public ExchangeCommandHandler(
                 IApplicationDbContext context,
                 IAccountService accountService,
                 IExchangeRateService exchangeRateService,
-                ICurrentUserService currentUserService,
-                IDateTime dateTime)
-                => (_context, _accountService, _exchangeRateService, _currentUserService, _dateTime)
-                    = (context, accountService, exchangeRateService, currentUserService, dateTime);
+                ICurrentUserService currentUserService)
+                => (_context, _accountService, _exchangeRateService, _currentUserService)
+                    = (context, accountService, exchangeRateService, currentUserService);
 
             public async Task<Unit> Handle(ExchangeCommand request, CancellationToken cancellationToken)
             {
