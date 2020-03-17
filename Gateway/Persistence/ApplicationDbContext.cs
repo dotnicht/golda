@@ -1,6 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
