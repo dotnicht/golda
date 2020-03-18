@@ -46,7 +46,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<(Result Result, Guid UserId)> CreateUser(string userName, string password, string code)
         {
-            var referral = _userManager.Users.SingleOrDefault(x => code == null || x.ReferralCode == code.Trim());
+            var referral = _userManager.Users.SingleOrDefault(x => code != null && x.ReferralCode == code.Trim());
 
             var user = new ApplicationUser
             {
