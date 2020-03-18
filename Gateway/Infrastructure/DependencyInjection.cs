@@ -19,6 +19,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Binebase.Exchange.Common.Infrastructure.Services;
+using Binebase.Exchange.Gateway.Infrastructure.Account;
+using Binebase.Exchange.Gateway.Infrastructure.Crypto;
 
 namespace Binebase.Exchange.Gateway.Infrastructure
 {
@@ -73,6 +75,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure
 
             services.AddAuthentication();
 
+            services.AddHttpClient<IAccountService, AccountService>();
+            services.AddHttpClient<ICryptoService, CryptoService>();
+
             return services;
         }
 
@@ -94,8 +99,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                     context.HttpContext.RequestServices
                         .GetRequiredService<ILogger<IIdentityService>>()
                         .LogInformation($"Token validated. User ID {user.Id} ({user.Email}).");
-
-
                 }
             }
 

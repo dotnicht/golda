@@ -8,8 +8,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using IApplicationDbContext = Binebase.Exchange.Gateway.Application.Interfaces.IApplicationDbContext;
-using Binebase.Exchange.Gateway.Domain.Entities;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -18,7 +16,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         public string Email { get; set; }
         public string Password { get; set; }
         public string Referral { get; set; }
-        public Guid? ReferenceId { get; set; }
+        public Guid? MiningRequestId { get; set; }
 
         public class SignUpCommandHandler : IRequestHandler<SignUpCommand>
         {
@@ -55,7 +53,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(userId));
 
                 await _accountService.Create(userId);
-
                 await _accountService.AddCurrency(userId, Currency.BINE);
                 await _accountService.AddCurrency(userId, Currency.EURB);
                 await _accountService.AddCurrency(userId, Currency.BTC);
@@ -64,13 +61,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _cryptoService.GenerateAddress(userId, Currency.BTC);
                 await _cryptoService.GenerateAddress(userId, Currency.ETH);
 
-                if (request.ReferenceId != null)
+                var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
+                if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnomymous)
                 {
-                    var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.ReferenceId.Value);
-                    if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow)
-                    {
-                        await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
-                    }
+                    await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Default);
+                    mining.LastModifiedBy = userId;
+                    mining.IsAnomymous = false;
+                    await _context.SaveChangesAsync();
                 }
 
                 return Unit.Value;

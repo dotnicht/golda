@@ -20,8 +20,11 @@ namespace Binebase.Exchange.CryptoService.Application.Queries
             public AddressesQueryHandler(IApplicationDbContext context, IMapper mapper)
                 => (_context, _mapper) = (context, mapper);
 
-            public Task<AddressesQueryResult> Handle(AddressesQuery request, CancellationToken cancellationToken)
-                => Task.FromResult(new AddressesQueryResult { Addresses = _mapper.Map<AddressesQueryResult.Address[]>(_context.Addresses.Where(x => x.AccountId == request.Id)) });
+            public async Task<AddressesQueryResult> Handle(AddressesQuery request, CancellationToken cancellationToken)
+            {
+                var tx = _context.Addresses.Where(x => x.AccountId == request.Id);
+                return await Task.FromResult(new AddressesQueryResult { Addresses = _mapper.Map<AddressesQueryResult.Address[]>(tx) });
+            }
         }
     }
 }

@@ -3,7 +3,6 @@ using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
-using Binebase.Exchange.Gateway.Infrastructure.Account;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Persistence;
 using FluentValidation.AspNetCore;
@@ -43,7 +42,6 @@ namespace Binebase.Exchange.Gateway.Api
             services.AddPersistence(Configuration);
 
             services.AddHttpContextAccessor();
-            services.AddHttpClient<IAccountService, AccountService>();
 
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>("Persistence");
             services.AddHealthChecks().AddDbContextCheck<IdentityDbContext>("Identity");
@@ -56,12 +54,16 @@ namespace Binebase.Exchange.Gateway.Api
                 })
                 .AddNewtonsoftJson();
 
-            services.AddCors(setup => setup.AddDefaultPolicy(policy =>
+            services.AddCors(options =>
             {
-                policy.AllowAnyHeader();
-                policy.AllowAnyMethod();
-                policy.AllowAnyOrigin();
-            }));
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                    .SetIsOriginAllowed(_ => true)
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    );
+            });
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -112,7 +114,7 @@ namespace Binebase.Exchange.Gateway.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors();
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {

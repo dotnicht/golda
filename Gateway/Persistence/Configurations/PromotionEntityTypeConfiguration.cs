@@ -9,6 +9,9 @@ namespace Binebase.Exchange.Gateway.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Promotion> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.CurrencyAmount).HasColumnType("decimal(18,8)");
+            builder.Property(x => x.TokenAmount).HasColumnType("decimal(18,8)");
+            builder.HasOne(x => x.MiningRequest).WithOne();
         }
     }
 }

@@ -29,9 +29,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         {
             var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
             var key = mnemo.DeriveExtKey(_configuration.Passwords[Currency.BTC]);
-            var address = key.Derive((uint)index).GetPublicKey().GetAddress(ScriptPubKeyType.Legacy, Network.Main);
+            var address = key.Derive((uint)index).ScriptPubKey.GetDestinationAddress(Network.Main);
             return await Task.FromResult(address.ToString());
-        }
+        } 
 
         private async Task<string> GenerateEtherumAddress(int index)
         {

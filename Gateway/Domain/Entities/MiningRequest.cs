@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Gateway.Domain.Enums;
+﻿using Binebase.Exchange.Gateway.Domain.Enums;
 
 namespace Binebase.Exchange.Gateway.Domain.Entities
 {
@@ -7,5 +6,6 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
     {
         public decimal Amount { get; set; }
         public TransactionType Type { get; set; }
+        public bool IsAnomymous { get; set; }
     }
 }

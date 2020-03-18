@@ -1,6 +1,7 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Exceptions;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,19 +21,24 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<SignInCommandResult> Handle(SignInCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(request.Email);
-                if (await _identityService.GetTwoFactorEnabled(user.Id))
+                if (user == null)
                 {
-                    return new SignInCommandResult { Id = user.Id, Email = user.Email };
+                    throw new NotFoundException(nameof(User), request.Email);
                 }
 
-                var result = await _identityService.Authenticate(request.Email, request.Password);
-                if (!result.Succeeded) 
-                { 
-                    throw new SecurityException(); 
+                var result = new SignInCommandResult { Id = user.Id, Email = user.Email };
+                if (!await _identityService.GetTwoFactorEnabled(user.Id))
+                {
+                    var auth = await _identityService.Authenticate(request.Email, request.Password);
+                    if (!auth.Succeeded)
+                    {
+                        throw auth.ToSecurityException();
+                    }
+
+                    result.Token = await _identityService.GenerateAuthToken(user);
                 }
 
-                var token = await _identityService.GenerateAuthToken(user);
-                return new SignInCommandResult { Id = user.Id, Email = user.Email, Token = token };
+                return result;
             }
         }
     }

@@ -27,6 +27,7 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
                 var index = _context.Addresses.SingleOrDefault(x => x.AccountId == request.Id && x.Currency == request.Currency)?.Index + 1 ?? 0;
                 var address = new Address
                 {
+                    AccountId = request.Id,
                     Currency = request.Currency,
                     Public = await _addressService.GenerateAddress(request.Currency, index),
                     Index = index

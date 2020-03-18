@@ -18,7 +18,11 @@ namespace Binebase.Exchange.CryptoService.Api.Controllers
             => await Mediator.Send(quary);
 
         [HttpPost, ProducesResponseType(typeof(PublishTransactionCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<PublishTransactionCommandResult>> Publish(PublishTransactionCommand command)
+        public async Task<ActionResult<PublishTransactionCommandResult>> Transactions(PublishTransactionCommand command)
             => await Mediator.Send(command);
+
+        [HttpGet, ProducesResponseType(typeof(TransactionsQueryResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionsQueryResult>> Transactions(TransactionsQuery query)
+            => await Mediator.Send(query);
     }
 }
