@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 {
@@ -43,14 +44,17 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         public async Task<User> GetUser(Guid userId)
             => _mapper.Map<User>(await _userManager.FindByIdAsync(userId.ToString()));
 
-        public async Task<(Result Result, Guid UserId)> CreateUser(string userName, string password)
+        public async Task<(Result Result, Guid UserId)> CreateUser(string userName, string password, string code)
         {
+            var referral = _userManager.Users.SingleOrDefault(x => code == null || x.ReferralCode == code.Trim());
+
             var user = new ApplicationUser
             {
                 UserName = userName,
                 Email = userName,
                 Registered = _dateTime.UtcNow,
-                ReferralCode = Guid.NewGuid().ToString()
+                ReferralCode = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", string.Empty),
+                ReferralId = referral?.Id
             };
 
             var result = await _userManager.CreateAsync(user, password);

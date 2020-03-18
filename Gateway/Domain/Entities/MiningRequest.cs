@@ -6,6 +6,6 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
     {
         public decimal Amount { get; set; }
         public TransactionType Type { get; set; }
-        public bool IsAnomymous { get; set; }
+        public bool IsAnonymous { get; set; }
     }
 }

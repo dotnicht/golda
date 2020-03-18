@@ -38,7 +38,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         public async Task<IActionResult> ResetPassword(ResetPasswordCommand command) 
             => Convert(await Mediator.Send(command));
 
-        [HttpGet, Authorize]
+        [HttpGet, Authorize, ProducesResponseType(typeof(MultyFactorStatusQueryResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<MultyFactorStatusQueryResult>> MultyFactorStatus([FromQuery]MultyFactorStatusQuery query) 
             => await Mediator.Send(query);
 

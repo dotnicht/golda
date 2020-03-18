@@ -10,7 +10,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         // TODO: reduce contract methods amount. 
         Task<User> GetUser(string userName);
         Task<User> GetUser(Guid userId);
-        Task<(Result Result, Guid UserId)> CreateUser(string userName, string password);
+        Task<(Result Result, Guid UserId)> CreateUser(string userName, string password, string code);
         Task<string> GenerateConfirmationUrl(Guid userId);
         Task<string> GenerateResetPasswordUrl(Guid userId);
         Task<string> GenerateAuthenticatorUrl(User user, string key);

@@ -21,7 +21,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<RequestMiningCommandResult> Handle(RequestMiningCommand request, CancellationToken cancellationToken)
             {
-                var item = new MiningRequest { Id = Guid.NewGuid(), Amount = await _calculationService.GenerateDefaultReward(), IsAnomymous = true };
+                var item = new MiningRequest { Id = Guid.NewGuid(), Amount = await _calculationService.GenerateDefaultReward(), IsAnonymous = true };
                 _context.MiningRequests.Add(item);
                 await _context.SaveChangesAsync();
                 return _mapper.Map<RequestMiningCommandResult>(item);
