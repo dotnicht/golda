@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Enums;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Crypto
         }
 
         public async Task<string> GetAddress(Guid id, Common.Domain.Currency currency)
-        {
-            return (await GetAddresses(id))[currency];
-        }
+            => (await GetAddresses(id))[currency];
 
         public async Task<Dictionary<Common.Domain.Currency, string>> GetAddresses(Guid id)
         {
@@ -34,13 +33,35 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Crypto
 
         public async Task<string> GenerateAddress(Guid id, Common.Domain.Currency currency)
         {
-            var result = await _cryptoClient.AddressesAsync(new GenerateAddressCommand
-            {
-                Id = id,
-                Currency = (Currency)currency
-            });
-
+            var result = await _cryptoClient.AddressesAsync(new GenerateAddressCommand { Id = id, Currency = (Currency)currency });
             return result.Address;
+        }
+
+        public async Task<Domain.Entities.Transaction[]> GetTransactions(Guid id)
+        {
+            var txs = await _cryptoClient.Transactions2Async(new TransactionsQuery { Id = id });
+            var result = new List<Domain.Entities.Transaction>();
+
+            foreach (var tx in txs.Transactions)
+            {
+                var item = new Domain.Entities.Transaction
+                {
+                    Id = tx.Id,
+                    Currency = (Common.Domain.Currency)tx.Currency,
+                    Amount = tx.Amount,
+                    Source = tx.Direction switch
+                    {
+                        TransactionDirection.Inbound => TransactionSource.Deposit,
+                        TransactionDirection.Outbound => TransactionSource.Widthraw,
+                        TransactionDirection.Internal => TransactionSource.Internal,
+                        _ => throw new NotSupportedException(),
+                    }
+                };
+
+                result.Add(item);
+            }
+
+            return result.ToArray();
         }
 
         public class Configuration

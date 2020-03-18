@@ -4,9 +4,8 @@ using System;
 
 namespace Binebase.Exchange.Gateway.Domain.Entities
 {
-    public class Transaction
+    public class Transaction : AuditableEntity
     {
-        public Guid Id { get; set; }
         public Currency Currency { get; set; }
         public decimal Amount { get; set; }
         public decimal Balance { get; set; }
