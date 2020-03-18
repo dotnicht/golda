@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Crypto
             });
 
             return result.Address;
+        }
+
+        public Task<Transaction[]> GetTransactions(Guid id)
+        {
+            throw new NotImplementedException();
         }
 
         public class Configuration
