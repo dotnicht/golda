@@ -26,24 +26,14 @@ namespace Binebase.Exchange.Gateway.Application.Queries
                     throw new NotFoundException(nameof(User), _currentUserService.UserId);
                 }
 
-                var status = await _identityService.GetTwoFactorEnabled(user.Id);
-                var key = null as string;
-                var uri = null as string;
+                var response = new MultyFactorStatusQueryResult { Status = await _identityService.GetTwoFactorEnabled(user.Id) };
 
-                if (!status)
+                if (!response.Status)
                 {
-                    key = await _identityService.GetAuthenticatorKey(_currentUserService.UserId);
-
-                    if (string.IsNullOrEmpty(key))
-                    {
-                        await _identityService.ResetAuthenticatorKey(_currentUserService.UserId);
-                        key = await _identityService.GetAuthenticatorKey(_currentUserService.UserId);
-                    }
-
-                    uri = await _identityService.GenerateAuthenticatorUrl(user, key);
+                    (response.Code, response.Url) = await _identityService.GetAuthenticatorData(user);
                 }
 
-                return await Task.FromResult(new MultyFactorStatusQueryResult { Status = status, Code = key, Url = uri });
+                return response;
             }
         }
     }

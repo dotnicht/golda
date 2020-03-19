@@ -29,6 +29,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var user = await _identityService.GetUser(request.Id);
+
                 var authResult = await _identityService.Authenticate(user);
 
                 if (!authResult.Succeeded)

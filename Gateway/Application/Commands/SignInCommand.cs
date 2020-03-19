@@ -29,7 +29,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var result = new SignInCommandResult { Id = user.Id, Email = user.Email };
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
-                    var auth = await _identityService.Authenticate(request.Email, request.Password);
+                    if (await _identityService.CheckUserPassword(user.Id, request.Password))
+                    {
+                        throw new SecurityException();
+                    }
+
+                    var auth = await _identityService.Authenticate(user);
+
                     if (!auth.Succeeded)
                     {
                         throw auth.ToSecurityException();
