@@ -29,7 +29,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         {
             var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
             var key = mnemo.DeriveExtKey(_configuration.Passwords[Currency.BTC]);
-            var address = key.Derive((uint)index).ScriptPubKey.GetDestinationAddress(Network.Main);
+            var address = key.Derive((uint)index).ScriptPubKey.GetDestinationAddress(Network.TestNet);
             return await Task.FromResult(address.ToString());
         } 
 
