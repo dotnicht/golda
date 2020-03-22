@@ -14,7 +14,7 @@ namespace Binebase.Exchange.Common.Application.Models
         public ValidationException ToValidationException(string name) 
             => new ValidationException(new Dictionary<string, string[]> { [name] = Errors });
         public SecurityException ToSecurityException() 
-            => new SecurityException(ToString());
+            => new SecurityException(string.Join(". ", Errors));
         public static Result Success() 
             => new Result(true, Array.Empty<string>());
         public static Result Failure(string error) 

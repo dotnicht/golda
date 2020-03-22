@@ -34,17 +34,17 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 // TODO: add exception messages.
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("multy_factor_not_enabled");
                 }
 
                 if (!await _identityService.CheckUserPassword(user.Id, request.Password))
                 {
-                    throw new SecurityException();
+                    throw new SecurityException("invalid_password");
                 }
 
                 if (!await _identityService.VerifyTwoFactorToken(user.Id, request.Code))
                 {
-                    throw new SecurityException();
+                    throw new SecurityException("invalid_multy_factor_code");
                 }
 
                 var result = _mapper.Map<SignInCommandResult>(user);
