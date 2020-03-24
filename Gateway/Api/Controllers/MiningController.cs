@@ -17,7 +17,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
 
         [HttpPost, ProducesResponseType(typeof(MiningBonusCommandResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<MiningBonusCommandResult>> Bonus(MiningBonusCommand command) 
-            => await Mediator.Send(command);
+            => await Mediator.Send(command ?? new MiningBonusCommand());
 
         [HttpPost, ProducesResponseType(typeof(MiningInstantCommandResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<MiningInstantCommandResult>> Instant(MiningInstantCommand command) 
@@ -25,7 +25,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
 
         [HttpPost, AllowAnonymous, ProducesResponseType(typeof(RequestMiningCommandResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<RequestMiningCommandResult>> RequestMining(RequestMiningCommand command) 
-            => await Mediator.Send(command);
+            => await Mediator.Send(command ?? new RequestMiningCommand());
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Promotion(ExchangePromotionCommand command) 

@@ -1213,7 +1213,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "weeklyTimeout": {
+          "bonusTimeout": {
             "type": "string",
             "format": "time-span"
           },
