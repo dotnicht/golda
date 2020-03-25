@@ -53,7 +53,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var mapping = _calculationService.InstantBoostMapping.Select(x => new { x.Key, x.Value }).OrderBy(x => x.Key);
-                var index = await _calculationService.GetCurrentMiningCount();
+                var index = _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == TransactionType.Instant);
 
                 mining = new MiningRequest
                 {
@@ -75,7 +75,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 if (mining.Amount > 0)
                 {
                     await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Instant);
-                    var promotion = await _calculationService.GeneratePromotion();
+                    var promotion = await _calculationService.GeneratePromotion(index);
                     if (promotion != null)
                     {
                         _context.Promotions.Add(promotion);

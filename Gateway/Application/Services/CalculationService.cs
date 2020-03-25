@@ -115,11 +115,11 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return bine;
         }
 
-        public async Task<Promotion> GeneratePromotion()
+        public async Task<Promotion> GeneratePromotion(int index)
         {
             // TODO: remove magic numbers.
             var promotion = null as Promotion;
-            var probability = _configuration.Promotion.Probability - (await GetCurrentMiningCount() % 5) * 0.01M;
+            var probability = _configuration.Promotion.Probability - (index % 5) * 0.01M;
 
             if (probability < 0.1M)
             {
@@ -164,11 +164,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             return await Task.FromResult(promotion);
         }
-
-        public async Task<int> GetCurrentMiningCount() // TODO: change to appropriate mining request check.
-            => (await _accountService.GetTransactions(_currentUserService.UserId))
-                .Where(x => x.Currency == Currency.BINE)
-                .Count(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Instant);
 
         public Task<decimal> GetInstantMiningFee()
             => Task.FromResult(_configuration.Instant.Fee);

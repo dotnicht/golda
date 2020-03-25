@@ -13,6 +13,7 @@ namespace Binebase.Exchange.CryptoService.Domain.Entities
         public AddressType Type { get; set; }
         public string Public { get; set; }
         public BigInteger Balance { get; set; }
+        public int Index { get; set; }
         public long GeneratedBlock { get; set; }
         public long LastBlock { get; set; }
         public virtual ICollection<Transaction> Transactions { get; } = new HashSet<Transaction>();

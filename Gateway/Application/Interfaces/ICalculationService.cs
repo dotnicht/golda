@@ -17,7 +17,6 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<(decimal Amount, TransactionType Type)> GenerateWeeklyReward();
         Task<(decimal Amount, TransactionType Type)> GenerateBonusReward();
         Task<decimal> GenerateInstantReward();
-        Task<Promotion> GeneratePromotion();
-        Task<int> GetCurrentMiningCount();
+        Task<Promotion> GeneratePromotion(int index);
     }
 }
