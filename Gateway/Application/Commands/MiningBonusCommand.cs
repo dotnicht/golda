@@ -38,13 +38,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var mining =_context.MiningRequests
                     .OrderByDescending(x => x.Created)
                     .FirstOrDefault(
-                        x => x.Type == TransactionType.Weekly || x.Type == TransactionType.Bonus || x.Type == TransactionType.Default
+                        x => (x.Type == TransactionType.Weekly || x.Type == TransactionType.Bonus || x.Type == TransactionType.Default)
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
                         && x.Created > _dateTime.UtcNow - _calculationService.WeeklyTimeout);
 
                 if (mining != null)
                 {
-                    throw new NotSupportedException("Timeout active.");
+                    throw new NotSupportedException(ErrorCode.MiningBonusTimeout);
                 }
 
                 var (amount, type) = await _calculationService.GenerateWeeklyReward();

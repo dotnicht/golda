@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Binebase.Exchange.Gateway.Domain
+namespace Binebase.Exchange.Gateway.Application
 {
     public static class ErrorCode
     {
@@ -15,8 +15,11 @@ namespace Binebase.Exchange.Gateway.Domain
         /// </summary>
         public const string PasswordMismatch = "password_mismatch";
         /// <summary>
-        /// The multy factor
+        /// The multi factor
         /// </summary>
-        public const string MultyFactor = "multy_factor";
+        public const string MultiFactor = "multi_factor";
+        public const string MiningInstantTimeout = "mining_instant_timeout";
+        public const string MiningBonusTimeout = "mining_bonus_timeout";
+        public const string MiningRequestNotSupported = "mining_request_not_supported";
     }
 }
