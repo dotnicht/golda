@@ -216,18 +216,18 @@
         }
       }
     },
-    "/api/Auth/SignInMultyFactor": {
+    "/api/Auth/SignInMultiFactor": {
       "post": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_SignInMultyFactor",
+        "operationId": "Auth_SignInMultiFactor",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SignInMultyFactorCommand"
+                "$ref": "#/components/schemas/SignInMultiFactorCommand"
               }
             }
           },
@@ -355,12 +355,12 @@
         }
       }
     },
-    "/api/Auth/MultyFactorStatus": {
+    "/api/Auth/MultiFactorStatus": {
       "get": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_MultyFactorStatus",
+        "operationId": "Auth_MultiFactorStatus",
         "parameters": [
           {
             "name": "query",
@@ -369,7 +369,7 @@
               "nullable": true,
               "oneOf": [
                 {
-                  "$ref": "#/components/schemas/MultyFactorStatusQuery"
+                  "$ref": "#/components/schemas/MultiFactorStatusQuery"
                 }
               ]
             },
@@ -382,7 +382,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MultyFactorStatusQueryResult"
+                  "$ref": "#/components/schemas/MultiFactorStatusQueryResult"
                 }
               }
             }
@@ -395,18 +395,18 @@
         ]
       }
     },
-    "/api/Auth/MultyFactor": {
+    "/api/Auth/MultiFactor": {
       "post": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_MultyFactor",
+        "operationId": "Auth_MultiFactor",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EnableMultyFactorCommand"
+                "$ref": "#/components/schemas/EnableMultiFactorCommand"
               }
             }
           },
@@ -428,13 +428,13 @@
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_MultyFactor2",
+        "operationId": "Auth_MultiFactor2",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DisableMultyFactorCommand"
+                "$ref": "#/components/schemas/DisableMultiFactorCommand"
               }
             }
           },
@@ -981,7 +981,7 @@
           }
         }
       },
-      "SignInMultyFactorCommand": {
+      "SignInMultiFactorCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1073,7 +1073,7 @@
           }
         }
       },
-      "MultyFactorStatusQueryResult": {
+      "MultiFactorStatusQueryResult": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1090,11 +1090,11 @@
           }
         }
       },
-      "MultyFactorStatusQuery": {
+      "MultiFactorStatusQuery": {
         "type": "object",
         "additionalProperties": false
       },
-      "EnableMultyFactorCommand": {
+      "EnableMultiFactorCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1104,7 +1104,7 @@
           }
         }
       },
-      "DisableMultyFactorCommand": {
+      "DisableMultiFactorCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

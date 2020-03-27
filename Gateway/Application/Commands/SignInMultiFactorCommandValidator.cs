@@ -2,7 +2,7 @@
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class MultyFactorSignInCommandValidator : AbstractValidator<SignInMultyFactorCommand>
+    public class MultyFactorSignInCommandValidator : AbstractValidator<SignInMultiFactorCommand>
     {
         public MultyFactorSignInCommandValidator()
         {

@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class EnableMultyFactorCommand : IRequest
+    public class EnableMultiFactorCommand : IRequest
     {
         public string Code { get; set; }
 
-        public class MultyCommandHandler : IRequestHandler<EnableMultyFactorCommand>
+        public class EnableMultiFactorCommandHandler : IRequestHandler<EnableMultiFactorCommand>
         {
             private readonly IIdentityService _identityService;
             private readonly ICurrentUserService _currentUserService;
 
-            public MultyCommandHandler(IIdentityService identityService, ICurrentUserService currentUserService)
+            public EnableMultiFactorCommandHandler(IIdentityService identityService, ICurrentUserService currentUserService)
                 => (_identityService, _currentUserService) = (identityService, currentUserService);
 
-            public async Task<Unit> Handle(EnableMultyFactorCommand request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(EnableMultiFactorCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(_currentUserService.UserId);
 
@@ -33,7 +33,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     var code = request.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
                     if (!await _identityService.VerifyTwoFactorToken(_currentUserService.UserId, code))
                     {
-                        throw new SecurityException();
+                        throw new SecurityException(); // TODO: err msg.
                     }
 
                     await _identityService.SetTwoFactorAuthentication(_currentUserService.UserId, true);

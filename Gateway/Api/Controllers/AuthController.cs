@@ -19,7 +19,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
             => await Mediator.Send(command);
 
         [HttpPost, ProducesResponseType(typeof(SignInCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<SignInCommandResult>> SignInMultyFactor(SignInMultyFactorCommand command)
+        public async Task<ActionResult<SignInCommandResult>> SignInMultiFactor(SignInMultiFactorCommand command)
             => await Mediator.Send(command);
 
         [HttpPost, ProducesResponseType(typeof(ConfirmCommandResult), StatusCodes.Status200OK)]
@@ -38,16 +38,16 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         public async Task<IActionResult> ResetPassword(ResetPasswordCommand command) 
             => Convert(await Mediator.Send(command));
 
-        [HttpGet, Authorize, ProducesResponseType(typeof(MultyFactorStatusQueryResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<MultyFactorStatusQueryResult>> MultyFactorStatus([FromQuery]MultyFactorStatusQuery query) 
+        [HttpGet, Authorize, ProducesResponseType(typeof(MultiFactorStatusQueryResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<MultiFactorStatusQueryResult>> MultiFactorStatus([FromQuery]MultiFactorStatusQuery query) 
             => await Mediator.Send(query);
 
         [HttpPost, Authorize, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> MultyFactor(EnableMultyFactorCommand command) 
+        public async Task<IActionResult> MultiFactor(EnableMultiFactorCommand command) 
             => Convert(await Mediator.Send(command));
 
         [HttpDelete, Authorize, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> MultyFactor(DisableMultyFactorCommand command) 
+        public async Task<IActionResult> MultiFactor(DisableMultiFactorCommand command) 
             => Convert(await Mediator.Send(command));
     }
 }

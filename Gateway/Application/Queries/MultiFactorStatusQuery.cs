@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Queries
 {
-    public class MultyFactorStatusQuery : IRequest<MultyFactorStatusQueryResult>
+    public class MultiFactorStatusQuery : IRequest<MultiFactorStatusQueryResult>
     {
-        public class MultyFactorStatusQueryHandler : IRequestHandler<MultyFactorStatusQuery, MultyFactorStatusQueryResult>
+        public class MultyFactorStatusQueryHandler : IRequestHandler<MultiFactorStatusQuery, MultiFactorStatusQueryResult>
         {
             private readonly ICurrentUserService _currentUserService;
             private readonly IIdentityService _identityService;
@@ -17,7 +17,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             public MultyFactorStatusQueryHandler(IIdentityService identityService, ICurrentUserService currentUserService)
                 => (_identityService, _currentUserService) = (identityService, currentUserService);
 
-            public async Task<MultyFactorStatusQueryResult> Handle(MultyFactorStatusQuery request, CancellationToken cancellationToken)
+            public async Task<MultiFactorStatusQueryResult> Handle(MultiFactorStatusQuery request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(_currentUserService.UserId);
 
@@ -26,7 +26,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
                     throw new NotFoundException(nameof(User), _currentUserService.UserId);
                 }
 
-                var response = new MultyFactorStatusQueryResult { Status = await _identityService.GetTwoFactorEnabled(user.Id) };
+                var response = new MultiFactorStatusQueryResult { Status = await _identityService.GetTwoFactorEnabled(user.Id) };
 
                 if (!response.Status)
                 {

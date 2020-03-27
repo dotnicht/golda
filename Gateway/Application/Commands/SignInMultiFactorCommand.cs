@@ -9,21 +9,21 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class SignInMultyFactorCommand : IRequest<SignInCommandResult>
+    public class SignInMultiFactorCommand : IRequest<SignInCommandResult>
     {
         public Guid Id { get; set; }
         public string Code { get; set; }
         public string Password { get; set; }
 
-        public class MultyFactorSignInCommandHandler : IRequestHandler<SignInMultyFactorCommand, SignInCommandResult>
+        public class SignInMultiFactorCommandHandler : IRequestHandler<SignInMultiFactorCommand, SignInCommandResult>
         {
             private readonly IIdentityService _identityService;
             private readonly IMapper _mapper;
 
-            public MultyFactorSignInCommandHandler(IIdentityService identityService, IMapper mapper)
+            public SignInMultiFactorCommandHandler(IIdentityService identityService, IMapper mapper)
                 => (_identityService, _mapper) = (identityService, mapper);
 
-            public async Task<SignInCommandResult> Handle(SignInMultyFactorCommand request, CancellationToken cancellationToken)
+            public async Task<SignInCommandResult> Handle(SignInMultiFactorCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(request.Id);
                 if (user == null)
@@ -34,7 +34,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 // TODO: add exception messages.
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
-                    throw new NotSupportedException("multy_factor_not_enabled");
+                    throw new NotSupportedException("multi_factor_not_enabled");
                 }
 
                 if (!await _identityService.CheckUserPassword(user.Id, request.Password))
@@ -44,7 +44,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (!await _identityService.VerifyTwoFactorToken(user.Id, request.Code))
                 {
-                    throw new SecurityException("invalid_multy_factor_code");
+                    throw new SecurityException("invalid_multi_factor_code");
                 }
 
                 var result = _mapper.Map<SignInCommandResult>(user);

@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class DisableMultyFactorCommand : IRequest
+    public class DisableMultiFactorCommand : IRequest
     {
         public string Password { get; set; }
         public string Code { get; set; }
 
-        public class DisableMultyCommandHandler : IRequestHandler<DisableMultyFactorCommand>
+        public class DisableMultiCommandHandler : IRequestHandler<DisableMultiFactorCommand>
         {
             private readonly IIdentityService _identityService;
             private readonly ICurrentUserService _currentUserService;
-            public DisableMultyCommandHandler(IIdentityService identityService, ICurrentUserService currentUserService)
+            public DisableMultiCommandHandler(IIdentityService identityService, ICurrentUserService currentUserService)
                 => (_identityService, _currentUserService) = (identityService, currentUserService);
 
-            public async Task<Unit> Handle(DisableMultyFactorCommand request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(DisableMultiFactorCommand request, CancellationToken cancellationToken)
             {
                 var user = await _identityService.GetUser(_currentUserService.UserId);
 
