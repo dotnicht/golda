@@ -24,7 +24,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var confirmResult = await _identityService.ConfirmToken(request.Id, request.Code);
                 if (!confirmResult.Succeeded) 
                 { 
-                    throw confirmResult.ToValidationException(nameof(ConfirmCommandHandler)); 
+                    throw confirmResult.ToValidationException(nameof(ConfirmCommandHandler)); // TODO: map err codes.
                 }
 
                 var user = await _identityService.GetUser(request.Id);

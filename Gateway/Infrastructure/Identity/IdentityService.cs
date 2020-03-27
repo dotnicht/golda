@@ -169,7 +169,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             var app = await _userManager.FindByNameAsync(user.Email);
             if (!await _signInManager.CanSignInAsync(app))
             {
-                return Result.Failure("Unable to sign in.");
+                return Result.Failure("signin_error");
             }
 
             await _signInManager.SignInAsync(app, true);
