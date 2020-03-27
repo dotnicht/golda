@@ -910,7 +910,8 @@
           "Deposit",
           "Widthraw",
           "Refferal",
-          "Fee"
+          "Fee",
+          "SignUp"
         ],
         "enum": [
           "Internal",
@@ -919,7 +920,8 @@
           "Deposit",
           "Widthraw",
           "Refferal",
-          "Fee"
+          "Fee",
+          "SignUp"
         ]
       },
       "SignUpCommand": {
