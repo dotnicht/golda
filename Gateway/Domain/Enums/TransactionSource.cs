@@ -12,6 +12,7 @@ namespace Binebase.Exchange.Gateway.Domain.Enums
         Deposit = 3,
         Widthraw = 4,
         Refferal = 5,
-        Fee = 6
+        Fee = 6,
+        // TODO: SignUp = 7
     }
 }

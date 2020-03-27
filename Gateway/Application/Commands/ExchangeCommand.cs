@@ -38,8 +38,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (ex == null)
                 {
-                    throw new NotSupportedException($"Conversions from {request.Base} to {request.Quote} not supported.");
+                    throw new NotSupportedException($"Conversions from {request.Base} to {request.Quote} not supported."); // TODO: err msg.
                 }
+
+                // TODO: check mining count.
 
                 var op = new ExchangeOperation
                 {

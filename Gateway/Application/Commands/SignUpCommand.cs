@@ -70,6 +70,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     await _context.SaveChangesAsync();
                 }
 
+                // TODO: implement 100 EURB bonus.
+
                 return Unit.Value;
             }
         }
