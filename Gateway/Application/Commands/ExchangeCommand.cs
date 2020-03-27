@@ -6,6 +6,7 @@ using Binebase.Exchange.Gateway.Domain.Enums;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +42,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException($"Conversions from {request.Base} to {request.Quote} not supported."); // TODO: err msg.
                 }
 
-                // TODO: check mining count.
+                int miningCount = 10;
+                if (_context.MiningRequests.Count(m => m.CreatedBy == _currentUserService.UserId) < miningCount)
+                {
+                    throw new NotSupportedException($"Exchange and withdrawal are not available until a user mines {miningCount} times");
+                }
 
                 var op = new ExchangeOperation
                 {

@@ -22,6 +22,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly ICalculationService _calculationService;
             private readonly IAccountService _accountService;
             private readonly ICurrentUserService _currentUserService;
+            private readonly IIdentityService _identityService;
             private readonly IApplicationDbContext _context;
             private readonly IDateTime _dateTime;
             private readonly IMapper _mapper;
@@ -31,12 +32,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 ICalculationService calculationService,
                 IAccountService accountService,
                 ICurrentUserService currentUserService,
+               IIdentityService identityService,
                 IApplicationDbContext context,
                 IDateTime dateTime,
                 IMapper mapper,
                 ILogger<MiningInstantCommandHandler> logger)
-                => (_calculationService, _accountService, _currentUserService, _context, _dateTime, _mapper, _logger)
-                    = (calculationService, accountService, currentUserService, context, dateTime, mapper, logger);
+                => (_calculationService, _accountService, _currentUserService, _identityService, _context, _dateTime, _mapper, _logger)
+                    = (calculationService, accountService, currentUserService, identityService, context, dateTime, mapper, logger);
 
             public async Task<MiningInstantCommandResult> Handle(MiningInstantCommand request, CancellationToken cancellationToken)
             {
@@ -61,10 +63,17 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     Type = TransactionType.Instant
                 };
 
+                User currentUser = await _identityService.GetUser(_currentUserService.UserId);
+
                 for (var i = 0; i < (request.Boost ? mapping.FirstOrDefault(x => x.Value <= index)?.Value ?? 1 : 1); i++)
                 {
-                    // TODO: check referral.
-                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionSource.Fee, TransactionType.Instant);
+                    if (currentUser.ReferralId != null)
+                    {
+                        var ammount = _calculationService.InstantMiningFee / 100 * 5;
+                        await _accountService.Debit(currentUser.ReferralId, Currency.EURB, ammount, mining.Id, TransactionSource.Refferal);
+                    }
+
+                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionSource.Fee);
                     mining.Amount += await _calculationService.GenerateInstantReward();
                 }
 
@@ -75,7 +84,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (mining.Amount > 0)
                 {
-                    // TODO: check referral.
+                    if (currentUser.ReferralId != null)
+                    {
+                        var ammount = mining.Amount / 100 * 5;
+                        await _accountService.Debit(currentUser.ReferralId, Currency.BINE, ammount, mining.Id, TransactionSource.Refferal);
+                    }
+
                     await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Instant);
                     var promotion = await _calculationService.GeneratePromotion(index);
                     if (promotion != null)

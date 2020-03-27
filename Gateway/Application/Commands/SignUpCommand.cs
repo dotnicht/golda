@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Binebase.Exchange.Gateway.Domain.Entities;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -70,7 +71,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     await _context.SaveChangesAsync();
                 }
 
-                // TODO: implement 100 EURB bonus.
+                await _accountService.Debit(userId, Currency.EURB, 100, Guid.NewGuid(), TransactionSource.SignUp, TransactionType.Default);
 
                 return Unit.Value;
             }
