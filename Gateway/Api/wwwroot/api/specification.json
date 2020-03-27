@@ -1221,11 +1221,11 @@
             "type": "string",
             "format": "time-span"
           },
-          "currentMiningCount": {
+          "instantMiningCount": {
             "type": "integer",
             "format": "int32"
           },
-          "boostMapping": {
+          "instantBoostMapping": {
             "type": "object",
             "nullable": true,
             "additionalProperties": {

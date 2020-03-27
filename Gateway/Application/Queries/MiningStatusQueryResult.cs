@@ -7,7 +7,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
     {
         public TimeSpan BonusTimeout { get; set; }
         public TimeSpan InstantTimeout { get; set; }
-        public int CurrentMiningCount { get; set; }
-        public Dictionary<int, int> BoostMapping { get; set; }
+        public int InstantMiningCount { get; set; }
+        public Dictionary<int, int> InstantBoostMapping { get; set; }
     }
 }

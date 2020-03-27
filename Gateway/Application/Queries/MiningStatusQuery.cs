@@ -2,6 +2,7 @@
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,10 +27,12 @@ namespace Binebase.Exchange.Gateway.Application.Queries
 
                 return new MiningStatusQueryResult
                 {
-                    BonusTimeout = _dateTime.UtcNow - minings.FirstOrDefault(x => x.Type == TransactionType.Weekly || x.Type == TransactionType.Bonus || x.Type == TransactionType.Default)?.Created ?? default,
-                    InstantTimeout = _dateTime.UtcNow - minings.FirstOrDefault(x => x.Type == TransactionType.Instant)?.Created ?? default,
-                    CurrentMiningCount = minings.Count(x => x.Type == TransactionType.Instant),
-                    BoostMapping = _calculationService.InstantBoostMapping
+                    BonusTimeout = _dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == TransactionType.Weekly || x.Type == TransactionType.Bonus || x.Type == TransactionType.Default))?.Created 
+                        ?? default,
+                    InstantTimeout = _dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == TransactionType.Instant))?.Created 
+                        ?? default,
+                    InstantMiningCount = await minings.CountAsync(x => x.Type == TransactionType.Instant),
+                    InstantBoostMapping = _calculationService.InstantBoostMapping
                 };
             }
         }
