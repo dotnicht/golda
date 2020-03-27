@@ -63,6 +63,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 for (var i = 0; i < (request.Boost ? mapping.FirstOrDefault(x => x.Value <= index)?.Value ?? 1 : 1); i++)
                 {
+                    // TODO: check referral.
                     await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionSource.Fee, TransactionType.Instant);
                     mining.Amount += await _calculationService.GenerateInstantReward();
                 }
@@ -74,6 +75,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (mining.Amount > 0)
                 {
+                    // TODO: check referral.
                     await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Instant);
                     var promotion = await _calculationService.GeneratePromotion(index);
                     if (promotion != null)
