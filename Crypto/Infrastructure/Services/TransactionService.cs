@@ -4,13 +4,13 @@ using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NBitcoin;
 using QBitNinja.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Transaction = Binebase.Exchange.CryptoService.Domain.Entities.Transaction;
@@ -21,26 +21,53 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
     {
         private readonly Configuration _configuration;
         private readonly IApplicationDbContext _context;
+        private readonly IAccountService _accountService;
+        private readonly ILogger _logger;
 
-        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context)
-            => (_configuration, _context) = (options.Value, context);
+        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context, IAccountService accountService, ILogger<TransactionService> logger)
+            => (_configuration, _context, _accountService, _logger) = (options.Value, context, accountService, logger);
 
         public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                foreach (var address in _context.Addresses.Include(x => x.Transactions).Where(x => x.Currency == currency && x.Type == AddressType.Deposit))
+                try
                 {
-                    foreach (var tx in await GetTransactions(address))
+                    var addresses = _context.Addresses
+                        .Include(x => x.Transactions)
+                        .Where(x => x.Currency == currency && x.Type == AddressType.Deposit)
+                        .ToArray();
+
+                    foreach (var address in addresses)
                     {
-                        if (address.Transactions.All(x => x.Hash != tx.Hash))
+                        _logger.LogDebug($"Processing {currency} address {address.Public}. Account Id {address.AccountId}.");
+                        var txs = new List<Transaction>();
+
+                        foreach (var tx in await GetTransactions(address))
                         {
-                            _context.Transactions.Add(tx);
+                            if (address.Transactions.All(x => x.Hash != tx.Hash))
+                            {
+                                txs.Add(_context.Transactions.Add(tx).Entity);
+                            }
+                        }
+
+                        await _context.SaveChangesAsync();
+
+                        if (_configuration.DebitDepositTransactions)
+                        {
+                            foreach (var tx in txs)
+                            {
+                                await _accountService.Debit(address.AccountId, currency, tx.Amount, tx.Id);
+                            }
                         }
                     }
-
-                    await _context.SaveChangesAsync();
                 }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, $"Subscription to {currency} blockchain failed.");
+                }
+
+                await Task.Delay(_configuration.TransactionPoolingTimeout);
             }
         }
 
@@ -73,16 +100,18 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             return balance.Operations.Select(x => new Transaction
             {
+                Address = address,
                 AddressId = address.Id,
                 Direction = TransactionDirection.Inbound,
                 Confirmed = x.FirstSeen.DateTime,
                 Hash = x.TransactionId.ToString(),
                 Block = x.Height,
-                Amount = x.Amount.Satoshi,
+                RawAmount = x.Amount.Satoshi,
+                Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
             }).ToArray();
         }
 
-        private async Task<Transaction[]> GetEthereumTransactions(Address address)
+        private Task<Transaction[]> GetEthereumTransactions(Address address)
         {
             throw new NotImplementedException();
         }
@@ -90,6 +119,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         public class Configuration
         {
             public bool IsTestNet { get; set; }
+            public bool DebitDepositTransactions { get; set; }
             public TimeSpan TransactionPoolingTimeout { get; set; }
         }
     }

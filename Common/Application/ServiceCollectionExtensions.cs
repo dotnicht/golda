@@ -29,7 +29,7 @@ namespace Binebase.Exchange.Common.Application
 
             foreach (var service in services.ToArray())
             {
-                if (service.ImplementationType != null)
+                if (service.ImplementationType != null) // TODO: add support for factory initialization.
                 {
                     foreach (var cfg in service.ImplementationType.GetInterfaces().Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IConfigurationProvider<>)))
                     {

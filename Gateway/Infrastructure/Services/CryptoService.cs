@@ -1,4 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Infrastructure.Clients;
+using Binebase.Exchange.Common.Infrastructure.Clients.Crypto;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using Microsoft.Extensions.Options;
@@ -8,7 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Binebase.Exchange.Gateway.Infrastructure.Crypto
+namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
     public class CryptoService : ICryptoService, IConfigurationProvider<CryptoService.Configuration>, ITransient<ICryptoService>
     {

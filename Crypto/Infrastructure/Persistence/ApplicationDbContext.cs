@@ -16,7 +16,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTime dateTime) : base(options) => _dateTime = dateTime;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTime dateTime) : base(options) 
+            => _dateTime = dateTime;
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

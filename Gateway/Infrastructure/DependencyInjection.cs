@@ -1,15 +1,19 @@
 ﻿using Binance.Net;
 using Binance.Net.Interfaces;
-using Binebase.Exchange.Common.Application.Exceptions;
-using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Common.Application.Exceptions;
+using Binebase.Exchange.Common.Infrastructure;
+using Binebase.Exchange.Common.Infrastructure.Services;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
+using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;
@@ -17,10 +21,6 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Binebase.Exchange.Common.Infrastructure.Services;
-using Binebase.Exchange.Gateway.Infrastructure.Account;
-using Binebase.Exchange.Gateway.Infrastructure.Crypto;
 
 namespace Binebase.Exchange.Gateway.Infrastructure
 {
@@ -64,14 +64,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                 };
             });
 
-            //if (!environment.IsEnvironment("Test"))
-            {
-                services.AddServices(Assembly.GetExecutingAssembly());
-                services.AddServices(typeof(DateTimeService).Assembly);
-
-                services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
-                services.AddTransient<IBinanceClient, BinanceClient>();
-            }
+            services.AddCommonInfrastructure(configuration);
+            services.AddServices(Assembly.GetExecutingAssembly());
+            services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
+            services.AddTransient<IBinanceClient, BinanceClient>();
 
             services.AddAuthentication();
 
@@ -81,9 +77,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             return services;
         }
 
-        private static async Task HandleTokenValidation(TokenValidatedContext context) 
+        private static async Task HandleTokenValidation(TokenValidatedContext context)
         {
-            if (context.Principal.Identity is ClaimsIdentity claims 
+            if (context.Principal.Identity is ClaimsIdentity claims
                 && Guid.TryParse(claims.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value, out var userId))
             {
                 var user = await context.HttpContext.RequestServices
