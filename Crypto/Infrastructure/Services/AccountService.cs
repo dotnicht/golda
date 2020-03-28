@@ -22,7 +22,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var cmd = new DebitAccountCommand
             {
                 Id = accountId,
-                Currency = (Common.Infrastructure.Clients.Account.Currency)currency,
+                Currency = (Currency)currency,
                 Amount = amount,
                 Payload = JsonConvert.SerializeObject(new TransactionPayload { ExternalId = externalId })
             };

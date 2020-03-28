@@ -1,6 +1,5 @@
 ﻿using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Common.Infrastructure.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace Binebase.Exchange.Common.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services)
         {
             services.AddServices(Assembly.GetExecutingAssembly());
             return services;
