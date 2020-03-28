@@ -9,8 +9,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Binebase.Exchange.Common.Infrastructure.Clients;
+using Binebase.Exchange.Common.Infrastructure.Clients.Account;
 
-namespace Binebase.Exchange.Gateway.Infrastructure.Account
+namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
     public class AccountService : IAccountService, IConfigurationProvider<AccountService.Configuration>, ITransient<IAccountService>
     {

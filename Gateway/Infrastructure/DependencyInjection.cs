@@ -1,15 +1,18 @@
 ﻿using Binance.Net;
 using Binance.Net.Interfaces;
-using Binebase.Exchange.Common.Application.Exceptions;
-using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Common.Application.Exceptions;
+using Binebase.Exchange.Common.Infrastructure.Services;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
+using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;
@@ -17,10 +20,6 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Binebase.Exchange.Common.Infrastructure.Services;
-using Binebase.Exchange.Gateway.Infrastructure.Account;
-using Binebase.Exchange.Gateway.Infrastructure.Crypto;
 
 namespace Binebase.Exchange.Gateway.Infrastructure
 {

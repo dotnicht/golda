@@ -99,7 +99,7 @@
             "wrapResponseMethods": [],
             "generateResponseClasses": true,
             "responseClass": "SwaggerResponse",
-            "namespace": "Binebase.Exchange.Common.Infrastructure.Clients",
+            "namespace": "Binebase.Exchange.Common.Infrastructure.Clients.Account",
             "requiredPropertiesMustBeDefined": true,
             "dateType": "System.DateTimeOffset",
             "jsonConverters": null,
@@ -134,7 +134,7 @@
             "enumNameGeneratorType": null,
             "serviceHost": null,
             "serviceSchemes": null,
-            "output": "../Common/Infrastructure/Clients/AccountService.cs"
+            "output": "../../Common/Infrastructure/Clients/Account/AccountService.cs"
         }
     }
 }
