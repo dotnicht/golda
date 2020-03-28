@@ -10,7 +10,6 @@ using QBitNinja.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Transaction = Binebase.Exchange.CryptoService.Domain.Entities.Transaction;
@@ -31,16 +30,28 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             {
                 foreach (var address in _context.Addresses.Include(x => x.Transactions).Where(x => x.Currency == currency && x.Type == AddressType.Deposit))
                 {
+                    var txs = new List<Transaction>();
+
                     foreach (var tx in await GetTransactions(address))
                     {
                         if (address.Transactions.All(x => x.Hash != tx.Hash))
                         {
-                            _context.Transactions.Add(tx);
+                            txs.Add(_context.Transactions.Add(tx).Entity);
                         }
                     }
 
                     await _context.SaveChangesAsync();
+
+                    if (_configuration.DebitDepositTransactions)
+                    {
+                        foreach (var tx in txs)
+                        {
+                            // debit 
+                        }
+                    }
                 }
+
+                await Task.Delay(_configuration.TransactionPoolingTimeout);
             }
         }
 
@@ -82,7 +93,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             }).ToArray();
         }
 
-        private async Task<Transaction[]> GetEthereumTransactions(Address address)
+        private Task<Transaction[]> GetEthereumTransactions(Address address)
         {
             throw new NotImplementedException();
         }
@@ -90,7 +101,13 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         public class Configuration
         {
             public bool IsTestNet { get; set; }
+            public bool DebitDepositTransactions { get; set; }
             public TimeSpan TransactionPoolingTimeout { get; set; }
+        }
+
+        private class TransactionPayload
+        {
+
         }
     }
 }
