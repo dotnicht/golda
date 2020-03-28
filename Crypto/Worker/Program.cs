@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.CryptoService.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -20,7 +17,7 @@ namespace Binebase.Exchange.Crypto.Worker
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
-
+                    services.AddInfrastructure(hostContext.Configuration);
                     services.AddConfigurationProviders(hostContext.Configuration);
                 });
     }
