@@ -40,7 +40,6 @@ namespace Worker
                          logging.AddConsole();
                          logging.AddAzureWebAppDiagnostics();
                          logging.AddEventSourceLogger();
-
                      });
     }
 }

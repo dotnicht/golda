@@ -3,7 +3,6 @@ using Binance.Net.Interfaces;
 using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Infrastructure;
-using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
@@ -38,9 +37,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            services.AddDbContext<IdentityDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("IdentityConnection"), b => b.MigrationsAssembly(typeof(IdentityDbContext).Assembly.FullName)));
+            services.AddDbContext<IdentityDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("IdentityConnection"), 
+                b => b.MigrationsAssembly(typeof(IdentityDbContext).Assembly.FullName)));
 
-            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(x => x.SignIn.RequireConfirmedEmail = false).AddDefaultTokenProviders().AddEntityFrameworkStores<IdentityDbContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(x => x.SignIn.RequireConfirmedEmail = false)
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<IdentityDbContext>();
 
             services.AddAuthentication(x =>
             {
@@ -64,8 +66,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                 };
             });
 
-            services.AddCommonInfrastructure(configuration);
+            services.AddCommonInfrastructure();
             services.AddServices(Assembly.GetExecutingAssembly());
+
             services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
             services.AddTransient<IBinanceClient, BinanceClient>();
 

@@ -22,7 +22,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var cmd = new DebitAccountCommand
             {
                 Id = accountId,
-                Currency = (Common.Infrastructure.Clients.Account.Currency)currency,
+                Currency = (Currency)currency,
                 Amount = amount,
                 Payload = JsonConvert.SerializeObject(new TransactionPayload { ExternalId = externalId })
             };
@@ -43,7 +43,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         private class TransactionPayload
         {
             public Guid ExternalId { get; set; }
-            public string Type => "Deposit"; // TODO: refactor after switching to common contracts.
+            public string Source => "Deposit"; // TODO: refactor after switching to common contracts.
         }
     }
 }
