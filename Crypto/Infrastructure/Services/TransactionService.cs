@@ -1,6 +1,5 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Common.Infrastructure.Clients.Account;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
@@ -26,7 +25,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         public TransactionService(IOptions<Configuration> options, IApplicationDbContext context, IAccountService accountService)
             => (_configuration, _context, _accountService) = (options.Value, context, accountService);
 
-        public async Task Subscribe(Common.Domain.Currency currency, CancellationToken cancellationToken)
+        public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -48,8 +47,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     {
                         foreach (var tx in txs)
                         {
-
-                            await _accountClient.DebitAsync(cmd);
+                            var amount = Money.Satoshis(Convert.ToInt64(tx.Amount)).ToDecimal(MoneyUnit.BTC);
+                            await _accountService.Debit(address.AccountId, currency, amount, tx.Id);
                         }
                     }
                 }
@@ -67,8 +66,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             return address.Currency switch
             {
-                Common.Domain.Currency.BTC => await GetBitcoinTransactions(address),
-                Common.Domain.Currency.ETH => await GetEthereumTransactions(address),
+                Currency.BTC => await GetBitcoinTransactions(address),
+                Currency.ETH => await GetEthereumTransactions(address),
                 _ => throw new NotSupportedException(),
             };
         }
@@ -87,6 +86,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             return balance.Operations.Select(x => new Transaction
             {
+                Address = address,
                 AddressId = address.Id,
                 Direction = TransactionDirection.Inbound,
                 Confirmed = x.FirstSeen.DateTime,

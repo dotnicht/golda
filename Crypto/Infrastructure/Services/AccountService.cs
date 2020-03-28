@@ -42,7 +42,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         private class TransactionPayload
         {
             public Guid ExternalId { get; set; }
-            public string Type => "Deposit";
+            public string Type => "Deposit"; // TODO: refactor after switching to common contracts.
         }
     }
 }
