@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : DbContext, IApplicationDbContext, ITransient<IApplicationDbContext>
+    public class ApplicationDbContext : DbContext, IApplicationDbContext, IScoped<IApplicationDbContext>
     {
         private readonly IDateTime _dateTime;
 
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTime dateTime) : base(options) => _dateTime = dateTime;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTime dateTime) : base(options) 
+            => _dateTime = dateTime;
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
