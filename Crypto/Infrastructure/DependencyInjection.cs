@@ -17,7 +17,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
             services.AddCommonInfrastructure(configuration);
             services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
             services.AddServices(Assembly.GetExecutingAssembly());
-            services.AddHttpClient<IAccountService, AccountService>();
+            services.AddHttpClients(Assembly.GetExecutingAssembly());
+            //services.AddHttpClient<IAccountService, AccountService>();
             return services;
         }
     }

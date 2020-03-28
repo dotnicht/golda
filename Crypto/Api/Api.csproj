@@ -51,10 +51,12 @@
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
+    
     <Target Name="NSwag" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
         <Copy SourceFiles="@(Reference)" DestinationFolder="$(OutDir)References" />
         <Exec Command="$(NSwagExe_Core30) run /variables:Configuration=$(Configuration)" />
         <RemoveDir Directories="$(OutDir)References" />
     </Target>
+    
 
 </Project>

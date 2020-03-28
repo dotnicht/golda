@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Api
 {
-    public class Program
+    public sealed class Program
     {
         public async static Task Main(string[] args)
         {
@@ -27,7 +27,6 @@ namespace Binebase.Exchange.CryptoService.Api
                 catch (Exception ex)
                 {
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-
                     logger.LogError(ex, "An error occurred while migrating or seeding the database.");
                 }
             }

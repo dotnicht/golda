@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Infrastructure.Clients.Account;
+using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
-    public class AccountService : IAccountService, IConfigurationProvider<AccountService.Configuration>, ITransient<IAccountService>
+    public class AccountService : IAccountService, IConfigurationProvider<AccountService.Configuration>, IHttpClientScoped<IAccountService>
     {
         private readonly AccountClient _accountClient;
 

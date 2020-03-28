@@ -1,6 +1,7 @@
 ﻿using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
+using Binebase.Exchange.CryptoService.Domain.Enums;
 using MediatR;
 using System;
 using System.Linq;
@@ -30,6 +31,7 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
                     AccountId = request.Id,
                     Currency = request.Currency,
                     Public = await _addressService.GenerateAddress(request.Currency, index),
+                    Type = AddressType.Deposit,
                     Index = index
                 };
 

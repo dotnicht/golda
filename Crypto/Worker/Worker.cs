@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,8 +23,7 @@ namespace Binebase.Exchange.Crypto.Worker
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var scope = _services.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<ITransactionService>();
-            var tasks = new[] { service.Subscribe(Currency.BTC, stoppingToken), service.Subscribe(Currency.ETH, stoppingToken) };
+            var tasks = new[] { Currency.BTC }.Select(async x => await scope.ServiceProvider.GetRequiredService<ITransactionService>().Subscribe(x, stoppingToken)).ToArray();
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogDebug("Worker running at: {time}", _dateTime.UtcNow);
