@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Common.Infrastructure.Clients.Account;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
@@ -20,11 +21,12 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
     {
         private readonly Configuration _configuration;
         private readonly IApplicationDbContext _context;
+        private readonly IAccountService _accountService;
 
-        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context)
-            => (_configuration, _context) = (options.Value, context);
+        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context, IAccountService accountService)
+            => (_configuration, _context, _accountService) = (options.Value, context, accountService);
 
-        public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
+        public async Task Subscribe(Common.Domain.Currency currency, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -46,7 +48,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     {
                         foreach (var tx in txs)
                         {
-                            // debit 
+
+                            await _accountClient.DebitAsync(cmd);
                         }
                     }
                 }
@@ -64,8 +67,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             return address.Currency switch
             {
-                Currency.BTC => await GetBitcoinTransactions(address),
-                Currency.ETH => await GetEthereumTransactions(address),
+                Common.Domain.Currency.BTC => await GetBitcoinTransactions(address),
+                Common.Domain.Currency.ETH => await GetEthereumTransactions(address),
                 _ => throw new NotSupportedException(),
             };
         }
@@ -103,11 +106,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             public bool IsTestNet { get; set; }
             public bool DebitDepositTransactions { get; set; }
             public TimeSpan TransactionPoolingTimeout { get; set; }
-        }
-
-        private class TransactionPayload
-        {
-
         }
     }
 }
