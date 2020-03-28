@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Binebase.Exchange.Common.Infrastructure.Clients;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Account
 {
