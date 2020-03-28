@@ -4,6 +4,7 @@ using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NBitcoin;
 using QBitNinja.Client;
@@ -21,36 +22,44 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         private readonly Configuration _configuration;
         private readonly IApplicationDbContext _context;
         private readonly IAccountService _accountService;
+        private readonly ILogger _logger;
 
-        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context, IAccountService accountService)
-            => (_configuration, _context, _accountService) = (options.Value, context, accountService);
+        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context, IAccountService accountService, ILogger<TransactionService> logger)
+            => (_configuration, _context, _accountService, _logger) = (options.Value, context, accountService, logger);
 
         public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                foreach (var address in _context.Addresses.Include(x => x.Transactions).Where(x => x.Currency == currency && x.Type == AddressType.Deposit))
+                try
                 {
-                    var txs = new List<Transaction>();
-
-                    foreach (var tx in await GetTransactions(address))
+                    foreach (var address in _context.Addresses.Include(x => x.Transactions).Where(x => x.Currency == currency && x.Type == AddressType.Deposit))
                     {
-                        if (address.Transactions.All(x => x.Hash != tx.Hash))
+                        var txs = new List<Transaction>();
+
+                        foreach (var tx in await GetTransactions(address))
                         {
-                            txs.Add(_context.Transactions.Add(tx).Entity);
+                            if (address.Transactions.All(x => x.Hash != tx.Hash))
+                            {
+                                txs.Add(_context.Transactions.Add(tx).Entity);
+                            }
+                        }
+
+                        await _context.SaveChangesAsync();
+
+                        if (_configuration.DebitDepositTransactions)
+                        {
+                            foreach (var tx in txs)
+                            {
+                                var amount = Money.Satoshis(Convert.ToInt64(tx.Amount)).ToDecimal(MoneyUnit.BTC);
+                                await _accountService.Debit(address.AccountId, currency, amount, tx.Id);
+                            }
                         }
                     }
-
-                    await _context.SaveChangesAsync();
-
-                    if (_configuration.DebitDepositTransactions)
-                    {
-                        foreach (var tx in txs)
-                        {
-                            var amount = Money.Satoshis(Convert.ToInt64(tx.Amount)).ToDecimal(MoneyUnit.BTC);
-                            await _accountService.Debit(address.AccountId, currency, amount, tx.Id);
-                        }
-                    }
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, $"Subscription to {currency} blockchain failed.");
                 }
 
                 await Task.Delay(_configuration.TransactionPoolingTimeout);
