@@ -33,7 +33,12 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             {
                 try
                 {
-                    foreach (var address in _context.Addresses.Include(x => x.Transactions).Where(x => x.Currency == currency && x.Type == AddressType.Deposit))
+                    var addresses = _context.Addresses
+                        .Include(x => x.Transactions)
+                        .Where(x => x.Currency == currency && x.Type == AddressType.Deposit)
+                        .ToArray();
+
+                    foreach (var address in addresses)
                     {
                         _logger.LogDebug($"Processing {currency} address {address.Public}. Account Id {address.AccountId}.");
                         var txs = new List<Transaction>();
