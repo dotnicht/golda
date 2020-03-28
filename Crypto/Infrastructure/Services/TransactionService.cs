@@ -35,6 +35,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 {
                     foreach (var address in _context.Addresses.Include(x => x.Transactions).Where(x => x.Currency == currency && x.Type == AddressType.Deposit))
                     {
+                        _logger.LogDebug($"Processing {currency} address {address.Public}. Account Id {address.AccountId}.");
                         var txs = new List<Transaction>();
 
                         foreach (var tx in await GetTransactions(address))
@@ -51,8 +52,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                         {
                             foreach (var tx in txs)
                             {
-                                var amount = Money.Satoshis(Convert.ToInt64(tx.Amount)).ToDecimal(MoneyUnit.BTC);
-                                await _accountService.Debit(address.AccountId, currency, amount, tx.Id);
+                                await _accountService.Debit(address.AccountId, currency, tx.Amount, tx.Id);
                             }
                         }
                     }
@@ -101,7 +101,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 Confirmed = x.FirstSeen.DateTime,
                 Hash = x.TransactionId.ToString(),
                 Block = x.Height,
-                Amount = x.Amount.Satoshi,
+                RawAmount = x.Amount.Satoshi,
+                Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
             }).ToArray();
         }
 

@@ -23,7 +23,7 @@ namespace Binebase.Exchange.Crypto.Worker
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var scope = _services.CreateScope();
-            var tasks = new[] { Currency.BTC }.Select(async x => await scope.ServiceProvider.GetRequiredService<ITransactionService>().Subscribe(x, stoppingToken)).ToArray();
+            var tasks = new[] { Currency.BTC }.Select(x => scope.ServiceProvider.GetRequiredService<ITransactionService>().Subscribe(x, stoppingToken)).ToArray();
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogDebug("Worker running at: {time}", _dateTime.UtcNow);

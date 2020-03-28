@@ -12,7 +12,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence.Configurati
         public void Configure(EntityTypeBuilder<Transaction> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Amount).HasConversion(new ValueConverter<BigInteger, string>(x => x.ToString(), x => BigInteger.Parse(x)));
+            builder.Property(x => x.RawAmount).HasConversion(new ValueConverter<BigInteger, string>(x => x.ToString(), x => BigInteger.Parse(x)));
+            builder.Property(x => x.Amount).HasColumnType("decimal(18,8)");
             builder.Property(x => x.Direction).HasConversion(new EnumToStringConverter<TransactionDirection>());
             builder.HasOne(x => x.Address).WithMany(x => x.Transactions);
         }
