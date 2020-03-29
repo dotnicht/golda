@@ -1,4 +1,5 @@
-﻿using Binebase.Exchange.CryptoService.Domain.Entities;
+﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,8 +13,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence.Configurati
         public void Configure(EntityTypeBuilder<Address> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Balance).HasConversion(new ValueConverter<BigInteger, string>(x => x.ToString(), x => BigInteger.Parse(x)));
             builder.Property(x => x.Type).HasConversion(new EnumToStringConverter<AddressType>());
+            builder.Property(x => x.Currency).HasConversion(new EnumToStringConverter<Currency>());
             builder.Property(x => x.Public).IsRequired();
         }
     }

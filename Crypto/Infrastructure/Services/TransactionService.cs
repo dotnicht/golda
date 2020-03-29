@@ -4,7 +4,6 @@ using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
-using EtherscanApi.Net.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -98,7 +97,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var network = _configuration.IsTestNet ? Network.TestNet : Network.Main;
             var client = new QBitNinjaClient(network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address.Public, network));
-            var value = balance.Operations.Sum(x => x.Amount.Satoshi);
+            var value = (ulong)balance.Operations.Sum(x => x.Amount.Satoshi);
 
             if (value > address.Balance)
             {
@@ -113,13 +112,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 Confirmed = x.FirstSeen.DateTime,
                 Hash = x.TransactionId.ToString(),
                 Block = (ulong)x.Height,
-                RawAmount = x.Amount.Satoshi,
+                RawAmount = (ulong)x.Amount.Satoshi,
                 Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
             }).ToArray();
         }
 
         private async Task<Transaction[]> GetEthereumTransactions(Address address)
         {
+            // TODO: add balance check and update.
             var result = new List<Transaction>();
             foreach (var operation in new[] { "txlist", "txlistinternal" })
             {
@@ -141,8 +141,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
                         Hash = x.Hash,
                         Block = x.BlockNumber,
-                        RawAmount = BigInteger.Parse(x.Value),
-                        Amount = Web3.Convert.FromWei(BigInteger.Parse(x.Value))
+                        RawAmount = x.Value,
+                        Amount = Web3.Convert.FromWei(x.Value)
                     });
 
                 result.AddRange(tx);
@@ -175,7 +175,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 public int TransactionIndex { get; set; }
                 public string From { get; set; }
                 public string To { get; set; }
-                public string Value { get; set; }
+                public ulong Value { get; set; }
                 public string Gas { get; set; }
                 public string GasPrice { get; set; }
                 public string IsError { get; set; }
