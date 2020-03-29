@@ -37,12 +37,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            services.AddDbContext<IdentityDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("IdentityConnection"), 
-                b => b.MigrationsAssembly(typeof(IdentityDbContext).Assembly.FullName)));
+            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
+                b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(x => x.SignIn.RequireConfirmedEmail = false)
                 .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<IdentityDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication(x =>
             {

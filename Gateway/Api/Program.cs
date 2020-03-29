@@ -17,13 +17,9 @@ namespace Binebase.Exchange.Gateway.Api
 
             using (var scope = host.Services.CreateScope())
             {
-                var services = scope.ServiceProvider;
-
                 try
                 {
-                    var identity = services.GetRequiredService<IdentityDbContext>();
-                    await identity.Database.MigrateAsync();
-                    var context = services.GetRequiredService<Persistence.ApplicationDbContext>();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     await context.Database.MigrateAsync();
                 }
                 catch (Exception ex)

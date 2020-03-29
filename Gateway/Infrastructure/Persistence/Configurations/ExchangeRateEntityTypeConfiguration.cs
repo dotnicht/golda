@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Binebase.Exchange.Gateway.Persistence.Configurations
+namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
 {
     public class ExchangeRateEntityTypeConfiguration //: IEntityTypeConfiguration<ExchangeRate>
     {

@@ -35,7 +35,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Common\Api\Api.csproj" />
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-        <ProjectReference Include="..\Persistence\Persistence.csproj" />
     </ItemGroup>
 
     <ItemGroup>

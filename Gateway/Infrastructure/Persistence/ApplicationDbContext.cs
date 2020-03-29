@@ -9,15 +9,21 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Binebase.Exchange.Gateway.Domain;
+using Binebase.Exchange.Gateway.Domain.Entities;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
 {
-    public class IdentityDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext, IScoped<IApplicationDbContext>
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTime _dateTime;
 
-        public IdentityDbContext(DbContextOptions<IdentityDbContext> options, ICurrentUserService currentUserService, IDateTime dateTime) 
+        public DbSet<MiningRequest> MiningRequests { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<ExchangeOperation> ExchangeOperations { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUserService, IDateTime dateTime) 
             : base(options)
                 => (_currentUserService, _dateTime) = (currentUserService, dateTime);
 

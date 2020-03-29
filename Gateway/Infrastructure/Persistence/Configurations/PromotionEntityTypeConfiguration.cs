@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Binebase.Exchange.Gateway.Persistence.Configurations
+namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
 {
     public class PromotionEntityTypeConfiguration : IEntityTypeConfiguration<Promotion>
     {

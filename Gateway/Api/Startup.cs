@@ -4,7 +4,7 @@ using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
-using Binebase.Exchange.Gateway.Persistence;
+using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -30,21 +30,11 @@ namespace Binebase.Exchange.Gateway.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplicationCommon();
             services.AddApplication();
-
-            services.AddMediatR(typeof(IAccountService).Assembly);
-
-            services.AddServices(Assembly.GetExecutingAssembly());
-            services.AddServices(typeof(IAccountService).Assembly);
-
             services.AddInfrastructure(Configuration);
-            services.AddPersistence(Configuration);
-
+            services.AddServices(Assembly.GetExecutingAssembly());
             services.AddHttpContextAccessor();
-
-            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>("Persistence");
-            services.AddHealthChecks().AddDbContextCheck<IdentityDbContext>("Identity");
+            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
             services.AddControllers()
                 .AddFluentValidation(fv =>
