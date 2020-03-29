@@ -74,8 +74,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
 
             services.AddAuthentication();
 
-            services.AddHttpClient<IAccountService, AccountService>();
-            services.AddHttpClient<ICryptoService, CryptoService>();
+            services.AddHttpClients(Assembly.GetExecutingAssembly());
 
             return services;
         }
