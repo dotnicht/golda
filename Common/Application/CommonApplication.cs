@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Binebase.Exchange.Common.Application
 {
-    public static class ServiceCollectionExtensions
+    public static class CommonApplication
     {
         public static IServiceCollection AddConfigurationProviders(this IServiceCollection services, IConfiguration configuration)
         {

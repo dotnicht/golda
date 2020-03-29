@@ -51,7 +51,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var ticket = await _identityService.GenerateConfirmationToken(userId);
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(userId));
-
+                
                 await _accountService.Create(userId);
                 await _accountService.AddCurrency(userId, Currency.BINE);
                 await _accountService.AddCurrency(userId, Currency.EURB);
@@ -71,7 +71,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 await _accountService.Debit(userId, Currency.EURB, 100, Guid.NewGuid(), TransactionSource.SignUp, TransactionType.Default);
-
+                
                 return Unit.Value;
             }
         }
