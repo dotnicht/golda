@@ -5,6 +5,7 @@ using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NBitcoin;
@@ -25,13 +26,13 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
     public class TransactionService : ITransactionService, IConfigurationProvider<TransactionService.Configuration>, IHttpClientScoped<ITransactionService>
     {
         private readonly Configuration _configuration;
-        private readonly IApplicationDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IAccountService _accountService;
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
 
-        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context, IAccountService accountService, ILogger<TransactionService> logger, HttpClient httpClient)
-            => (_configuration, _context, _accountService, _logger, _httpClient) = (options.Value, context, accountService, logger, httpClient);
+        public TransactionService(IOptions<Configuration> options, IServiceProvider serviceProvider, IAccountService accountService, ILogger<TransactionService> logger, HttpClient httpClient)
+            => (_configuration, _serviceProvider, _accountService, _logger, _httpClient) = (options.Value, serviceProvider, accountService, logger, httpClient);
 
         public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
         {
@@ -39,7 +40,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             {
                 try
                 {
-                    var addresses = _context.Addresses
+                    var context = _serviceProvider.GetRequiredService<IApplicationDbContext>();
+
+                    var addresses = context.Addresses
                         .Include(x => x.Transactions)
                         .Where(x => x.Currency == currency && x.Type == AddressType.Deposit)
                         .ToArray();
@@ -53,11 +56,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                         {
                             if (address.Transactions.All(x => x.Hash != tx.Hash))
                             {
-                                txs.Add(_context.Transactions.Add(tx).Entity);
+                                txs.Add(context.Transactions.Add(tx).Entity);
                             }
                         }
 
-                        await _context.SaveChangesAsync();
+                        await context.SaveChangesAsync();
 
                         if (_configuration.DebitDepositTransactions)
                         {
@@ -106,7 +109,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             return balance.Operations.Select(x => new Transaction
             {
-                Address = address,
+                //Address = address,
                 AddressId = address.Id,
                 Direction = TransactionDirection.Inbound,
                 Confirmed = x.FirstSeen.DateTime,
