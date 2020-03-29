@@ -109,7 +109,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             return balance.Operations.Select(x => new Transaction
             {
-                //Address = address,
                 AddressId = address.Id,
                 Direction = TransactionDirection.Inbound,
                 Confirmed = x.FirstSeen.DateTime,
@@ -122,9 +121,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         private async Task<Transaction[]> GetEthereumTransactions(Address address)
         {
-            // TODO: add balance check and update.
             var result = new List<Transaction>();
-            foreach (var operation in new[] { "txlist", "txlistinternal" })
+
+            foreach (var operation in new[] { "balance", "txlist", "txlistinternal" })
             {
                 var uri = string.Format("http://{0}.etherscan.io/api?module=account&action={1}&address={2}&apikey={3}",
                     _configuration.IsTestNet ? "ropsten" : "api",
@@ -135,7 +134,19 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 var response = await _httpClient.GetAsync(uri);
                 var content = await response.Content.ReadAsStringAsync();
 
-                var tx = JsonConvert.DeserializeObject<EtherscanResponse>(content).Result
+                if (operation == "balance")
+                {
+                    var balance = JsonConvert.DeserializeObject<EtherscanBalanceResponse>(content);
+                    if (balance.Result > address.Balance)
+                    {
+                        address.Balance = balance.Result;
+                        continue;
+                    }
+
+                    break;
+                }
+
+                var tx = JsonConvert.DeserializeObject<EtherscanTransactionsResponse>(content).Result
                     .Select(x => new Transaction
                     {
                         Address = address,
@@ -162,7 +173,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             public string EtherscanApiKey { get; set; }
         }
 
-        private class EtherscanResponse
+        private class EtherscanBalanceResponse
+        {
+            public string Status { get; set; }
+            public string Message { get; set; }
+            public ulong Result { get; set; }
+        }
+
+        private class EtherscanTransactionsResponse
         {
             public string Status { get; set; }
             public string Message { get; set; }
