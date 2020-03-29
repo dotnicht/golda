@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
@@ -8,25 +9,30 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NBitcoin;
+using Nethereum.Web3;
+using Newtonsoft.Json;
 using QBitNinja.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Transaction = Binebase.Exchange.CryptoService.Domain.Entities.Transaction;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
-    public class TransactionService : ITransactionService, IConfigurationProvider<TransactionService.Configuration>, ITransient<ITransactionService>
+    public class TransactionService : ITransactionService, IConfigurationProvider<TransactionService.Configuration>, IHttpClientScoped<ITransactionService>
     {
         private readonly Configuration _configuration;
         private readonly IApplicationDbContext _context;
         private readonly IAccountService _accountService;
         private readonly ILogger _logger;
+        private readonly HttpClient _httpClient;
 
-        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context, IAccountService accountService, ILogger<TransactionService> logger)
-            => (_configuration, _context, _accountService, _logger) = (options.Value, context, accountService, logger);
+        public TransactionService(IOptions<Configuration> options, IApplicationDbContext context, IAccountService accountService, ILogger<TransactionService> logger, HttpClient httpClient)
+            => (_configuration, _context, _accountService, _logger, _httpClient) = (options.Value, context, accountService, logger, httpClient);
 
         public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
         {
@@ -63,7 +69,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                         }
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Subscription to {currency} blockchain failed.");
                 }
@@ -114,27 +120,35 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         private async Task<Transaction[]> GetEthereumTransactions(Address address)
         {
-            var client = new EtherScanClient(_configuration.EtherscanApiKey);
-            //var balance = client.GetEtherBalance(address.Public).Result;
-
-            //if (balance > address.Balance)
-            //{
-            //    address.Balance = balance;
-            //}
-
-            var tx = client.GetTransactions(address.Public).Result;
-
-            return tx.Select(x => new Transaction
+            var result = new List<Transaction>();
+            foreach (var operation in new[] { "txlist", "txlistinternal" })
             {
-                Address = address, 
-                AddressId = address.Id,
-                Direction = TransactionDirection.Inbound,
-                //Confirmed = x.
-                Hash = x.TxId,
-                Block = x.BlockNumber,
-                RawAmount = Nethereum.Web3.Web3.Convert.ToWei(x.Value),
-                Amount = x.Value
-            }).ToArray();
+                var uri = string.Format("http://{0}.etherscan.io/api?module=account&action={1}&address={2}&apikey={3}",
+                    _configuration.IsTestNet ? "ropsten" : "api",
+                    operation,
+                    address.Public,
+                    _configuration.EtherscanApiKey);
+
+                var response = await _httpClient.GetAsync(uri);
+                var content = await response.Content.ReadAsStringAsync();
+
+                var tx = JsonConvert.DeserializeObject<EtherscanResponse>(content).Result
+                    .Select(x => new Transaction
+                    {
+                        Address = address,
+                        AddressId = address.Id,
+                        Direction = TransactionDirection.Inbound,
+                        Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
+                        Hash = x.Hash,
+                        Block = x.BlockNumber,
+                        RawAmount = BigInteger.Parse(x.Value),
+                        Amount = Web3.Convert.FromWei(BigInteger.Parse(x.Value))
+                    });
+
+                result.AddRange(tx);
+            }
+
+            return result.ToArray();
         }
 
         public class Configuration
@@ -142,7 +156,36 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             public bool IsTestNet { get; set; }
             public bool DebitDepositTransactions { get; set; }
             public TimeSpan TransactionPoolingTimeout { get; set; }
-            public string EtherscanApiKey { get; set; } // QJZXTMH6PUTG4S3IA4H5URIIXT9TYUGI7P
+            public string EtherscanApiKey { get; set; } 
+        }
+
+        private class EtherscanResponse
+        {
+            public string Status { get; set; }
+            public string Message { get; set; }
+            public Transaction[] Result { get; set; }
+
+            public class Transaction
+            {
+                public ulong BlockNumber { get; set; }
+                public long TimeStamp { get; set; }
+                public string Hash { get; set; }
+                public string Nonce { get; set; }
+                public string BlockHash { get; set; }
+                public int TransactionIndex { get; set; }
+                public string From { get; set; }
+                public string To { get; set; }
+                public string Value { get; set; }
+                public string Gas { get; set; }
+                public string GasPrice { get; set; }
+                public string IsError { get; set; }
+                //public string Txreceipt_status { get; set; }
+                //public string input { get; set; }
+                //public string contractAddress { get; set; }
+                //public string cumulativeGasUsed { get; set; }
+                //public string gasUsed { get; set; }
+                public ulong Confirmations { get; set; }
+            }
         }
     }
 }
