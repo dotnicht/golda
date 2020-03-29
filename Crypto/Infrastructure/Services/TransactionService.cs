@@ -156,7 +156,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             public bool IsTestNet { get; set; }
             public bool DebitDepositTransactions { get; set; }
             public TimeSpan TransactionPoolingTimeout { get; set; }
-            public string EtherscanApiKey { get; set; } 
+            public string EtherscanApiKey { get; set; }
         }
 
         private class EtherscanResponse
@@ -170,15 +170,15 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 public ulong BlockNumber { get; set; }
                 public long TimeStamp { get; set; }
                 public string Hash { get; set; }
-                public string Nonce { get; set; }
+                //public string Nonce { get; set; }
                 public string BlockHash { get; set; }
-                public int TransactionIndex { get; set; }
+                public uint TransactionIndex { get; set; }
                 public string From { get; set; }
                 public string To { get; set; }
                 public ulong Value { get; set; }
-                public string Gas { get; set; }
-                public string GasPrice { get; set; }
-                public string IsError { get; set; }
+                //public string Gas { get; set; }
+                //public string GasPrice { get; set; }
+                //public string IsError { get; set; }
                 //public string Txreceipt_status { get; set; }
                 //public string input { get; set; }
                 //public string contractAddress { get; set; }
