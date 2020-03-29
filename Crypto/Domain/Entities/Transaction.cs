@@ -1,7 +1,6 @@
 ﻿using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using System;
-using System.Numerics;
 
 namespace Binebase.Exchange.CryptoService.Domain.Entities
 {
@@ -10,7 +9,7 @@ namespace Binebase.Exchange.CryptoService.Domain.Entities
         public TransactionDirection Direction { get; set; }
         public ulong Block { get; set; }
         public string Hash { get; set; }
-        public BigInteger RawAmount { get; set; }
+        public ulong RawAmount { get; set; }
         public decimal Amount { get; set; }
         public DateTime Confirmed { get; set; }
         public Guid AddressId { get; set; }
