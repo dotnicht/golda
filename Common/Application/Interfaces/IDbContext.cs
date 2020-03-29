@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Common.Application.Interfaces
 {
-    public interface IDbContext
+    public interface IDbContext : IDisposable
     {
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
     }
