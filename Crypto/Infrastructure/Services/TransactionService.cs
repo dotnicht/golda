@@ -3,6 +3,7 @@ using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
+using EtherscanApi.Net.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -105,15 +106,35 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 Direction = TransactionDirection.Inbound,
                 Confirmed = x.FirstSeen.DateTime,
                 Hash = x.TransactionId.ToString(),
-                Block = x.Height,
+                Block = (ulong)x.Height,
                 RawAmount = x.Amount.Satoshi,
                 Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
             }).ToArray();
         }
 
-        private Task<Transaction[]> GetEthereumTransactions(Address address)
+        private async Task<Transaction[]> GetEthereumTransactions(Address address)
         {
-            throw new NotImplementedException();
+            var client = new EtherScanClient(_configuration.EtherscanApiKey);
+            //var balance = client.GetEtherBalance(address.Public).Result;
+
+            //if (balance > address.Balance)
+            //{
+            //    address.Balance = balance;
+            //}
+
+            var tx = client.GetTransactions(address.Public).Result;
+
+            return tx.Select(x => new Transaction
+            {
+                Address = address, 
+                AddressId = address.Id,
+                Direction = TransactionDirection.Inbound,
+                //Confirmed = x.
+                Hash = x.TxId,
+                Block = x.BlockNumber,
+                RawAmount = Nethereum.Web3.Web3.Convert.ToWei(x.Value),
+                Amount = x.Value
+            }).ToArray();
         }
 
         public class Configuration
@@ -121,6 +142,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             public bool IsTestNet { get; set; }
             public bool DebitDepositTransactions { get; set; }
             public TimeSpan TransactionPoolingTimeout { get; set; }
+            public string EtherscanApiKey { get; set; } // QJZXTMH6PUTG4S3IA4H5URIIXT9TYUGI7P
         }
     }
 }
