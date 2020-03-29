@@ -25,9 +25,6 @@ namespace Binebase.Exchange.Gateway.Api
                     await identity.Database.MigrateAsync();
                     var context = services.GetRequiredService<Persistence.ApplicationDbContext>();
                     await context.Database.MigrateAsync();
-                    //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    //var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-                    //await ApplicationDbContextSeed.SeedAsync(context, userManager, roleManager);
                 }
                 catch (Exception ex)
                 {
