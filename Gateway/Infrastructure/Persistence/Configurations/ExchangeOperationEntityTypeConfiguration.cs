@@ -1,4 +1,5 @@
 ﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
                 var convert = new EnumToStringConverter<Currency>();
                 x.Property(y => y.Base).HasColumnName(nameof(Pair.Base)).IsRequired(true).HasConversion(convert);
                 x.Property(y => y.Quote).HasColumnName(nameof(Pair.Quote)).IsRequired(true).HasConversion(convert);
+                builder.Property(x => x.Amount).HasColumnType(CommonInfrastructure.DecimalFormat);
             });
         }
     }

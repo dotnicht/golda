@@ -7,8 +7,10 @@ using System.Reflection;
 
 namespace Binebase.Exchange.Common.Infrastructure
 {
-    public static class DependencyInjection
+    public static class CommonInfrastructure
     {
+        public const string DecimalFormat = "decimal (18,8)"; 
+
         public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services)
         {
             services.AddServices(Assembly.GetExecutingAssembly());

@@ -1,4 +1,5 @@
-﻿using Binebase.Exchange.Gateway.Domain.Entities;
+﻿using Binebase.Exchange.Common.Infrastructure;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,7 +13,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Type).HasConversion(new EnumToStringConverter<TransactionType>());
-            builder.Property(x => x.Amount).HasColumnType("decimal(18,8)");
+            builder.Property(x => x.Amount).HasColumnType(CommonInfrastructure.DecimalFormat);
         }
     }
 }
