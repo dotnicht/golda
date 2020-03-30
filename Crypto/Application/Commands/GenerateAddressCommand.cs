@@ -18,10 +18,11 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
         public class GenerateAddressCommandHandler : IRequestHandler<GenerateAddressCommand, GenerateAddressCommandResult>
         {
             private readonly IAddressService _addressService;
+            private readonly IBlockchainService _blockchainService;
             private readonly IApplicationDbContext _context;
 
-            public GenerateAddressCommandHandler(IAddressService addressService, IApplicationDbContext context)
-                => (_addressService, _context) = (addressService, context);
+            public GenerateAddressCommandHandler(IAddressService addressService, IBlockchainService blockchainService, IApplicationDbContext context)
+                => (_addressService, _blockchainService, _context) = (addressService, blockchainService, context);
 
             public async Task<GenerateAddressCommandResult> Handle(GenerateAddressCommand request, CancellationToken cancellationToken)
             {
@@ -32,7 +33,8 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
                     Currency = request.Currency,
                     Public = await _addressService.GenerateAddress(request.Currency, index),
                     Type = AddressType.Deposit,
-                    Index = index
+                    Index = index,
+                    GeneratedBlock = await _blockchainService.CurrentIndex(request.Currency)
                 };
 
                 _context.Addresses.Add(address);

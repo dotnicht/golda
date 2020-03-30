@@ -6,5 +6,6 @@ namespace Binebase.Exchange.CryptoService.Application.Interfaces
     public interface IAddressService
     {
         Task<string> GenerateAddress(Currency currency, uint index);
+        Task<bool> ValidateAddress(Currency currency, string address);
     }
 }
