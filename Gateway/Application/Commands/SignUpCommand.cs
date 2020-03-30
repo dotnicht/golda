@@ -35,12 +35,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 ICalculationService calculationService,
                 IAccountService accountService,
                 ICryptoService cryptoService,
-                IDateTime dateTime,
-                IApplicationDbContext context,
+               // IDateTime dateTime,
+               // IApplicationDbContext context,
                 ILogger<SignUpCommandHandler> logger)
-                => (_identityService, _emailService, _calculationService, _accountService, _cryptoService, _dateTime, _context, _logger)
-                    = (identityService, emailService, calculationService, accountService, cryptoService, dateTime, context, logger);
-
+            { }
+            //=> (_identityService, _emailService, _calculationService, _accountService, _cryptoService, _dateTime, _context, _logger)
+              //      = (identityService, emailService, calculationService, accountService, cryptoService, dateTime, context, logger);
+                    
             public async Task<Unit> Handle(SignUpCommand request, CancellationToken cancellationToken)
             {
                 var (result, userId) = await _identityService.CreateUser(request.Email, request.Password, request.ReferralCode);

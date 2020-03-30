@@ -4,9 +4,8 @@ using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
-using Binebase.Exchange.Gateway.Infrastructure.Persistence;
+using Binebase.Exchange.Gateway.Infrastructure.Services;
 using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -75,6 +74,8 @@ namespace Binebase.Exchange.Gateway.Api
             });
 
             services.AddConfigurationProviders(Configuration);
+            services.Configure<AccountService.Configuration>(Configuration.GetSection("AccountService.Configuration"));
+            services.Configure<CryptoService.Configuration>(Configuration.GetSection("CryptoService.Configuration"));
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
