@@ -10,6 +10,6 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public string Email { get; set; }
         public DateTime Registered { get; set; }
         public bool Confirmed { get; set; }
-        public Guid ReferralId { get; set; }
+        public Guid? ReferralId { get; set; }
     }
 }
