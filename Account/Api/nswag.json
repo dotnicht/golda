@@ -134,7 +134,7 @@
             "enumNameGeneratorType": null,
             "serviceHost": null,
             "serviceSchemes": null,
-            "output": "../../Common/Infrastructure/Clients/Account/AccountService.cs"
+            "output": "../../Common/Infrastructure/Clients/Account/AccountClient.cs"
         }
     }
 }
