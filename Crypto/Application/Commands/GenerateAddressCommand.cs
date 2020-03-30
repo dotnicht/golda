@@ -25,7 +25,7 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
 
             public async Task<GenerateAddressCommandResult> Handle(GenerateAddressCommand request, CancellationToken cancellationToken)
             {
-                var index = _context.Addresses.SingleOrDefault(x => x.AccountId == request.Id && x.Currency == request.Currency)?.Index + 1 ?? 0;
+                var index = _context.Addresses.Where(x => x.Currency == request.Currency).OrderByDescending(x => x.Index).FirstOrDefault()?.Index + 1 ?? 0;
                 var address = new Address
                 {
                     AccountId = request.Id,

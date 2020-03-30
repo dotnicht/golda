@@ -32,7 +32,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     if (!await _identityService.CheckUserPassword(user.Id, request.Password) || !await _identityService.VerifyTwoFactorToken(user.Id, request.Code))
                     {
-                        throw new SecurityException();
+                        throw new SecurityException(ErrorCode.MultiFactor);
                     }
 
                     await _identityService.SetTwoFactorAuthentication(_currentUserService.UserId, false);
