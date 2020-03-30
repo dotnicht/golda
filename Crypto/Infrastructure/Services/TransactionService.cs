@@ -124,7 +124,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             foreach (var operation in new[] { "balance", "txlist", "txlistinternal" })
             {
-                var uri = string.Format(_configuration.EtherscanUriFormat,
+                var uri = string.Format(_configuration.EtherscanUriFormat, // TODO: fix etherscan uri.
                     _configuration.IsTestNet ? "ropsten" : "api",
                     operation,
                     address.Public);

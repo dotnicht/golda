@@ -17,7 +17,7 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
         public Currency Currency { get; set; }
         public string Public { get; set; }
         public decimal Amount { get; set; }
-        public Guid ExternalId { get; set; }
+        public Guid ExternalId { get; set; } // TODO: remove external id.
 
         public class PublishTransactionCommandHandler : IRequestHandler<PublishTransactionCommand, PublishTransactionCommandResult>
         {

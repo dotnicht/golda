@@ -11,7 +11,7 @@ namespace Binebase.Exchange.AccountService.Application.Commands
 {
     public class DebitAccountCommand : IRequest<DebitAccountCommandResult>, IIdContainer
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } // TODO: add transaction id.
         public Currency Currency { get; set; }
         public decimal Amount { get; set; }
         public string Payload { get; set; }
