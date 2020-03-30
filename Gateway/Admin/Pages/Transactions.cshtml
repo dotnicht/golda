@@ -1,0 +1,208 @@
+﻿
+@page
+@using Admin.Models;
+@addTagHelper *, Admin
+@model Admin.TransactionsModel
+@{
+    ViewData["Title"] = Model.ActiveTab == Tab.Deposits ? "Deposits" : "Withdrow";
+    string btnActive1 = (Model.ActiveTab == Tab.Deposits) ? "active" : "";
+    string btnActive2 = (Model.ActiveTab == Tab.Withdraw) ? "active" : "";
+}
+<head>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('select').on('change', function () {
+                alert(this.value);
+            });
+        });
+    </script>
+
+</head>
+<h1>Transactions</h1>
+<form method="post">
+    <ul class="nav nav-tabs">
+        <li><button class="btn btn-primary @btnActive1" asp-page-handler="SwitchToTabs" asp-route-tabname="Deposits">Deposits</button></li>
+        <li><button class="btn btn-primary @btnActive2" asp-page-handler="SwitchToTabs" asp-route-tabname="Withdraw">Withdraw</button></li>
+    </ul>
+</form>
+
+<h2>@ViewData["Title"]</h2>
+<table id="myTable" class="table" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Id)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Smartphone</a></li>
+                        <li><a href="#">Tablet</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].UserId)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Tablet</a></li>
+                        <li><a href="#">Smartphone</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Currency)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        @foreach (var currency in Model.Currencies)
+                        {
+                            <li><a asp-page="/Transactions" asp-route-currentFilterFieldName="Currency" asp-route-currentFilter=@currency>@currency</a></li>
+                        }
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Amount)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Tablet</a></li>
+                        <li><a href="#">Smartphone</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Balance)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Tablet</a></li>
+                        <li><a href="#">Smartphone</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].DateTime)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Tablet</a></li>
+                        <li><a href="#">Smartphone</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Source)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        @foreach (var source in Model.Sources)
+                        {
+                            <li><a asp-page="/Transactions" asp-route-currentFilterFieldName="Source" asp-route-currentFilter=@source>@source</a></li>
+                        }
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Type)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        @foreach (var type in Model.Types)
+                        {
+                            <li><a asp-page="/Transactions" asp-route-currentFilterFieldName="Type" asp-route-currentFilter=@type>@type</a></li>
+                        }
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].CreatedBy)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Tablet</a></li>
+                        <li><a href="#">Smartphone</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Created)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Tablet</a></li>
+                        <li><a href="#">Smartphone</a></li>
+                    </ul>
+                </div>
+            </th>
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (TransactionExt item in Model.Transactions)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.UserId</td>
+                <td>@item.Currency</td>
+                <td>@item.Amount</td>
+                <td>@item.Balance</td>
+                <td>@item.DateTime</td>
+                <td>@item.Source</td>
+                <td>@item.Type</td>
+                <td>@item.CreatedBy</td>
+                <td>@item.Created</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@{
+    var prevDisabled = !Model.Transactions.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Transactions.HasNextPage ? "disabled" : "";
+}
+<a asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Transactions.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Transactions.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
+<div>@Model.Transactions.PageIndex/@Model.Transactions.TotalPages  Total: @Model.Transactions.Count() @ViewData["Title"] (on page: @Model.Transactions.Count)</div>

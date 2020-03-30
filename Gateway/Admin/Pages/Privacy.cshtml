@@ -1,0 +1,62 @@
+﻿@*@model List<HelloWorldMvcApp.Blog>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+ template from http://getbootstrap.com/getting-started 
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap 101 Template</title>
+
+     CSS Includes 
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div role="tabpanel">
+             Nav tabs 
+            <ul class="nav nav-tabs" role="tablist">
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        <li role="presentation" class="active"><a href="#@Model[i].BlogId" aria-controls="@Model[i].BlogId" role="tab" data-toggle="tab">@Model[i].BlogName</a></li>
+                    }
+                    else
+                    {
+                        <li role="presentation"><a href="#@Model[i].BlogId" aria-controls="@Model[i].BlogId" role="tab" data-toggle="tab">@Model[i].BlogName</a></li>
+                    }
+                }
+            </ul>
+
+             Tab panes 
+            <div class="tab-content">
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        <div role="tabpanel" class="tab-pane active" id="@Model[i].BlogId">@Model[i].BlogName</div>
+                    }
+                    else
+                    {
+                        <div role="tabpanel" class="tab-pane" id="@Model[i].BlogId">@Model[i].BlogName</div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+     JS includes 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+    <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>*@

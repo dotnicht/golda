@@ -1,0 +1,38 @@
+﻿@page "{id}"
+@model Admin.Pages.EditUserModel
+@{
+    ViewData["Title"] = "EditUser";
+}
+
+<h1>EditUser</h1>
+
+<table id="myTable" class="table">
+    <tbody>
+        @foreach (var property in Model.CurrentUser.GetType().GetProperties())
+        {
+            <tr>
+                <th>@property.Name</th>
+                <td>@property.GetValue(Model.CurrentUser)</td>
+                @if (@property.Name == "IsLocked")
+                {
+                    var title = (Model.CurrentUser.IsLocked) ? "Unlock" : "Lock";
+                    <td>
+                        <form method="post">
+                            <button class="btn btn-link" asp-page-handler="UpdateLock">@title</button>
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@*@{
+        var prevDisabled = !Model.Users.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.Users.HasNextPage ? "disabled" : "";
+    }*@
+
+<div class="row">
+    <a class="btn btn-primary @true" asp-page="EditUser" asp-route-id="@Model.CurrentUser.Id">Apply</a>
+    <a class="btn btn-primary @true" asp-page="Users">Cancel</a>
+</div>
