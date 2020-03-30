@@ -51,7 +51,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (mining != null)
                 {
-                    throw new NotSupportedException("Timeout active."); // TODO: err msg.
+                    throw new NotSupportedException(ErrorCode.MiningInstantTimeout);
                 }
 
                 var mapping = _calculationService.InstantBoostMapping.Select(x => new { x.Key, x.Value }).OrderBy(x => x.Key);

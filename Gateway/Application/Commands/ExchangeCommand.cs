@@ -39,7 +39,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (ex == null)
                 {
-                    throw new NotSupportedException($"Conversions from {request.Base} to {request.Quote} not supported."); // TODO: err msg.
+                    throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
                 }
 
                 int miningCount = 10;

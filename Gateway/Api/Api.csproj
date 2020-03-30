@@ -40,7 +40,6 @@
     <ItemGroup>
       <Content Update="appsettings.Development.json">
           <DependentUpon>appsettings.json</DependentUpon>
-
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Update="appsettings.json">
@@ -52,7 +51,6 @@
       </Content>
       <Content Update="appsettings.Test.json">
           <DependentUpon>appsettings.json</DependentUpon>
-
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

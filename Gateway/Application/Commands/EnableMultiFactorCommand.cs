@@ -33,7 +33,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     var code = request.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
                     if (!await _identityService.VerifyTwoFactorToken(_currentUserService.UserId, code))
                     {
-                        throw new SecurityException(); // TODO: err msg.
+                        throw new SecurityException(ErrorCode.MultiFactor);
                     }
 
                     await _identityService.SetTwoFactorAuthentication(_currentUserService.UserId, true);
