@@ -22,7 +22,7 @@ using Transaction = Binebase.Exchange.CryptoService.Domain.Entities.Transaction;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
-    public class TransactionService : ITransactionService, IConfigurationProvider<TransactionService.Configuration>, IHttpClientScoped<ITransactionService>
+    public class TransactionService : ITransactionService, IHttpClientScoped<ITransactionService>
     {
         private readonly Configuration _configuration;
         private readonly IServiceProvider _serviceProvider;
@@ -124,11 +124,10 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             foreach (var operation in new[] { "balance", "txlist", "txlistinternal" })
             {
-                var uri = string.Format("http://{0}.etherscan.io/api?module=account&action={1}&address={2}&apikey={3}",
+                var uri = string.Format(_configuration.EtherscanUriFormat,
                     _configuration.IsTestNet ? "ropsten" : "api",
                     operation,
-                    address.Public,
-                    _configuration.EtherscanApiKey);
+                    address.Public);
 
                 var response = await _httpClient.GetAsync(uri);
                 var content = await response.Content.ReadAsStringAsync();
@@ -161,14 +160,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             }
 
             return result.ToArray();
-        }
-
-        public class Configuration
-        {
-            public bool IsTestNet { get; set; }
-            public bool DebitDepositTransactions { get; set; }
-            public TimeSpan TransactionPoolingTimeout { get; set; }
-            public string EtherscanApiKey { get; set; }
         }
 
         private class EtherscanBalanceResponse

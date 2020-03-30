@@ -18,8 +18,6 @@ namespace Binebase.Exchange.Crypto.Worker
                     services.AddHostedService<Worker>();
                     services.AddInfrastructure(hostContext.Configuration);
                     services.AddConfigurationProviders(hostContext.Configuration);
-                    services.Configure<AccountService.Configuration>(hostContext.Configuration.GetSection("AccountService.Configuration"));
-                    services.Configure<TransactionService.Configuration>(hostContext.Configuration.GetSection("TransactionService.Configuration"));
                 });
     }
 }

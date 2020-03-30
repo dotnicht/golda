@@ -17,6 +17,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
             services.AddServices(Assembly.GetExecutingAssembly());
             services.AddHttpClients(Assembly.GetExecutingAssembly());
+            services.Configure<Configuration>(configuration.GetSection("Infrastructure.Configuration"));
             return services;
         }
     }

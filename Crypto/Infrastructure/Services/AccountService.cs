@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
-    public class AccountService : IAccountService, IConfigurationProvider<AccountService.Configuration>, IHttpClientScoped<IAccountService>
+    public class AccountService : IAccountService, IHttpClientScoped<IAccountService>
     {
         private readonly AccountClient _accountClient;
 
         public AccountService(HttpClient httpClient, IOptions<Configuration> options)
-            => _accountClient = new AccountClient(options.Value.Address.ToString(), httpClient);
+            => _accountClient = new AccountClient(options.Value.AccountService.ToString(), httpClient);
 
         public async Task<Guid> Debit(Guid accountId, Common.Domain.Currency currency, decimal amount, Guid externalId)
         {
@@ -28,16 +28,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             };
 
             return (await _accountClient.DebitAsync(cmd)).Id;
-        }
-
-        public Task<Guid> Credit(Guid accountId, Common.Domain.Currency currency, decimal amount, Guid externalId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public class Configuration
-        {
-            public Uri Address { get; set; }
         }
 
         private class TransactionPayload
