@@ -25,6 +25,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 _ => throw new NotSupportedException(),
             };
 
+        public Task<bool> ValidateAddress(Currency currency, string address)
+        {
+            throw new NotImplementedException();
+        }
+
         private async Task<string> GenerateBitcoinAddress(uint index)
         {
             var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);

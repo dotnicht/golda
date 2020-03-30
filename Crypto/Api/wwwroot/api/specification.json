@@ -220,7 +220,7 @@
           "currency": {
             "$ref": "#/components/schemas/Currency"
           },
-          "address": {
+          "public": {
             "type": "string",
             "nullable": true
           },
