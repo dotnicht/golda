@@ -11,6 +11,7 @@ namespace Binebase.Exchange.Gateway.Application
         {
             services.AddApplicationCommon();
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddServices(Assembly.GetExecutingAssembly());
             return services;
         }
     }
