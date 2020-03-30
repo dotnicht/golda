@@ -26,6 +26,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         public TimeSpan InstantTimeout => _configuration.Instant.Timeout;
         public decimal InstantMiningFee => _configuration.Instant.Fee;
         public Dictionary<int, int> InstantBoostMapping => _configuration.Instant.BoostMapping.ToDictionary(x => int.Parse(x.Key), x => x.Value);
+        public int OperationLockMiningCount => _configuration.Instant.OperationLockMiningCount;
 
         public CalculationService(
             IAccountService accountService,
@@ -218,6 +219,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 public decimal Probability { get; set; }
                 public decimal Fee { get; set; }
                 public Dictionary<Category, decimal> Categories { get; set; }
+                public int OperationLockMiningCount { get; set; }
 
                 public enum Category
                 {

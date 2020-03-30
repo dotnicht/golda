@@ -32,7 +32,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 ICalculationService calculationService,
                 IAccountService accountService,
                 ICurrentUserService currentUserService,
-               IIdentityService identityService,
+                IIdentityService identityService,
                 IApplicationDbContext context,
                 IDateTime dateTime,
                 IMapper mapper,

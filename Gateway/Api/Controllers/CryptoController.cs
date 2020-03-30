@@ -30,5 +30,9 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Exchange(ExchangeCommand command) 
             => Convert(await Mediator.Send(command));
+
+        [HttpPost, ProducesResponseType(typeof(WithdrawCommandResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<WithdrawCommandResult>> Withdraw(WithdrawCommand command)
+            => await Mediator.Send(command);
     }
 }

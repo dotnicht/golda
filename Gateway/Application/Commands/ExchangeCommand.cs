@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Common.Domain;
+﻿using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
@@ -7,6 +6,7 @@ using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using MediatR;
 using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,14 +24,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IAccountService _accountService;
             private readonly IExchangeRateService _exchangeRateService;
             private readonly ICurrentUserService _currentUserService;
+            private readonly ICalculationService _calculationService;
 
             public ExchangeCommandHandler(
                 IApplicationDbContext context,
                 IAccountService accountService,
                 IExchangeRateService exchangeRateService,
-                ICurrentUserService currentUserService)
-                => (_context, _accountService, _exchangeRateService, _currentUserService)
-                    = (context, accountService, exchangeRateService, currentUserService);
+                ICurrentUserService currentUserService,
+                ICalculationService calculationService)
+                => (_context, _accountService, _exchangeRateService, _currentUserService, _calculationService)
+                    = (context, accountService, exchangeRateService, currentUserService, calculationService);
 
             public async Task<Unit> Handle(ExchangeCommand request, CancellationToken cancellationToken)
             {
@@ -42,10 +44,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
                 }
 
-                int miningCount = 10;
-                if (_context.MiningRequests.Count(m => m.CreatedBy == _currentUserService.UserId) < miningCount)
+                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == TransactionType.Instant) < _calculationService.OperationLockMiningCount)
                 {
-                    throw new NotSupportedException($"Exchange and withdrawal are not available until a user mines {miningCount} times");
+                    throw new NotSupportedException(ErrorCode.InsufficientMinings);
                 }
 
                 var op = new ExchangeOperation

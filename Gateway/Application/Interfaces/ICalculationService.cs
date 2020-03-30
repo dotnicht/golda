@@ -12,6 +12,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         TimeSpan WeeklyTimeout { get; }
         TimeSpan InstantTimeout { get; }
         decimal InstantMiningFee { get; }
+        int OperationLockMiningCount { get; }
         Dictionary<int, int> InstantBoostMapping { get; }
         Task<decimal> GenerateDefaultReward();
         Task<(decimal Amount, TransactionType Type)> GenerateWeeklyReward();

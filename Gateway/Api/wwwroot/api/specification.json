@@ -631,6 +631,43 @@
         ]
       }
     },
+    "/api/Crypto/Withdraw": {
+      "post": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Withdraw",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCommandResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Mining/Status": {
       "get": {
         "tags": [
@@ -1208,6 +1245,37 @@
           "amount": {
             "type": "number",
             "format": "decimal"
+          }
+        }
+      },
+      "WithdrawCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "hash": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WithdrawCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
