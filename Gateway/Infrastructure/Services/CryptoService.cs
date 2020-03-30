@@ -35,7 +35,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public async Task<string> GenerateAddress(Guid id, Common.Domain.Currency currency)
         {
-            var result = await _cryptoClient.AddressesAsync(new GenerateAddressCommand { Id = id, Currency = (Common.Infrastructure.Clients.Crypto.Currency)currency });
+            var result = await _cryptoClient.AddressesAsync(new GenerateAddressCommand { Id = id, Currency = (Currency)currency });
             return result.Address;
         }
 
@@ -56,7 +56,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                         TransactionDirection.Inbound => TransactionSource.Deposit,
                         TransactionDirection.Outbound => TransactionSource.Widthraw,
                         TransactionDirection.Internal => TransactionSource.Internal,
-                        _ => throw new NotSupportedException(),
+                        _ => throw new InvalidOperationException(),
                     }
                 };
 
@@ -66,9 +66,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             return result.ToArray();
         }
 
-        public Task<string> PublishTransaction(Guid id, Common.Domain.Currency currency, decimal amount, string address)
+        public async Task<string> PublishTransaction(Guid id, Common.Domain.Currency currency, decimal amount, string address, Guid externalId)
         {
-            throw new NotImplementedException();
+            var result = await _cryptoClient.TransactionsAsync(new PublishTransactionCommand { Id = id, Currency = (Currency)currency, Amount = amount, Address = address, ExternalId = externalId });
+            return result.Hash;
         }
 
         public class Configuration

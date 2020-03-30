@@ -55,7 +55,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var id = Guid.NewGuid();
                 await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionSource.Widthraw);
-                return new WithdrawCommandResult { Hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address) };
+                return new WithdrawCommandResult { Hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id) };
             }
         }
     }

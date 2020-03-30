@@ -8,9 +8,11 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
 {
     public class PublishTransactionCommand : IRequest<PublishTransactionCommandResult>
     {
+        public Guid Id { get; set; }
         public Currency Currency { get; set; }
         public string Address { get; set; }
         public decimal Amount { get; set; }
+        public Guid ExternalId { get; set; }
 
         public class PublishTransactionCommandHandler : IRequestHandler<PublishTransactionCommand, PublishTransactionCommandResult>
         {
