@@ -44,6 +44,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
 
                     return new TransactionsQueryResult { Transactions = resTrans.ToArray() };
                 }
+
                 return new TransactionsQueryResult { Transactions = filteredTransactions.ToArray() };
             }
         }
