@@ -9,15 +9,15 @@ namespace Binebase.Exchange.Gateway.Api.Services
 {
     public class CurrentUserService : ICurrentUserService, IScoped<ICurrentUserService>
     {
-        private readonly Lazy<Guid> _userId;
+        private readonly Lazy<Guid?> _userId;
 
-        public Guid UserId => _userId.Value;
+        public Guid UserId => _userId.Value ?? throw new InvalidOperationException("User Id uninitialized.");
 
         public CurrentUserService(IHttpContextAccessor httpContextAccessor) =>
-            _userId = new Lazy<Guid>(
+            _userId = new Lazy<Guid?>(
                 () => Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier), out var userId)
                     ? userId
-                    : default,
+                    : default(Guid?),
                 LazyThreadSafetyMode.ExecutionAndPublication);
     }
 }
