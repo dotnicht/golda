@@ -149,7 +149,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 var tx = JsonConvert.DeserializeObject<EtherscanTransactionsResponse>(content).Result
                     .Select(x => new Transaction
                     {
-                        Address = address,
                         AddressId = address.Id,
                         Direction = TransactionDirection.Inbound,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
