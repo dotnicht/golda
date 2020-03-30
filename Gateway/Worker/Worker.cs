@@ -19,13 +19,15 @@ namespace Worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await _exchangeRateService.Subscribe();
+            var tasks = new[] { _exchangeRateService.Subscribe() };
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogDebug("Worker running at: {time}", _dateTime.UtcNow);
                 await Task.Delay(1000, stoppingToken);
             }
+
+            Task.WaitAll(tasks);
         }
     }
 }
