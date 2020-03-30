@@ -68,7 +68,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public async Task<string> PublishTransaction(Guid id, Common.Domain.Currency currency, decimal amount, string address, Guid externalId)
         {
-            var result = await _cryptoClient.TransactionsAsync(new PublishTransactionCommand { Id = id, Currency = (Currency)currency, Amount = amount, Address = address, ExternalId = externalId });
+            var result = await _cryptoClient.TransactionsAsync(new PublishTransactionCommand { Id = id, Currency = (Currency)currency, Amount = amount, Public = address, ExternalId = externalId });
             return result.Hash;
         }
 

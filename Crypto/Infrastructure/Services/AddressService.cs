@@ -4,6 +4,7 @@ using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Microsoft.Extensions.Options;
 using NBitcoin;
 using Nethereum.HdWallet;
+using Nethereum.Util;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
     {
         private readonly Configuration _configuration;
 
+        private Network BitcoinNetwork => _configuration.IsTestNet ? Network.TestNet : Network.Main;
+
         public AddressService(IOptions<Configuration> options)
             => _configuration = options.Value;
 
@@ -21,33 +24,43 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             => currency switch
             {
                 Currency.BTC => await GenerateBitcoinAddress(index),
-                Currency.ETH => await GenerateEtherumAddress(index),
+                Currency.ETH => new Wallet(_configuration.Mnemonic, _configuration.Password).GetAccount((int)index).Address,
                 _ => throw new NotSupportedException(),
             };
 
-        public Task<bool> ValidateAddress(Currency currency, string address)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<bool> ValidateAddress(Currency currency, string address)
+            => currency switch
+            {
+                Currency.BTC => await ValidateBitcoinAddress(address),
+                Currency.ETH => AddressUtil.Current.IsValidEthereumAddressHexFormat(address),
+                _ => throw new NotSupportedException(),
+            };
 
         private async Task<string> GenerateBitcoinAddress(uint index)
         {
             var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
-            var key = mnemo.DeriveExtKey(_configuration.Passwords[Currency.BTC]);
+            var key = mnemo.DeriveExtKey(_configuration.Password);
             var address = key.Derive(index).ScriptPubKey.GetDestinationAddress(_configuration.IsTestNet ? Network.TestNet : Network.Main);
             return await Task.FromResult(address.ToString());
         } 
 
-        private async Task<string> GenerateEtherumAddress(uint index)
+        private async Task<bool> ValidateBitcoinAddress(string address)
         {
-            var wallet = new Wallet(_configuration.Mnemonic, _configuration.Passwords[Currency.ETH]);
-            return await Task.FromResult(wallet.GetAccount((int)index).Address);
+            try
+            {
+                BitcoinAddress.Create(address, BitcoinNetwork);
+                return await Task.FromResult(true);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public class Configuration
         {
             public string Mnemonic { get; set; }
-            public Dictionary<Currency, string> Passwords { get; set; }
+            public string Password { get; set; }
             public bool IsTestNet { get; set; }
         }
     }
