@@ -10,6 +10,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
         public Uri AccountService { get; set; }
         public bool DebitDepositTransactions { get; set; }
         public TimeSpan TransactionPoolingTimeout { get; set; }
-        public string EtherscanUriFormat { get; set; }
+        public string EtherscanUrlFormat { get; set; }
     }
 }

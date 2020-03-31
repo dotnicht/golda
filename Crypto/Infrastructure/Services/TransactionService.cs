@@ -124,8 +124,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             foreach (var operation in new[] { "balance", "txlist", "txlistinternal" })
             {
-                var uri = string.Format(_configuration.EtherscanUriFormat,
+                var uri = string.Format(_configuration.EtherscanUrlFormat,
                     _configuration.IsTestNet ? "ropsten" : "api",
+                    "account",
                     $"{operation}&address={address.Public}");
 
                 var response = await _httpClient.GetAsync(uri);

@@ -3,6 +3,8 @@ using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Microsoft.Extensions.Options;
 using NBitcoin;
+using Nethereum.Hex.HexTypes;
+using Newtonsoft.Json;
 using QBitNinja.Client;
 using QBitNinja.Client.Models;
 using System;
@@ -42,8 +44,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         private async Task<ulong> CurrentIndexEthereum()
         {
-            var response = await _httpClient.GetAsync(string.Format(_configuration.EtherscanUriFormat, _configuration.IsTestNet ? "ropsten" : "api", "proxy", "eth_blockNumber"));
-            return ulong.Parse(await response.Content.ReadAsStringAsync(), NumberStyles.HexNumber);
+            var response = await _httpClient.GetAsync(string.Format(_configuration.EtherscanUrlFormat, _configuration.IsTestNet ? "ropsten" : "api", "proxy", "eth_blockNumber"));
+            var result = JsonConvert.DeserializeObject<EtherscanBlockNumberResponse>(await response.Content.ReadAsStringAsync());
+            return new HexBigInteger(result.Result).ToUlong();
         }
 
         private class EtherscanBlockNumberResponse
