@@ -13,7 +13,7 @@ namespace Admin.ViewComponents
         }
         public IViewComponentResult Invoke(List<TransactionExt> transactions)
         {
-            _transactions = transactions.Where(x => x.Source == Binebase.Exchange.Gateway.Domain.Enums.TransactionSource.Widthraw).ToList();
+            _transactions = transactions.Where(x => x.Type == Binebase.Exchange.Common.Domain.TransactionType.Widthraw).ToList();
             return View(_transactions);
         }
     }

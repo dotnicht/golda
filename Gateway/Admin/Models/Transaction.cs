@@ -20,8 +20,7 @@ namespace Admin.Models
         public decimal Amount { get; set; }
         public decimal Balance { get; set; }
         public DateTime DateTime { get; set; }
-        public TransactionSource Source { get; set; }
-        public TransactionType? Type { get; set; }
+        public TransactionType Type { get; set; }
         public Guid CreatedBy { get; set; }
         public Guid LastModifiedBy { get; set; }
         public Guid Id { get; set; }

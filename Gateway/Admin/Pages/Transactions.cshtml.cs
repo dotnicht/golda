@@ -75,9 +75,9 @@ namespace Admin
             }
             CurrentFilter = searchString;
 
-            TransactionsIQ = _transactions.Where(t => t.Source == (ActiveTab == Tab.Deposits ?
-                                                                   Binebase.Exchange.Gateway.Domain.Enums.TransactionSource.Deposit :
-                                                                   Binebase.Exchange.Gateway.Domain.Enums.TransactionSource.Widthraw)).ToList();
+            TransactionsIQ = _transactions.Where(t => t.Type == (ActiveTab == Tab.Deposits ?
+                                                                   Binebase.Exchange.Common.Domain.TransactionType.Deposit :
+                                                                   Binebase.Exchange.Common.Domain.TransactionType.Widthraw)).ToList();
             #region Filtering
             if (!string.IsNullOrEmpty(currentFilter))
             {
@@ -87,7 +87,7 @@ namespace Admin
                         TransactionsIQ = TransactionsIQ.Where(t => t.Currency.ToString().Contains(searchString)).ToList();
                         break;
                     case "Source":
-                        TransactionsIQ = TransactionsIQ.Where(t => t.Source.ToString().Contains(searchString)).ToList();
+                        TransactionsIQ = TransactionsIQ.Where(t => t.Type.ToString().Contains(searchString)).ToList();
                         break;
                     case "Amount":
                         TransactionsIQ = TransactionsIQ.Where(t => t.Amount.ToString().Contains(searchString)).ToList();
@@ -124,7 +124,7 @@ namespace Admin
 
             #region filteringLists
             Currencies = TransactionsIQ.Select(t => t.Currency.ToString()).Distinct().ToList();
-            Sources = TransactionsIQ.Select(t => t.Source.ToString()).Distinct().ToList();
+            Sources = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
             UserIds = TransactionsIQ.Select(t => t.UserId.ToString()).Distinct().ToList();
             Types = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
             #endregion
@@ -147,28 +147,6 @@ namespace Admin
                     break;
             }
             await OnGet(ActiveTab, "", "", "", "", null);
-        }
-
-        public void Deposits()
-        {
-        }
-
-        private TransactionExt CreateNew(bool isDeposit)
-        {
-            return new TransactionExt
-            {
-                Amount = 5,
-                Balance = 10,
-                Type = Binebase.Exchange.Gateway.Domain.Enums.TransactionType.Bonus,
-                Created = DateTime.Now,
-                CreatedBy = Guid.NewGuid(),
-                Currency = Binebase.Exchange.Common.Domain.Currency.BINE,
-                DateTime = DateTime.Now,
-                Id = Guid.NewGuid(),
-                LastModified = DateTime.Now,
-                LastModifiedBy = Guid.NewGuid(),
-                Source = isDeposit ? Binebase.Exchange.Gateway.Domain.Enums.TransactionSource.Deposit : Binebase.Exchange.Gateway.Domain.Enums.TransactionSource.Widthraw
-            };
         }
     }
 }

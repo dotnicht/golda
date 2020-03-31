@@ -115,7 +115,7 @@
             <th>
                 <div class="btn-group">
                     <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
-                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Source)</a>
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Type)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
                     </button>
@@ -181,7 +181,6 @@
                 <td>@item.Amount</td>
                 <td>@item.Balance</td>
                 <td>@item.DateTime</td>
-                <td>@item.Source</td>
                 <td>@item.Type</td>
                 <td>@item.CreatedBy</td>
                 <td>@item.Created</td>

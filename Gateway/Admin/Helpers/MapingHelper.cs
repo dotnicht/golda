@@ -66,7 +66,6 @@ namespace Admin.Helpers
                  Amount = transaction.Amount,
                  Balance = transaction.Balance,
                  DateTime = transaction.DateTime,
-                 Source = transaction.Source,
                  Type = transaction.Type,
                  CreatedBy = transaction.CreatedBy,
                  LastModifiedBy = transaction.LastModifiedBy,

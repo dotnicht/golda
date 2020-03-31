@@ -56,7 +56,7 @@ namespace Admin.ViewComponents
 
             CurrentFilter = searchString;
 
-            TransactionsIQ = _transactions.Where(t => t.Source == Binebase.Exchange.Gateway.Domain.Enums.TransactionSource.Deposit).ToList();
+            TransactionsIQ = _transactions.Where(t => t.Type == Binebase.Exchange.Common.Domain.TransactionType.Deposit).ToList();
 
             //if (!string.IsNullOrEmpty(searchString))
             //{
