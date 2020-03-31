@@ -13,29 +13,10 @@ namespace Binebase.Exchange.AccountService.Api
 {
     public sealed class Program
     {
-        public async static Task Main(string[] args)
+        public static void Main(string[] args)
         {
             ConfigureLogging();
             var host = CreateWebHostBuilder(args).Build();
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                try
-                {
-                    await Task.CompletedTask;
-                    //var context = services.GetRequiredService<ApplicationDbContext>();
-                    //await context.Database.MigrateAsync();
-                }
-                catch (Exception ex)
-                {
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-
-                    logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-                }
-            }
-
             host.Run();
         }
 

@@ -13,7 +13,6 @@ namespace Admin.Pages
 {
     public class UsersModel : PageModel
     {
-        private readonly ILogger<UsersModel> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public string NameSort { get; set; }
@@ -29,15 +28,16 @@ namespace Admin.Pages
         public List<string> UsersNames { get; set; }
 
 
-        public UsersModel(ILogger<UsersModel> logger, UserManager<ApplicationUser> userManager)
+        public UsersModel(UserManager<ApplicationUser> userManager)
         {
-            _logger = logger;
             _userManager = userManager;
             PageSize = 10;
         }
 
         public async Task OnGetAsync(string sortOrder, string currentFilterFieldName, string currentFilter, string searchString, int? pageIndex)
         {
+            await Task.CompletedTask;
+
             CurrentSort = sortOrder;
             NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             DateSort = sortOrder == "Date" ? "date_desc" : "Date";
