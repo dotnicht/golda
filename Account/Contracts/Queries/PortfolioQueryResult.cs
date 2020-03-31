@@ -1,10 +1,9 @@
-﻿using Binebase.Exchange.Common.Domain;
-using System.Collections.Generic;
+﻿using Binebase.Exchange.AccountService.Domain.Entities;
 
 namespace Binebase.Exchange.AccountService.Application.Queries
 {
     public class PortfolioQueryResult
     {
-        public Dictionary<Currency, decimal> Portfolio { get; set; }
+        public Asset[] Portfolio { get; set; }
     }
 }

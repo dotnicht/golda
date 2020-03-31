@@ -38,7 +38,7 @@ namespace Binebase.Exchange.AccountService.Application
         public async Task<PortfolioQueryResult> Handle(PortfolioQuery request, CancellationToken cancellationToken)
         {
             var account = _repository.GetById<Account>(request.Id, int.MaxValue);
-            var result = new PortfolioQueryResult { Portfolio = account.Portfolio.ToDictionary(x => x.Currency, x => x.Balance) };
+            var result = new PortfolioQueryResult { Portfolio = account.Portfolio.ToArray() };
             return await Task.FromResult(result);
         }
 
@@ -51,6 +51,7 @@ namespace Binebase.Exchange.AccountService.Application
                 throw new NotFoundException(nameof(Account), request.Id);
             }
 
+            // TODO: fix tx.
             using var stream = _storeEvents.OpenStream(request.Id, 0, int.MaxValue);
             var trx = new List<TransactionsQueryResult.Transaction>();
             var balance = Enum.GetNames(typeof(Currency)).Select(x => Enum.Parse<Currency>(x)).ToDictionary(x => x, x => 0M);

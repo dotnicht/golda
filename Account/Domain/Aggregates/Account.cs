@@ -93,7 +93,7 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
                 throw new AccountException(ErrorCode.InsufficientBalance);
             }
 
-            var debit = new DebitedEvent { Id = txId, Amount = amount, DateTime = dateTime, Type = type };
+            var debit = new DebitedEvent { AssetId = id, TransactionId = txId, Amount = amount, DateTime = dateTime, Type = type };
             RaiseEvent(debit);
         }
 
@@ -109,7 +109,7 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
                 throw new AccountException(ErrorCode.InsufficientBalance);
             }
 
-            var credit = new CreditedEvent { Id = txId, Amount = amount, DateTime = dateTime, Type = type};
+            var credit = new CreditedEvent { AssetId = id, TransactionId = txId, Amount = amount, DateTime = dateTime, Type = type};
             RaiseEvent(credit);
         }
 
