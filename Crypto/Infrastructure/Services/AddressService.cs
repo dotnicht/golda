@@ -6,12 +6,11 @@ using NBitcoin;
 using Nethereum.HdWallet;
 using Nethereum.Util;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
-    public class AddressService : IAddressService, IConfigurationProvider<AddressService.Configuration>, ITransient<IAddressService>
+    public class AddressService : IAddressService, ITransient<IAddressService>
     {
         private readonly Configuration _configuration;
 
@@ -40,7 +39,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         {
             var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
             var key = mnemo.DeriveExtKey(_configuration.Password);
-            var address = key.Derive(index).ScriptPubKey.GetDestinationAddress(_configuration.IsTestNet ? Network.TestNet : Network.Main);
+            var address = key.Derive(index).ScriptPubKey.GetDestinationAddress(BitcoinNetwork);
             return await Task.FromResult(address.ToString());
         } 
 
@@ -55,13 +54,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             {
                 return false;
             }
-        }
-
-        public class Configuration
-        {
-            public string Mnemonic { get; set; }
-            public string Password { get; set; }
-            public bool IsTestNet { get; set; }
         }
     }
 }

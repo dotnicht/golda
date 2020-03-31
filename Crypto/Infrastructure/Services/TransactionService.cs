@@ -22,7 +22,7 @@ using Transaction = Binebase.Exchange.CryptoService.Domain.Entities.Transaction;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
-    public class TransactionService : ITransactionService, IConfigurationProvider<TransactionService.Configuration>, IHttpClientScoped<ITransactionService>
+    public class TransactionService : ITransactionService, IHttpClientScoped<ITransactionService>
     {
         private readonly Configuration _configuration;
         private readonly IServiceProvider _serviceProvider;
@@ -101,7 +101,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var balance = await client.GetBalance(BitcoinAddress.Create(address.Public, network));
             var value = (ulong)balance.Operations.Sum(x => x.Amount.Satoshi);
 
-            if (value > address.Balance)
+            if (value != address.Balance)
             {
                 address.Balance = value;
             }
@@ -124,11 +124,10 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             foreach (var operation in new[] { "balance", "txlist", "txlistinternal" })
             {
-                var uri = string.Format("http://{0}.etherscan.io/api?module=account&action={1}&address={2}&apikey={3}",
+                var uri = string.Format(_configuration.EtherscanUrlFormat,
                     _configuration.IsTestNet ? "ropsten" : "api",
-                    operation,
-                    address.Public,
-                    _configuration.EtherscanApiKey);
+                    "account",
+                    $"{operation}&address={address.Public}");
 
                 var response = await _httpClient.GetAsync(uri);
                 var content = await response.Content.ReadAsStringAsync();
@@ -136,7 +135,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 if (operation == "balance")
                 {
                     var balance = JsonConvert.DeserializeObject<EtherscanBalanceResponse>(content);
-                    if (balance.Result > address.Balance)
+                    if (balance.Result != address.Balance)
                     {
                         address.Balance = balance.Result;
                         continue;
@@ -161,14 +160,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             }
 
             return result.ToArray();
-        }
-
-        public class Configuration
-        {
-            public bool IsTestNet { get; set; }
-            public bool DebitDepositTransactions { get; set; }
-            public TimeSpan TransactionPoolingTimeout { get; set; }
-            public string EtherscanApiKey { get; set; }
         }
 
         private class EtherscanBalanceResponse
