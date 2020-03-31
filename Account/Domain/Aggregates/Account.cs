@@ -64,7 +64,7 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
                 throw new AccountException(ErrorCode.AssetExists);
             }
 
-            RaiseEvent(new AssetAddedEvent { Currency = currency, DateTime = DateTime.UtcNow });
+            RaiseEvent(new AssetAddedEvent { AssetId = id, Currency = currency, DateTime = dateTime });
         }
 
         public void RemoveAsset(Guid id, DateTime dateTime)
@@ -78,7 +78,7 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
                 throw new AccountException(ErrorCode.NonZeroBalance);
             }
 
-            RaiseEvent(new AssetRemovedEvent { Id = id, DateTime = dateTime });
+            RaiseEvent(new AssetRemovedEvent { AssetId = id, DateTime = dateTime });
         }
 
         public void Debit(Guid id, Guid txId, decimal amount, DateTime dateTime, TransactionType type)
@@ -139,7 +139,7 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
             EnsureAssetExists(id);
             EnsureAssetUnlocked(id);
 
-            RaiseEvent(new AssetLockedEvent { Id = id, DateTime = dateTime });
+            RaiseEvent(new AssetLockedEvent { AssetId = id, DateTime = dateTime });
         }
 
         public void Unlock(Guid id, DateTime dateTime)
@@ -153,7 +153,7 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
                 throw new AccountException(ErrorCode.AssetUnlocked);
             }
 
-            RaiseEvent(new AssetUnlockedEvent { Id = id, DateTime = dateTime });
+            RaiseEvent(new AssetUnlockedEvent { AssetId = id, DateTime = dateTime });
         }
 
         public decimal Balance(Guid id)
@@ -196,13 +196,13 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
         }
 
         private void Apply(AccountCreatedEvent obj) => Exists = true;
-        private void Apply(AssetAddedEvent obj) => PortfolioInternal.Add(obj.Id, new Asset { Id = obj.Id, Currency = obj.Currency });
-        private void Apply(AssetRemovedEvent obj) => PortfolioInternal.Remove(obj.Id);
-        private void Apply(CreditedEvent obj) => PortfolioInternal[obj.Id].Balance -= obj.Amount;
-        private void Apply(DebitedEvent obj) => PortfolioInternal[obj.Id].Balance += obj.Amount;
+        private void Apply(AssetAddedEvent obj) => PortfolioInternal.Add(obj.AssetId, new Asset { Id = obj.AssetId, Currency = obj.Currency });
+        private void Apply(AssetRemovedEvent obj) => PortfolioInternal.Remove(obj.AssetId);
+        private void Apply(CreditedEvent obj) => PortfolioInternal[obj.AssetId].Balance -= obj.Amount;
+        private void Apply(DebitedEvent obj) => PortfolioInternal[obj.AssetId].Balance += obj.Amount;
         private void Apply(AccountLockedEvent obj) => IsLocked = true;
         private void Apply(AccountUnlockedEvent obj) => IsLocked = false;
-        private void Apply(AssetLockedEvent obj) => PortfolioInternal[obj.Id].IsLocked = true;
-        private void Apply(AssetUnlockedEvent obj) => PortfolioInternal[obj.Id].IsLocked = false;
+        private void Apply(AssetLockedEvent obj) => PortfolioInternal[obj.AssetId].IsLocked = true;
+        private void Apply(AssetUnlockedEvent obj) => PortfolioInternal[obj.AssetId].IsLocked = false;
     }
 }

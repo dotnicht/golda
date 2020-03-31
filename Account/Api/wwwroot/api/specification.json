@@ -239,15 +239,31 @@
         "additionalProperties": false,
         "properties": {
           "portfolio": {
-            "type": "object",
+            "type": "array",
             "nullable": true,
-            "x-dictionaryKey": {
-              "$ref": "#/components/schemas/Currency"
-            },
-            "additionalProperties": {
-              "type": "number",
-              "format": "decimal"
+            "items": {
+              "$ref": "#/components/schemas/Asset"
             }
+          }
+        }
+      },
+      "Asset": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "balance": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "isLocked": {
+            "type": "boolean"
           }
         }
       },
@@ -311,10 +327,6 @@
           "dateTime": {
             "type": "string",
             "format": "date-time"
-          },
-          "payload": {
-            "type": "string",
-            "nullable": true
           },
           "currency": {
             "$ref": "#/components/schemas/Currency"
