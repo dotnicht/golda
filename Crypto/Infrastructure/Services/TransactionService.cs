@@ -101,7 +101,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var balance = await client.GetBalance(BitcoinAddress.Create(address.Public, network));
             var value = (ulong)balance.Operations.Sum(x => x.Amount.Satoshi);
 
-            if (value > address.Balance)
+            if (value != address.Balance)
             {
                 address.Balance = value;
             }
@@ -135,7 +135,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 if (operation == "balance")
                 {
                     var balance = JsonConvert.DeserializeObject<EtherscanBalanceResponse>(content);
-                    if (balance.Result > address.Balance)
+                    if (balance.Result != address.Balance)
                     {
                         address.Balance = balance.Result;
                         continue;
