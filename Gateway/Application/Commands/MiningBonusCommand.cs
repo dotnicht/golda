@@ -59,14 +59,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 _context.MiningRequests.Add(mining);
                 await _context.SaveChangesAsync();
 
-                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining, mining.Type);
+                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
                 (amount, type) = await _calculationService.GenerateBonusReward();
 
                 if (type != MiningType.Default && amount > 0)
                 {
                     mining.Type = type;
                     mining.Amount += amount;
-                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining, type);
+                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining);
                 }
 
                 return _mapper.Map<MiningBonusCommandResult>(mining);

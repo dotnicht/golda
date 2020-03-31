@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.AccountService.Application.Commands;
 using Binebase.Exchange.AccountService.Application.Queries;
+using Binebase.Exchange.AccountService.Contracts.Commands;
 using Binebase.Exchange.Common.Api.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,5 +33,17 @@ namespace Binebase.Exchange.AccountService.Api.Controllers
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Credit(CreditCommand command) => Convert(await Mediator.Send(command));
+
+        [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Lock(LockAccountCommand command) => Convert(await Mediator.Send(command));
+
+        [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Unlock(UnlockAccountCommand command) => Convert(await Mediator.Send(command));
+
+        [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> LockAsset(LockAssetCommand command) => Convert(await Mediator.Send(command));
+
+        [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> UnlockAsset(UnlockAssetCommand command) => Convert(await Mediator.Send(command));
     }
 }

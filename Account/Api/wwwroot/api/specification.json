@@ -230,6 +230,106 @@
           }
         }
       }
+    },
+    "/api/Account/Lock": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Lock",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LockAccountCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Account/Unlock": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Unlock",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlockAccountCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Account/LockAsset": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_LockAsset",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LockAssetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Account/UnlockAsset": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_UnlockAsset",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlockAssetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {
@@ -445,6 +545,54 @@
           },
           "type": {
             "$ref": "#/components/schemas/TransactionType"
+          }
+        }
+      },
+      "LockAccountCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "UnlockAccountCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "LockAssetCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "assetId": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "UnlockAssetCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "assetId": {
+            "type": "string",
+            "format": "guid"
           }
         }
       }

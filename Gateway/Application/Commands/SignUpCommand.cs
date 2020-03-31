@@ -64,13 +64,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
                 if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnonymous)
                 {
-                    await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining, MiningType.Default);
+                    await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
                     mining.LastModifiedBy = userId;
                     mining.IsAnonymous = false;
                     await _context.SaveChangesAsync();
                 }
 
-                await _accountService.Debit(userId, Currency.EURB, 100, Guid.NewGuid(), TransactionType.SignUp, MiningType.Default);
+                await _accountService.Debit(userId, Currency.EURB, 100, Guid.NewGuid(), TransactionType.SignUp);
                 
                 return Unit.Value;
             }

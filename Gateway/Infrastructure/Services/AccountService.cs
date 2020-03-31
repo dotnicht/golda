@@ -28,15 +28,14 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         public async Task<decimal> GetBalance(Guid id, Common.Domain.Currency currency)
         {
             var portfolio = await _accountClient.PortfolioAsync(id);
-
-            var result = await _accountClient.BalanceAsync(id, (Currency)currency);
+            var result = await _accountClient.BalanceAsync(id, portfolio.Portfolio.Single(x => x.Currency == (Currency)currency).Id);
             return result.Amount;
         }
 
         public async Task<Dictionary<Common.Domain.Currency, decimal>> GetPorfolio(Guid id)
         {
             var result = await _accountClient.PortfolioAsync(id);
-            return result.Portfolio.ToDictionary(k => (Common.Domain.Currency)k.Key, k => k.Value);
+            return result.Portfolio.ToDictionary(k => (Common.Domain.Currency)k.Currency, k => k.Balance);
         }
 
         public async Task Create(Guid id)
@@ -45,44 +44,51 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         public async Task AddCurrency(Guid id, Common.Domain.Currency currency)
             => await _accountClient.CurrencyAsync(new AddAssetCommand { Id = id, Currency = (Currency)currency });
 
-        public async Task RemoveCurrency(Guid id, Common.Domain.Currency currency)
-            => await _accountClient.Currency2Async(new RemoveCurrencyCommand { Id = id, Currency = (Currency)currency });
-
-        public async Task<Guid> Debit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, Common.Domain.TransactionType type)
+        public async Task Debit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, Common.Domain.TransactionType type)
         {
-            var cmd = new DebitAccountCommand
+            var portfolio = await _accountClient.PortfolioAsync(id);
+
+            var cmd = new DebitCommand
             {
                 Id = id,
-                Currency = (Currency)currency,
+                AssetId = portfolio.Portfolio.Single(x => x.Currency == (Currency)currency).Id,
+                TransactionId = externalId,
                 Amount = amount,
-                Payload = JsonConvert.SerializeObject(new TransactionPayload { ExternalId = externalId, Source = source, Type = type })
+                Type = (TransactionType)type
             };
 
-            return (await _accountClient.DebitAsync(cmd)).Id;
+            await _accountClient.DebitAsync(cmd);
         }
 
-        public async Task<Guid> Credit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, Common.Domain.TransactionType type)
+        public async Task Credit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, Common.Domain.TransactionType type)
         {
+            var portfolio = await _accountClient.PortfolioAsync(id);
+
             var cmd = new CreditCommand
             {
                 Id = id,
-                Currency = (Currency)currency,
+                AssetId = portfolio.Portfolio.Single(x => x.Currency == (Currency)currency).Id,
+                TransactionId = externalId,
                 Amount = amount,
+                Type = (TransactionType)type
             };
 
-            return (await _accountClient.CreditAsync(cmd)).Id;
+            await _accountClient.CreditAsync(cmd);
         }
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(Guid id)
         {
+            var portfolio = await _accountClient.PortfolioAsync(id);
+            var assets = portfolio.Portfolio.ToDictionary(x => x.Id, x => new Asset { Currency = x.Currency });
             var txs = await _accountClient.TransactionsAsync(id);
+
             return txs.Transactions.Select(x => new Domain.Entities.Transaction
             {
                 Id = x.Id,
                 DateTime = x.DateTime.DateTime,
                 Amount = x.Amount,
-                Balance = x.Balance,
-                Currency = (Common.Domain.Currency)x.Currency,
+                Balance = assets[x.AssetId].Balance,
+                Currency = (Common.Domain.Currency)assets[x.AssetId].Currency,
             }).ToArray();
         }
 

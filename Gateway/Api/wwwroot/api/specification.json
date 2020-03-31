@@ -933,11 +933,11 @@
             "format": "decimal"
           },
           "source": {
-            "$ref": "#/components/schemas/TransactionSource"
+            "$ref": "#/components/schemas/TransactionType"
           }
         }
       },
-      "TransactionSource": {
+      "TransactionType": {
         "type": "string",
         "description": "",
         "x-enumNames": [
@@ -1318,11 +1318,11 @@
             "format": "decimal"
           },
           "type": {
-            "$ref": "#/components/schemas/TransactionType"
+            "$ref": "#/components/schemas/MiningType"
           }
         }
       },
-      "TransactionType": {
+      "MiningType": {
         "type": "string",
         "description": "",
         "x-enumNames": [

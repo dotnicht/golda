@@ -1,4 +1,5 @@
-﻿using Binebase.Exchange.Common.Infrastructure;
+﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using Microsoft.EntityFrameworkCore;

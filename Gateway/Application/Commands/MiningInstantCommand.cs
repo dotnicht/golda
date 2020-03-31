@@ -90,7 +90,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                         await _accountService.Debit(currentUser.ReferralId.Value, Currency.BINE, ammount, mining.Id, TransactionType.Refferal);
                     }
 
-                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining, MiningType.Instant);
+                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
                     var promotion = await _calculationService.GeneratePromotion(index);
                     if (promotion != null)
                     {
