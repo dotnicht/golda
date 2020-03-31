@@ -708,6 +708,46 @@
         ]
       }
     },
+    "/api/Mining/Minings": {
+      "get": {
+        "tags": [
+          "Mining"
+        ],
+        "operationId": "Mining_Minings",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/MiningsQuery"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiningsQueryResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Mining/Bonus": {
       "post": {
         "tags": [
@@ -1309,10 +1349,31 @@
         "type": "object",
         "additionalProperties": false
       },
-      "MiningBonusCommandResult": {
+      "MiningsQueryResult": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "minings": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Mining"
+            }
+          }
+        }
+      },
+      "Mining": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
           "amount": {
             "type": "number",
             "format": "decimal"
@@ -1337,6 +1398,23 @@
           "Bonus",
           "Instant"
         ]
+      },
+      "MiningsQuery": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MiningBonusCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TransactionType"
+          }
+        }
       },
       "MiningBonusCommand": {
         "type": "object",

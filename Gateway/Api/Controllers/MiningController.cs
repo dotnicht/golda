@@ -15,6 +15,10 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         public async Task<ActionResult<MiningStatusQueryResult>> Status([FromQuery]MiningStatusQuery query) 
             => await Mediator.Send(query);
 
+        [HttpGet, ProducesResponseType(typeof(MiningsQueryResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<MiningsQueryResult>> Minings([FromQuery]MiningsQuery query)
+            => await Mediator.Send(query ?? new MiningsQuery());
+
         [HttpPost, ProducesResponseType(typeof(MiningBonusCommandResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<MiningBonusCommandResult>> Bonus(MiningBonusCommand command) 
             => await Mediator.Send(command ?? new MiningBonusCommand());
