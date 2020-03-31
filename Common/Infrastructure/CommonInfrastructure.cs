@@ -13,7 +13,7 @@ namespace Binebase.Exchange.Common.Infrastructure
 {
     public static class CommonInfrastructure
     {
-        public const string DecimalFormat = "decimal(18,8)"; 
+        public const string DecimalFormat = "decimal(18,8)";
 
         public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services)
         {
@@ -40,12 +40,9 @@ namespace Binebase.Exchange.Common.Infrastructure
             {
                 foreach (var item in type.GetInterfaces())
                 {
-                    if (item.IsGenericType)
+                    if (item.IsGenericType && item.GetGenericTypeDefinition() == typeof(IHttpClientScoped<>))
                     {
-                        if (item.GetGenericTypeDefinition() == typeof(IHttpClientScoped<>))
-                        {
-                            method.MakeGenericMethod(item.GetGenericArguments().Single(), type).Invoke(null, new[] { services });
-                        }
+                        method.MakeGenericMethod(item.GetGenericArguments().Single(), type).Invoke(null, new[] { services });
                     }
                 }
             }
