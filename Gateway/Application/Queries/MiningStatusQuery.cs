@@ -27,11 +27,11 @@ namespace Binebase.Exchange.Gateway.Application.Queries
 
                 return new MiningStatusQueryResult
                 {
-                    BonusTimeout = _dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == TransactionType.Weekly || x.Type == TransactionType.Bonus || x.Type == TransactionType.Default))?.Created 
+                    BonusTimeout = _dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default))?.Created 
                         ?? default,
-                    InstantTimeout = _dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == TransactionType.Instant))?.Created 
+                    InstantTimeout = _dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == MiningType.Instant))?.Created 
                         ?? default,
-                    InstantMiningCount = await minings.CountAsync(x => x.Type == TransactionType.Instant),
+                    InstantMiningCount = await minings.CountAsync(x => x.Type == MiningType.Instant),
                     InstantBoostMapping = _calculationService.InstantBoostMapping
                 };
             }

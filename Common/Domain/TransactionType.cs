@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Binebase.Exchange.Gateway.Domain.Enums
+namespace Binebase.Exchange.Common.Domain
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum TransactionSource
+    public enum TransactionType
     {
         Internal = 0,
         Mining = 1,

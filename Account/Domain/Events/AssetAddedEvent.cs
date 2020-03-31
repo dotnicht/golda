@@ -3,8 +3,9 @@ using System;
 
 namespace Binebase.Exchange.AccountService.Domain.Events
 {
-    public class AccountCurrencyAddedEvent
+    public class AssetAddedEvent
     {
+        public Guid Id { get; set; }
         public DateTime DateTime { get; set; }
         public Currency Currency { get; set; }
     }

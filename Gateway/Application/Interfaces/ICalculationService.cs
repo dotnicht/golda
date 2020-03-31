@@ -15,8 +15,8 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         int OperationLockMiningCount { get; }
         Dictionary<int, int> InstantBoostMapping { get; }
         Task<decimal> GenerateDefaultReward();
-        Task<(decimal Amount, TransactionType Type)> GenerateWeeklyReward();
-        Task<(decimal Amount, TransactionType Type)> GenerateBonusReward();
+        Task<(decimal Amount, MiningType Type)> GenerateWeeklyReward();
+        Task<(decimal Amount, MiningType Type)> GenerateBonusReward();
         Task<decimal> GenerateInstantReward();
         Task<Promotion> GeneratePromotion(int index);
     }

@@ -53,9 +53,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     Amount = tx.Amount,
                     Source = tx.Direction switch
                     {
-                        TransactionDirection.Inbound => TransactionSource.Deposit,
-                        TransactionDirection.Outbound => TransactionSource.Widthraw,
-                        TransactionDirection.Internal => TransactionSource.Internal,
+                        TransactionDirection.Inbound => TransactionType.Deposit,
+                        TransactionDirection.Outbound => TransactionType.Widthraw,
+                        TransactionDirection.Internal => TransactionType.Internal,
                         _ => throw new InvalidOperationException(),
                     }
                 };

@@ -1,10 +1,11 @@
-﻿using Binebase.Exchange.Common.Application.Interfaces;
+﻿using MediatR;
 using System;
 
 namespace Binebase.Exchange.AccountService.Application.Commands
 {
-    public class CreditAccountCommandResult : IIdContainer
+    public class RemoveAssetCommand : IRequest
     {
         public Guid Id { get; set; }
+        public Guid AssetId { get; set; }
     }
 }

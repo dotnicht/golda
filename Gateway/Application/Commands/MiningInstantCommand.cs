@@ -45,7 +45,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var mining = _context.MiningRequests
                     .OrderByDescending(x => x.Created)
                     .FirstOrDefault(
-                        x => x.Type == TransactionType.Instant
+                        x => x.Type == MiningType.Instant
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
                         && x.Created > _dateTime.UtcNow - _calculationService.InstantTimeout);
 
@@ -55,12 +55,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var mapping = _calculationService.InstantBoostMapping.Select(x => new { x.Key, x.Value }).OrderBy(x => x.Key);
-                var index = _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == TransactionType.Instant);
+                var index = _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant);
 
                 mining = new MiningRequest
                 {
                     Id = Guid.NewGuid(),
-                    Type = TransactionType.Instant
+                    Type = MiningType.Instant
                 };
 
                 User currentUser = await _identityService.GetUser(_currentUserService.UserId);
@@ -70,10 +70,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     if (currentUser.ReferralId != null)
                     {
                         var ammount = _calculationService.InstantMiningFee / 100 * 5;
-                        await _accountService.Debit(currentUser.ReferralId.Value, Currency.EURB, ammount, mining.Id, TransactionSource.Refferal);
+                        await _accountService.Debit(currentUser.ReferralId.Value, Currency.EURB, ammount, mining.Id, TransactionType.Refferal);
                     }
 
-                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionSource.Fee);
+                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionType.Fee);
                     mining.Amount += await _calculationService.GenerateInstantReward();
                 }
 
@@ -87,10 +87,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     if (currentUser.ReferralId != null)
                     {
                         var ammount = mining.Amount / 100 * 5;
-                        await _accountService.Debit(currentUser.ReferralId.Value, Currency.BINE, ammount, mining.Id, TransactionSource.Refferal);
+                        await _accountService.Debit(currentUser.ReferralId.Value, Currency.BINE, ammount, mining.Id, TransactionType.Refferal);
                     }
 
-                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, TransactionType.Instant);
+                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining, MiningType.Instant);
                     var promotion = await _calculationService.GeneratePromotion(index);
                     if (promotion != null)
                     {

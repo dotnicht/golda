@@ -12,7 +12,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<MiningRequest> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Type).HasConversion(new EnumToStringConverter<TransactionType>());
+            builder.Property(x => x.Type).HasConversion(new EnumToStringConverter<MiningType>());
             builder.Property(x => x.Amount).HasColumnType(CommonInfrastructure.DecimalFormat);
         }
     }

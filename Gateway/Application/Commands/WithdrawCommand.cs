@@ -38,7 +38,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {
-                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == TransactionType.Instant) < _calculationService.OperationLockMiningCount)
+                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _calculationService.OperationLockMiningCount)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);
                 }
@@ -54,7 +54,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var id = Guid.NewGuid();
-                await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionSource.Widthraw);
+                await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Widthraw);
                 return new WithdrawCommandResult { Hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id) };
             }
         }

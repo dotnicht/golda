@@ -1,4 +1,5 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Common.Infrastructure.Clients.Account;
 using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.Gateway.Application.Interfaces;
@@ -46,7 +47,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         public async Task RemoveCurrency(Guid id, Common.Domain.Currency currency)
             => await _accountClient.Currency2Async(new RemoveCurrencyCommand { Id = id, Currency = (Currency)currency });
 
-        public async Task<Guid> Debit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, TransactionSource source, TransactionType? type = null)
+        public async Task<Guid> Debit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, TransactionType type)
         {
             var cmd = new DebitAccountCommand
             {
@@ -59,7 +60,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             return (await _accountClient.DebitAsync(cmd)).Id;
         }
 
-        public async Task<Guid> Credit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, TransactionSource source, TransactionType? type = null)
+        public async Task<Guid> Credit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, TransactionType source, MiningType? type = null)
         {
             var cmd = new CreditAccountCommand
             {
@@ -87,7 +88,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     Amount = tx.Amount,
                     Balance = tx.Balance,
                     Currency = (Common.Domain.Currency)tx.Currency,
-                    Source = payload?.Source ?? TransactionSource.Internal,
+                    Source = payload?.Source ?? TransactionType.Internal,
                     Type = payload?.Type
                 };
 
@@ -105,8 +106,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private class TransactionPayload
         {
             public Guid ExternalId { get; set; }
-            public TransactionSource Source { get; set; }
-            public TransactionType? Type { get; set; }
+            public TransactionType Source { get; set; }
+            public MiningType? Type { get; set; }
         }
     }
 }

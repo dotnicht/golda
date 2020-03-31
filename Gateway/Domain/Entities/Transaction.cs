@@ -10,7 +10,7 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public decimal Amount { get; set; }
         public decimal Balance { get; set; }
         public DateTime DateTime { get; set; }
-        public TransactionSource Source { get; set; }
-        public TransactionType? Type { get; set; }
+        public TransactionType Source { get; set; }
+        public MiningType? Type { get; set; }
     }
 }

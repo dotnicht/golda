@@ -38,7 +38,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var mining =_context.MiningRequests
                     .OrderByDescending(x => x.Created)
                     .FirstOrDefault(
-                        x => (x.Type == TransactionType.Weekly || x.Type == TransactionType.Bonus || x.Type == TransactionType.Default)
+                        x => (x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default)
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
                         && x.Created > _dateTime.UtcNow - _calculationService.WeeklyTimeout);
 
@@ -59,14 +59,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 _context.MiningRequests.Add(mining);
                 await _context.SaveChangesAsync();
 
-                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionSource.Mining, mining.Type);
+                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining, mining.Type);
                 (amount, type) = await _calculationService.GenerateBonusReward();
 
-                if (type != TransactionType.Default && amount > 0)
+                if (type != MiningType.Default && amount > 0)
                 {
                     mining.Type = type;
                     mining.Amount += amount;
-                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionSource.Mining, type);
+                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining, type);
                 }
 
                 return _mapper.Map<MiningBonusCommandResult>(mining);

@@ -17,7 +17,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             public Currency Currency { get; set; }
             public decimal Amount { get; set; }
             public decimal Balance { get; set; }
-            public TransactionSource Source { get; set; }
+            public TransactionType Source { get; set; }
         }
     }
 }

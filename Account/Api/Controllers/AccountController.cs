@@ -23,15 +23,15 @@ namespace Binebase.Exchange.AccountService.Api.Controllers
         public async Task<IActionResult> Create(CreateAccountCommand command) => Convert(await Mediator.Send(command));
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Currency(AddCurrencyCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> Currency(AddAssetCommand command) => Convert(await Mediator.Send(command));
 
         [HttpDelete, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Currency(RemoveCurrencyCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> Currency(RemoveAssetCommand command) => Convert(await Mediator.Send(command));
 
-        [HttpPost, ProducesResponseType(typeof(DebitAccountCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<DebitAccountCommandResult>> Debit(DebitAccountCommand command) => await Mediator.Send(command);
+        [HttpPost, ProducesResponseType(typeof(DebitCommandResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<DebitCommandResult>> Debit(DebitCommand command) => await Mediator.Send(command);
 
-        [HttpPost, ProducesResponseType(typeof(CreditAccountCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<CreditAccountCommandResult>> Credit(CreditAccountCommand command) => await Mediator.Send(command);
+        [HttpPost, ProducesResponseType(typeof(CreditCommandResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<CreditCommandResult>> Credit(CreditCommand command) => await Mediator.Send(command);
     }
 }

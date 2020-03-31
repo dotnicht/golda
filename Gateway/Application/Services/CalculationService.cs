@@ -41,15 +41,15 @@ namespace Binebase.Exchange.Gateway.Application.Services
         public Task<decimal> GenerateDefaultReward()
             => Task.FromResult(RandomInRange(_configuration.DefaultRange[0], _configuration.DefaultRange[1]));
 
-        public async Task<(decimal Amount, TransactionType Type)> GenerateWeeklyReward()
+        public async Task<(decimal Amount, MiningType Type)> GenerateWeeklyReward()
         {
             var balance = await GetInternalBalance();
             var amount = await GenerateDefaultReward();
-            var type = TransactionType.Default;
+            var type = MiningType.Default;
 
             if (balance > _configuration.BalanceTreshold && Random() > _configuration.Weekly.Probability)
             {
-                type = TransactionType.Weekly;
+                type = MiningType.Weekly;
                 var user = await _identityService.GetUser(_currentUserService.UserId);
                 amount = balance * _configuration.Weekly.Coefficients[(int)Math.Floor((_dateTime.UtcNow - user.Registered).TotalDays / 7)] / 100;
             }
@@ -57,29 +57,29 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return (amount, type);
         }
 
-        public async Task<(decimal Amount, TransactionType Type)> GenerateBonusReward()
+        public async Task<(decimal Amount, MiningType Type)> GenerateBonusReward()
         {
             var amount = 0M;
-            var type = TransactionType.Default;
+            var type = MiningType.Default;
 
             var txs = (await _accountService.GetTransactions(_currentUserService.UserId))
                 .Where(x => x.Currency == Currency.BINE)
                 .OrderByDescending(x => x.DateTime);
 
             var target = txs
-                .Where(x => x.Source == TransactionSource.Mining && x.Type == TransactionType.Weekly)
+                .Where(x => x.Source == TransactionType.Mining && x.Type == MiningType.Weekly)
                 .Take(_configuration.Bonus.StackTimes)
                 .Select((x, i) => new { Index = i, Target = x })
                 .ToDictionary(x => x.Index, x => x.Target);
 
-            var bonus = txs.FirstOrDefault(x => x.Type == TransactionType.Bonus);
+            var bonus = txs.FirstOrDefault(x => x.Type == MiningType.Bonus);
 
             if (target.Count >= _configuration.Bonus.StackTimes
                 && target.All(x => x.Key == 0 || x.Value.DateTime - target[x.Key - 1].DateTime <= _configuration.Bonus.Window * 2)
                 && (bonus == null || bonus.DateTime < _dateTime.UtcNow - _configuration.Bonus.Timeout)
                 && Random() > _configuration.Bonus.Probability)
             {
-                type = TransactionType.Bonus;
+                type = MiningType.Bonus;
                 amount = RandomInRange(_configuration.Bonus.Range[0], _configuration.Bonus.Range[1]) * await GetInternalBalance();
             }
 

@@ -34,7 +34,7 @@ namespace Binebase.Exchange.AccountService.Api
             services.AddHttpContextAccessor();
 
             services.AddControllers()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddCurrencyCommand>()) // TODO: replace.
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddAssetCommand>()) // TODO: replace.
                 .AddNewtonsoftJson();
 
             services.Configure<ApiBehaviorOptions>(options =>

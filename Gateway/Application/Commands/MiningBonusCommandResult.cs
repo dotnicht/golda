@@ -7,6 +7,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     public class MiningBonusCommandResult : IMapFrom<MiningRequest>
     {
         public decimal Amount { get; set; }
-        public TransactionType Type { get; set; }
+        public MiningType Type { get; set; }
     }
 }

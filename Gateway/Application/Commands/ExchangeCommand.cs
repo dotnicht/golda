@@ -44,7 +44,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
                 }
 
-                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == TransactionType.Instant) < _calculationService.OperationLockMiningCount)
+                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _calculationService.OperationLockMiningCount)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);
                 }
@@ -56,8 +56,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     Amount = request.Amount,
                 };
 
-                await _accountService.Credit(_currentUserService.UserId, request.Quote, request.Amount * ex.Rate, op.Id, TransactionSource.Exchange);
-                await _accountService.Debit(_currentUserService.UserId, request.Base, request.Amount, op.Id, TransactionSource.Exchange);
+                await _accountService.Credit(_currentUserService.UserId, request.Quote, request.Amount * ex.Rate, op.Id, TransactionType.Exchange);
+                await _accountService.Debit(_currentUserService.UserId, request.Base, request.Amount, op.Id, TransactionType.Exchange);
 
                 _context.ExchangeOperations.Add(op);
                 await _context.SaveChangesAsync();

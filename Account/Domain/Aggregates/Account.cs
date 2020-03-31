@@ -1,134 +1,208 @@
-﻿using Binebase.Exchange.AccountService.Domain.Events;
+﻿using Binebase.Exchange.AccountService.Domain.Entities;
+using Binebase.Exchange.AccountService.Domain.Events;
 using Binebase.Exchange.AccountService.Domain.Exceptions;
 using Binebase.Exchange.Common.Domain;
 using NEventStore.Domain.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Binebase.Exchange.AccountService.Domain.Aggregates
 {
     public class Account : AggregateBase
     {
-        public bool Created { get; private set; }
+        public bool Exists { get; private set; }
+        public bool IsLocked { get; private set; }
 
-        public IEnumerable<(Currency Currency, decimal Amount)> Portfolio  
+        public IEnumerable<Asset> Portfolio  
         { 
             get 
             { 
-                EnsureCreated(); 
-                return PortfolioInternal.Select(x => (x.Key, x.Value));
+                EnsureExists();
+                return PortfolioInternal.Values;
             } 
         }
 
-        private Dictionary<Currency, decimal> PortfolioInternal { get; } = new Dictionary<Currency, decimal>();
+        private Dictionary<Guid, Asset> PortfolioInternal { get; } = new Dictionary<Guid, Asset>();
 
-        public Account(Guid id) : this()
+        public Account(Guid id, DateTime dateTime) : this()
         {
             if (id == default)
             {
                 throw new ArgumentException("Default GUID is not allowed.", nameof(id));
             }
 
+            if (dateTime == default)
+            {
+                throw new ArgumentException("Default DateTime is not allowed.", nameof(dateTime));
+            }
+
             Id = id;
-            RaiseEvent(new AccountCreatedEvent { Id = id, DateTime = DateTime.UtcNow });
+            RaiseEvent(new AccountCreatedEvent { Id = id, DateTime = dateTime });
         }
 
         private Account() : base()
         {
             Register<AccountCreatedEvent>(Apply);
-            Register<AccountCurrencyAddedEvent>(Apply);
-            Register<AccountCurrencyRemovedEvent>(Apply);
-            Register<AccountCreditedEvent>(Apply);
-            Register<AccountDebitedEvent>(Apply);
+            Register<AssetAddedEvent>(Apply);
+            Register<AssetRemovedEvent>(Apply);
+            Register<CreditedEvent>(Apply);
+            Register<DebitedEvent>(Apply);
+            Register<AccountLockedEvent>(Apply);
+            Register<AccountUnlockedEvent>(Apply);
+            Register<AssetLockedEvent>(Apply);
+            Register<AssetUnlockedEvent>(Apply);
         }
 
-        public void AddCurrency(Currency currency)
+        public void AddAsset(Guid id, Currency currency, DateTime dateTime)
         {
-            EnsureCreated();
+            EnsureExists();
+            EnsureUnlocked();
+            EnsureUnlocked();
 
-            if (PortfolioInternal.ContainsKey(currency))
+            if (PortfolioInternal.ContainsKey(id))
             {
-                throw new AccountException($"Currency {currency} is already added to account {Id}.");
+                throw new AccountException(ErrorCode.AssetExists);
             }
 
-            RaiseEvent(new AccountCurrencyAddedEvent { Currency = currency, DateTime = DateTime.UtcNow });
+            RaiseEvent(new AssetAddedEvent { Currency = currency, DateTime = DateTime.UtcNow });
         }
 
-        public void RemoveCurrency(Currency currency)
+        public void RemoveAsset(Guid id, DateTime dateTime)
         {
-            EnsureCreated();
-            EnsureCurrencyExists(currency);
+            EnsureExists();
+            EnsureUnlocked();
+            EnsureAssetExists(id);
 
-            if (PortfolioInternal[currency] != 0)
+            if (PortfolioInternal[id].Balance != 0)
             {
-                throw new AccountException($"Unable to remove currency {currency} with non-zero balance from account {Id}.");
+                throw new AccountException(ErrorCode.NonZeroBalance);
             }
 
-            RaiseEvent(new AccountCurrencyRemovedEvent { Currency = currency, DateTime = DateTime.UtcNow });
+            RaiseEvent(new AssetRemovedEvent { Id = id, DateTime = dateTime });
         }
 
-        public Guid Debit(Currency currency, decimal amount, string payload = null)
+        public void Debit(Guid id, Guid txId, decimal amount, DateTime dateTime, TransactionType type)
         {
-            EnsureCreated();
-            EnsureCurrencyExists(currency);
+            EnsureExists();
+            EnsureUnlocked();
+            EnsureAssetExists(id);
+            EnsureAssetUnlocked(id);
 
-            if (PortfolioInternal[currency] + amount < 0)
+            if (PortfolioInternal[id].Balance + amount < 0)
             {
-                throw new AccountException($"Insufficient balance to perform debit operation in {currency} currency on account {Id}.");
+                throw new AccountException(ErrorCode.InsufficientBalance);
             }
 
-            var debit = new AccountDebitedEvent { Id = Guid.NewGuid(), Currency = currency, Amount = amount, DateTime = DateTime.UtcNow, Payload = payload };
+            var debit = new DebitedEvent { Id = txId, Amount = amount, DateTime = dateTime, Type = type };
             RaiseEvent(debit);
-            return debit.Id;
         }
 
-        public Guid Credit(Currency currency, decimal amount, string payload = null)
+        public void Credit(Guid id, Guid txId, decimal amount, DateTime dateTime, TransactionType type)
         {
-            EnsureCreated();
-            EnsureCurrencyExists(currency);
+            EnsureExists();
+            EnsureUnlocked();
+            EnsureAssetExists(id);
+            EnsureAssetUnlocked(id);
 
-            if (PortfolioInternal[currency] - amount < 0)
+            if (PortfolioInternal[id].Balance - amount < 0)
             {
-                throw new AccountException($"Insufficient balance to perform credit operation in {currency} currency on account {Id}.");
+                throw new AccountException(ErrorCode.InsufficientBalance);
             }
 
-            var credit = new AccountCreditedEvent { Id = Guid.NewGuid(), Currency = currency, Amount = amount, DateTime = DateTime.UtcNow, Payload = payload };
+            var credit = new CreditedEvent { Id = txId, Amount = amount, DateTime = dateTime, Type = type};
             RaiseEvent(credit);
-            return credit.Id;
         }
 
-        public decimal Balance(Currency currency)
+        public void Lock(DateTime dateTime)
         {
-            EnsureCreated();
-            EnsureCurrencyExists(currency);
-            return PortfolioInternal[currency];
+            EnsureExists();
+            EnsureUnlocked();
+            RaiseEvent(new AccountLockedEvent { DateTime = dateTime });
         }
 
-        private void EnsureCreated()
+        public void Unlock(DateTime dateTime)
         {
-            if (!Created)
+            EnsureExists();
+
+            if (!IsLocked)
             {
-                throw new AccountException($"Account {Id} is not created.");
+                throw new AccountException(ErrorCode.AccountUnlocked);
+            }
+
+            RaiseEvent(new AccountUnlockedEvent { DateTime = dateTime });
+        }
+
+        public void Lock(Guid id, DateTime dateTime)
+        {
+            EnsureExists();
+            EnsureUnlocked();
+            EnsureAssetExists(id);
+            EnsureAssetUnlocked(id);
+
+            RaiseEvent(new AssetLockedEvent { Id = id, DateTime = dateTime });
+        }
+
+        public void Unlock(Guid id, DateTime dateTime)
+        {
+            EnsureExists();
+            EnsureUnlocked();
+            EnsureAssetExists(id);
+
+            if (!PortfolioInternal[id].IsLocked)
+            {
+                throw new AccountException(ErrorCode.AssetUnlocked);
+            }
+
+            RaiseEvent(new AssetUnlockedEvent { Id = id, DateTime = dateTime });
+        }
+
+        public decimal Balance(Guid id)
+        {
+            EnsureExists();
+            EnsureAssetExists(id);
+            return PortfolioInternal[id].Balance;
+        }
+
+        private void EnsureExists()
+        {
+            if (!Exists)
+            {
+                throw new AccountException(ErrorCode.AccountNotExists);
             }
         }
 
-        private void EnsureCurrencyExists(Currency currency)
+        private void EnsureUnlocked()
         {
-            if (!PortfolioInternal.ContainsKey(currency))
+            if (IsLocked)
             {
-                throw new AccountException($"Currency {currency} doesn't exist in account {Id}.");
+                throw new AccountException(ErrorCode.AccountLocked);
             }
         }
 
-        private void Apply(AccountCreatedEvent obj) => Created = true;
+        private void EnsureAssetExists(Guid id)
+        {
+            if (!PortfolioInternal.ContainsKey(id))
+            {
+                throw new AccountException(ErrorCode.AssetNotExists);
+            }
+        }
 
-        private void Apply(AccountCurrencyAddedEvent obj) => PortfolioInternal.Add(obj.Currency, default);
+        private void EnsureAssetUnlocked(Guid id)
+        {
+            if (PortfolioInternal[id].IsLocked)
+            {
+                throw new AccountException(ErrorCode.AssetLocked);
+            }
+        }
 
-        private void Apply(AccountCurrencyRemovedEvent obj) => PortfolioInternal.Remove(obj.Currency);
-
-        private void Apply(AccountCreditedEvent obj) => PortfolioInternal[obj.Currency] -= obj.Amount;
-
-        private void Apply(AccountDebitedEvent obj) => PortfolioInternal[obj.Currency] += obj.Amount;
+        private void Apply(AccountCreatedEvent obj) => Exists = true;
+        private void Apply(AssetAddedEvent obj) => PortfolioInternal.Add(obj.Id, new Asset { Id = obj.Id, Currency = obj.Currency });
+        private void Apply(AssetRemovedEvent obj) => PortfolioInternal.Remove(obj.Id);
+        private void Apply(CreditedEvent obj) => PortfolioInternal[obj.Id].Balance -= obj.Amount;
+        private void Apply(DebitedEvent obj) => PortfolioInternal[obj.Id].Balance += obj.Amount;
+        private void Apply(AccountLockedEvent obj) => IsLocked = true;
+        private void Apply(AccountUnlockedEvent obj) => IsLocked = false;
+        private void Apply(AssetLockedEvent obj) => PortfolioInternal[obj.Id].IsLocked = true;
+        private void Apply(AssetUnlockedEvent obj) => PortfolioInternal[obj.Id].IsLocked = false;
     }
 }
