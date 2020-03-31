@@ -42,7 +42,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             => await _accountClient.NewAsync(new NewAccountCommand { Id = id });
 
         public async Task AddCurrency(Guid id, Common.Domain.Currency currency)
-            => await _accountClient.CurrencyAsync(new AddAssetCommand { Id = id, Currency = (Currency)currency });
+            => await _accountClient.CurrencyAsync(new AddAssetCommand { Id = id, AssetId = Guid.NewGuid(), Currency = (Currency)currency });
 
         public async Task Debit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, Common.Domain.TransactionType type)
         {
