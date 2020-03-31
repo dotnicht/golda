@@ -20,6 +20,7 @@ namespace Binebase.Exchange.AccountService.Infrastructure
         {
             services.AddCommonInfrastructure();
 
+            // TODO: wrap event store into singleton service.
             services.AddSingleton(x => Wireup
                 .Init()
                 .LogToOutputWindow(LogLevel.Info)

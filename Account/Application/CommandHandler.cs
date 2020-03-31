@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Binebase.Exchange.AccountService.Application
 {
     public class CommandHandler :
-        IRequestHandler<CreateAccountCommand>,
+        IRequestHandler<NewAccountCommand>,
         IRequestHandler<AddAssetCommand>,
         IRequestHandler<RemoveAssetCommand>,
         IRequestHandler<DebitCommand>,
@@ -27,7 +27,7 @@ namespace Binebase.Exchange.AccountService.Application
 
         public CommandHandler(IRepository repository, IDateTime dateTime) => (_repository, _dateTime) = (repository, dateTime);
 
-        public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(NewAccountCommand request, CancellationToken cancellationToken)
         {
             var account = Get(request.Id);
             if (account.Exists)

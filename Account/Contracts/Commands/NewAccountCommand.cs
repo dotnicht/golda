@@ -3,7 +3,7 @@ using System;
 
 namespace Binebase.Exchange.AccountService.Contracts.Commands
 {
-    public class CreateAccountCommand : IRequest
+    public class NewAccountCommand : IRequest
     {
         public Guid Id { get; set; }
     }

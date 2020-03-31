@@ -7,16 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ValueObjects\Currency.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="NEventStore.Domain" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ValueObjects\" />
   </ItemGroup>
 
   <ItemGroup>

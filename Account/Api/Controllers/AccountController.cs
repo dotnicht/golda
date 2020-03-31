@@ -19,7 +19,7 @@ namespace Binebase.Exchange.AccountService.Api.Controllers
         public async Task<ActionResult<TransactionsQueryResult>> Transactions([FromQuery]TransactionsQuery query) => await Mediator.Send(query);
 
         [HttpPost("/api/[controller]"), ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Create(CreateAccountCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> New(NewAccountCommand command) => Convert(await Mediator.Send(command));
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Currency(AddAssetCommand command) => Convert(await Mediator.Send(command));

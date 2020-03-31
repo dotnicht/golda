@@ -37,12 +37,12 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
             }
 
             Id = id;
-            RaiseEvent(new AccountCreatedEvent { Id = id, DateTime = dateTime });
+            RaiseEvent(new NewAccountEvent { Id = id, DateTime = dateTime });
         }
 
         private Account() : base()
         {
-            Register<AccountCreatedEvent>(Apply);
+            Register<NewAccountEvent>(Apply);
             Register<AssetAddedEvent>(Apply);
             Register<AssetRemovedEvent>(Apply);
             Register<CreditedEvent>(Apply);
@@ -195,7 +195,7 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
             }
         }
 
-        private void Apply(AccountCreatedEvent obj) => Exists = true;
+        private void Apply(NewAccountEvent obj) => Exists = true;
         private void Apply(AssetAddedEvent obj) => PortfolioInternal.Add(obj.AssetId, new Asset { Id = obj.AssetId, Currency = obj.Currency });
         private void Apply(AssetRemovedEvent obj) => PortfolioInternal.Remove(obj.AssetId);
         private void Apply(CreditedEvent obj) => PortfolioInternal[obj.AssetId].Balance -= obj.Amount;
