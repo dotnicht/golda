@@ -1378,6 +1378,10 @@
             "type": "number",
             "format": "decimal"
           },
+          "balance": {
+            "type": "number",
+            "format": "decimal"
+          },
           "type": {
             "$ref": "#/components/schemas/TransactionType"
           }
@@ -1436,13 +1440,12 @@
             "type": "number",
             "format": "decimal"
           },
-          "promotion": {
+          "promotions": {
+            "type": "array",
             "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/PromotionItem"
-              }
-            ]
+            "items": {
+              "$ref": "#/components/schemas/PromotionItem"
+            }
           }
         }
       },

@@ -24,10 +24,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             {
                 if (!_currentUserService.IsAnonymous)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(ErrorCode.MiningRequestNotSupported);
                 }
 
-                var item = new MiningRequest { Id = Guid.NewGuid(), Amount = await _calculationService.GenerateDefaultReward(), IsAnonymous = true };
+                var amount = await _calculationService.GenerateDefaultReward();
+                var item = new MiningRequest { Id = Guid.NewGuid(), Amount = amount, Balance = amount, IsAnonymous = true };
                 _context.MiningRequests.Add(item);
                 await _context.SaveChangesAsync();
                 return _mapper.Map<RequestMiningCommandResult>(item);

@@ -65,9 +65,11 @@ namespace Binebase.Exchange.Common.Infrastructure
             return JsonConvert.DeserializeObject<TResponse>(content);
         }
 
-        public static async Task<TResponse> Get<TRequest, TResponse>(this HttpClient source, string path, TRequest request) where TRequest : IRequest<TResponse>
+        public static async Task<TResponse> Post<TRequest, TResponse>(this HttpClient target, string path, TRequest request) where TRequest : IRequest<TResponse>
         {
-            throw new NotImplementedException();
+            var response = await target.PostAsync(path, new StringContent(JsonConvert.SerializeObject(request)));
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<TResponse>(content);
         }
     }
 }

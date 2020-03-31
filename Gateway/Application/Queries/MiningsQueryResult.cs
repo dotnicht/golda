@@ -14,6 +14,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             public Guid Id { get; set; }
             public DateTime Created { get; set; }
             public decimal Amount { get; set; }
+            public decimal Balance { get; set; }
             public TransactionType Type { get; set; }
         }
     }
