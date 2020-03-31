@@ -17,8 +17,8 @@
         },
         "Binebase.Exchange.CryptoService.Api": {
             "commandName": "Project",
-            "launchBrowser": true,
-            "applicationUrl": "https://localhost:5002",
+            "launchBrowser": false,
+            "launchUrl": "https://localhost:5002/api",
             "environmentVariables": {
                 "DOTNET_ENVIRONMENT": "Development"
             }
