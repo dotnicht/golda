@@ -14,6 +14,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 {
     public class CalculationService : ICalculationService, IConfigurationProvider<CalculationService.Configuration>, ITransient<ICalculationService>
     {
+        private readonly IApplicationDbContext _context;
         private readonly IAccountService _accountService;
         private readonly IExchangeRateService _exchangeRateService;
         private readonly IIdentityService _identityService;
@@ -29,14 +30,15 @@ namespace Binebase.Exchange.Gateway.Application.Services
         public int OperationLockMiningCount => _configuration.Instant.OperationLockMiningCount;
 
         public CalculationService(
+            IApplicationDbContext context,
             IAccountService accountService,
             IExchangeRateService exchangeRateService,
             IIdentityService identityService,
             ICurrentUserService currentUserService,
             IDateTime dateTime,
             IOptions<Configuration> options)
-            => (_accountService, _exchangeRateService, _identityService, _currentUserService, _dateTime, _configuration)
-                = (accountService, exchangeRateService, identityService, currentUserService, dateTime, options.Value);
+            => (_context, _accountService, _exchangeRateService, _identityService, _currentUserService, _dateTime, _configuration)
+                = (context, accountService, exchangeRateService, identityService, currentUserService, dateTime, options.Value);
 
         public Task<decimal> GenerateDefaultReward()
             => Task.FromResult(RandomInRange(_configuration.DefaultRange[0], _configuration.DefaultRange[1]));
@@ -62,12 +64,12 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var amount = 0M;
             var type = MiningType.Default;
 
-            var txs = (await _accountService.GetTransactions(_currentUserService.UserId))
-                .Where(x => x.Currency == Currency.BINE)
-                .OrderByDescending(x => x.DateTime);
+            var txs = _context.MiningRequests
+                .Where(x => _currentUserService.UserId == x.CreatedBy)
+                .OrderByDescending(x => x.Created);
 
             var target = txs
-                .Where(x => x.Source == TransactionType.Mining && x.Type == MiningType.Weekly)
+                .Where(x => x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default)
                 .Take(_configuration.Bonus.StackTimes)
                 .Select((x, i) => new { Index = i, Target = x })
                 .ToDictionary(x => x.Index, x => x.Target);
@@ -75,8 +77,8 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var bonus = txs.FirstOrDefault(x => x.Type == MiningType.Bonus);
 
             if (target.Count >= _configuration.Bonus.StackTimes
-                && target.All(x => x.Key == 0 || x.Value.DateTime - target[x.Key - 1].DateTime <= _configuration.Bonus.Window * 2)
-                && (bonus == null || bonus.DateTime < _dateTime.UtcNow - _configuration.Bonus.Timeout)
+                && target.All(x => x.Key == 0 || x.Value.Created - target[x.Key - 1].Created <= _configuration.Bonus.Window * 2)
+                && (bonus == null || bonus.Created < _dateTime.UtcNow - _configuration.Bonus.Timeout)
                 && Random() > _configuration.Bonus.Probability)
             {
                 type = MiningType.Bonus;

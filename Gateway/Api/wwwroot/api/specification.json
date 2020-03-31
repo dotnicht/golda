@@ -932,7 +932,7 @@
             "type": "number",
             "format": "decimal"
           },
-          "source": {
+          "type": {
             "$ref": "#/components/schemas/TransactionType"
           }
         }

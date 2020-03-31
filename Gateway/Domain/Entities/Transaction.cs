@@ -11,6 +11,5 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public decimal Balance { get; set; }
         public DateTime DateTime { get; set; }
         public TransactionType Source { get; set; }
-        public MiningType? Type { get; set; }
     }
 }
