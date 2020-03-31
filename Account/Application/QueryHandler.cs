@@ -11,7 +11,6 @@ using NEventStore.Domain.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,21 +22,23 @@ namespace Binebase.Exchange.AccountService.Application
         IRequestHandler<TransactionsQuery, TransactionsQueryResult>
     {
         private readonly IRepository _repository;
+        private IStoreEvents _storeEvents;
         private readonly IDateTime _dateTime;
         private IMapper _mapper;
 
-        public QueryHandler(IRepository repository, IDateTime dateTime, IMapper mapper) => (_repository, _dateTime, _mapper) = (repository, dateTime, mapper);
+        public QueryHandler(IRepository repository, IStoreEvents storeEvents, IDateTime dateTime, IMapper mapper) 
+            => (_repository, _storeEvents, _dateTime, _mapper) = (repository, storeEvents, dateTime, mapper);
 
         public async Task<BalanceQueryResult> Handle(BalanceQuery request, CancellationToken cancellationToken)
         {
             var account = _repository.GetById<Account>(request.Id, int.MaxValue);
-            return await Task.FromResult(new BalanceQueryResult { Amount = account.Balance(request.Currency) });
+            return await Task.FromResult(new BalanceQueryResult { Amount = account.Balance(request.AssetId) });
         }
 
         public async Task<PortfolioQueryResult> Handle(PortfolioQuery request, CancellationToken cancellationToken)
         {
             var account = _repository.GetById<Account>(request.Id, int.MaxValue);
-            var result = new PortfolioQueryResult { Portfolio = account.Portfolio.ToDictionary(x => x.Currency, x => x.Amount) };
+            var result = new PortfolioQueryResult { Portfolio = account.Portfolio.ToDictionary(x => x.Currency, x => x.Balance) };
             return await Task.FromResult(result);
         }
 
@@ -50,7 +51,7 @@ namespace Binebase.Exchange.AccountService.Application
                 throw new NotFoundException(nameof(Account), request.Id);
             }
 
-            using var stream = IStoreEvents.OpenStream(request.Id, 0, int.MaxValue);
+            using var stream = _storeEvents.OpenStream(request.Id, 0, int.MaxValue);
             var trx = new List<TransactionsQueryResult.Transaction>();
             var balance = Enum.GetNames(typeof(Currency)).Select(x => Enum.Parse<Currency>(x)).ToDictionary(x => x, x => 0M);
 

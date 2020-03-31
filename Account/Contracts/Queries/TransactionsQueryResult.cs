@@ -9,7 +9,7 @@ namespace Binebase.Exchange.AccountService.Application.Queries
     {
         public Transaction[] Transactions { get; set; }
 
-        public class Transaction : IMapFrom<AccountCreditedEvent>, IMapFrom<AccountDebitedEvent>
+        public class Transaction : IMapFrom<CreditedEvent>, IMapFrom<DebitedEvent>
         {
             public Guid Id { get; set; }
             public decimal Amount { get; set; }

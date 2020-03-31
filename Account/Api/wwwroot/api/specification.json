@@ -54,10 +54,11 @@
             "x-position": 1
           },
           {
-            "name": "Currency",
+            "name": "AssetId",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/Currency"
+              "type": "string",
+              "format": "guid"
             },
             "x-position": 2
           }
@@ -143,7 +144,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddCurrencyCommand"
+                "$ref": "#/components/schemas/AddAssetCommand"
               }
             }
           },
@@ -166,7 +167,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RemoveCurrencyCommand"
+                "$ref": "#/components/schemas/RemoveAssetCommand"
               }
             }
           },
@@ -191,7 +192,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DebitAccountCommand"
+                "$ref": "#/components/schemas/DebitCommand"
               }
             }
           },
@@ -199,15 +200,8 @@
           "x-position": 1
         },
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DebitAccountCommandResult"
-                }
-              }
-            }
+          "204": {
+            "description": ""
           }
         }
       }
@@ -223,7 +217,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreditAccountCommand"
+                "$ref": "#/components/schemas/CreditCommand"
               }
             }
           },
@@ -231,15 +225,8 @@
           "x-position": 1
         },
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreditAccountCommandResult"
-                }
-              }
-            }
+          "204": {
+            "description": ""
           }
         }
       }
@@ -344,11 +331,15 @@
           }
         }
       },
-      "AddCurrencyCommand": {
+      "AddAssetCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "assetId": {
             "type": "string",
             "format": "guid"
           },
@@ -357,7 +348,7 @@
           }
         }
       },
-      "RemoveCurrencyCommand": {
+      "RemoveAssetCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -365,22 +356,13 @@
             "type": "string",
             "format": "guid"
           },
-          "currency": {
-            "$ref": "#/components/schemas/Currency"
-          }
-        }
-      },
-      "DebitAccountCommandResult": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
+          "assetId": {
             "type": "string",
             "format": "guid"
           }
         }
       },
-      "DebitAccountCommand": {
+      "DebitCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -388,30 +370,48 @@
             "type": "string",
             "format": "guid"
           },
-          "currency": {
-            "$ref": "#/components/schemas/Currency"
+          "assetId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "transactionId": {
+            "type": "string",
+            "format": "guid"
           },
           "amount": {
             "type": "number",
             "format": "decimal"
           },
-          "payload": {
-            "type": "string",
-            "nullable": true
+          "type": {
+            "$ref": "#/components/schemas/TransactionType"
           }
         }
       },
-      "CreditAccountCommandResult": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          }
-        }
+      "TransactionType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Internal",
+          "Mining",
+          "Exchange",
+          "Deposit",
+          "Widthraw",
+          "Refferal",
+          "Fee",
+          "SignUp"
+        ],
+        "enum": [
+          "Internal",
+          "Mining",
+          "Exchange",
+          "Deposit",
+          "Widthraw",
+          "Refferal",
+          "Fee",
+          "SignUp"
+        ]
       },
-      "CreditAccountCommand": {
+      "CreditCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -419,16 +419,20 @@
             "type": "string",
             "format": "guid"
           },
-          "currency": {
-            "$ref": "#/components/schemas/Currency"
+          "assetId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "transactionId": {
+            "type": "string",
+            "format": "guid"
           },
           "amount": {
             "type": "number",
             "format": "decimal"
           },
-          "payload": {
-            "type": "string",
-            "nullable": true
+          "type": {
+            "$ref": "#/components/schemas/TransactionType"
           }
         }
       }

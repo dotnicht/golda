@@ -1,7 +1,6 @@
 ﻿using Binebase.Exchange.AccountService.Application.Commands;
 using Binebase.Exchange.AccountService.Application.Queries;
 using Binebase.Exchange.Common.Api.Controllers;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -28,10 +27,10 @@ namespace Binebase.Exchange.AccountService.Api.Controllers
         [HttpDelete, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Currency(RemoveAssetCommand command) => Convert(await Mediator.Send(command));
 
-        [HttpPost, ProducesResponseType(typeof(DebitCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<DebitCommandResult>> Debit(DebitCommand command) => await Mediator.Send(command);
+        [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Debit(DebitCommand command) => Convert(await Mediator.Send(command));
 
-        [HttpPost, ProducesResponseType(typeof(CreditCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<CreditCommandResult>> Credit(CreditCommand command) => await Mediator.Send(command);
+        [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Credit(CreditCommand command) => Convert(await Mediator.Send(command));
     }
 }
