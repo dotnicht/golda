@@ -54,6 +54,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,8)");
 
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,8)");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 

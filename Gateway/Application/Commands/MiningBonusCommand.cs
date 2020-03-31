@@ -53,7 +53,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 { 
                     Id = Guid.NewGuid(),
                     Amount = amount,
-                    Type = type
+                    Type = type,
+                    Balance = amount + _context.MiningRequests.Where(x => x.CreatedBy == _currentUserService.UserId).Sum(x => x.Amount)
                 };
 
                 _context.MiningRequests.Add(mining);

@@ -10,7 +10,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         public Guid Id { get; set; }
         public int Index { get; set; }
         public decimal Amount { get; set; }
-        public PromotionItem Promotion { get; set; }
+        public PromotionItem[] Promotions { get; set; }
 
         public class PromotionItem : IMapFrom<Promotion>
         {

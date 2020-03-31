@@ -134,7 +134,7 @@
             "enumNameGeneratorType": null,
             "serviceHost": null,
             "serviceSchemes": null,
-            "output": "../../Common/Infrastructure/Clients/Crypto/CryptoService.cs"
+            "output": "../../Common/Infrastructure/Clients/Crypto/CryptoClient.cs"
         }
     }
 }

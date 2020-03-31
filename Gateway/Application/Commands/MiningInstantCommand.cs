@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
-using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Gateway.Domain.Entities;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -62,7 +63,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     Type = MiningType.Instant
                 };
 
-                User currentUser = await _identityService.GetUser(_currentUserService.UserId);
+                var currentUser = await _identityService.GetUser(_currentUserService.UserId);
 
                 for (var i = 0; i < (request.Boost ? mapping.FirstOrDefault(x => x.Value <= index)?.Value ?? 1 : 1); i++)
                 {
@@ -80,9 +81,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _context.SaveChangesAsync();
 
                 var result = _mapper.Map<MiningInstantCommandResult>(mining);
+                var promotions = new List<Promotion>();
 
                 if (mining.Amount > 0)
                 {
+                    mining.Balance = mining.Amount + _context.MiningRequests.Where(x => x.CreatedBy == _currentUserService.UserId).Sum(x => x.Amount);
+
                     if (currentUser.ReferralId != null)
                     {
                         var ammount = mining.Amount / 100 * 5;
@@ -95,9 +99,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     {
                         _context.Promotions.Add(promotion);
                         await _context.SaveChangesAsync();
-                        result.Promotion = _mapper.Map<MiningInstantCommandResult.PromotionItem>(promotion);
+                        promotions.Add(promotion);
                     }
                 }
+
+                result.Promotions =  _mapper.Map<MiningInstantCommandResult.PromotionItem[]>(promotions);
 
                 return result;
             }
