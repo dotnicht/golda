@@ -113,13 +113,13 @@
         "tags": [
           "Account"
         ],
-        "operationId": "Account_Create",
+        "operationId": "Account_New",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateAccountCommand"
+                "$ref": "#/components/schemas/NewAccountCommand"
               }
             }
           },
@@ -555,7 +555,7 @@
           "SignUp"
         ]
       },
-      "CreateAccountCommand": {
+      "NewAccountCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

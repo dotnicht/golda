@@ -263,14 +263,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         }
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CreateAsync(CreateAccountCommand command)
+        public System.Threading.Tasks.Task NewAsync(NewAccountCommand command)
         {
-            return CreateAsync(command, System.Threading.CancellationToken.None);
+            return NewAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CreateAsync(CreateAccountCommand command, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task NewAsync(NewAccountCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Account");
@@ -1432,7 +1432,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class CreateAccountCommand 
+    public partial class NewAccountCommand 
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid Id { get; set; }
