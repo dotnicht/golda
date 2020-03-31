@@ -95,6 +95,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     Currency = (Common.Domain.Currency)assets[tx.AssetId].Currency,
                     Type = (Common.Domain.TransactionType)tx.Type,
                 };
+
+                result.Add(item);
             }
 
             return result.ToArray();
