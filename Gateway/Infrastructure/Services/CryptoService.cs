@@ -2,7 +2,6 @@
 using Binebase.Exchange.Common.Infrastructure.Clients.Crypto;
 using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Domain.Enums;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -52,7 +51,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     Id = tx.Id,
                     Currency = (Common.Domain.Currency)tx.Currency,
                     Amount = tx.Amount,
-                    Source = tx.Direction switch
+                    Type = tx.Direction switch
                     {
                         TransactionDirection.Inbound => TransactionType.Deposit,
                         TransactionDirection.Outbound => TransactionType.Widthraw,

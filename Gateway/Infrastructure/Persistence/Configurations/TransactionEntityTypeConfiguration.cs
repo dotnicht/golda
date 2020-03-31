@@ -13,7 +13,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Transaction> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Source).HasConversion(new EnumToStringConverter<TransactionType>());
+            builder.Property(x => x.Type).HasConversion(new EnumToStringConverter<TransactionType>());
             builder.Property(x => x.Amount).HasColumnType(CommonInfrastructure.DecimalFormat);
             builder.Property(x => x.Balance).HasColumnType(CommonInfrastructure.DecimalFormat);
         }

@@ -11,7 +11,7 @@ namespace Binebase.Exchange.AccountService.Application.Queries
 
         public class Transaction : IMapFrom<CreditedEvent>, IMapFrom<DebitedEvent>
         {
-            public Guid Id { get; set; }
+            public Guid TransactionId { get; set; }
             public Guid AssetId { get; set; }
             public TransactionType Type { get; set; }
             public DateTime DateTime { get; set; }

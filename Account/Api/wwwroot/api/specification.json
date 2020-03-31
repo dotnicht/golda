@@ -510,7 +510,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
+          "transactionId": {
             "type": "string",
             "format": "guid"
           },

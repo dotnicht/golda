@@ -81,15 +81,23 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             var portfolio = await _accountClient.PortfolioAsync(id);
             var assets = portfolio.Portfolio.ToDictionary(x => x.Id, x => new Asset { Currency = x.Currency });
             var txs = await _accountClient.TransactionsAsync(id);
+            var result = new List<Domain.Entities.Transaction>();
 
-            return txs.Transactions.Select(x => new Domain.Entities.Transaction
+            foreach (var tx in txs.Transactions)
             {
-                Id = x.Id,
-                DateTime = x.DateTime.DateTime,
-                Amount = x.Amount,
-                Balance = assets[x.AssetId].Balance,
-                Currency = (Common.Domain.Currency)assets[x.AssetId].Currency,
-            }).ToArray();
+                assets[tx.AssetId].Balance += tx.Amount;
+                var item = new Domain.Entities.Transaction
+                {
+                    Id = tx.TransactionId,
+                    DateTime = tx.DateTime.DateTime,
+                    Amount = tx.Amount,
+                    Balance = assets[tx.AssetId].Balance,
+                    Currency = (Common.Domain.Currency)assets[tx.AssetId].Currency,
+                    Type = (Common.Domain.TransactionType)tx.Type,
+                };
+            }
+
+            return result.ToArray();
         }
 
         public class Configuration
