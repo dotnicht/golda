@@ -2,7 +2,7 @@
 using MediatR;
 using System;
 
-namespace Binebase.Exchange.AccountService.Application.Commands
+namespace Binebase.Exchange.AccountService.Contracts.Commands
 {
     public class DebitCommand : IRequest
     {

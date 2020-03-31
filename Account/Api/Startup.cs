@@ -1,5 +1,5 @@
 using Binebase.Exchange.AccountService.Application;
-using Binebase.Exchange.AccountService.Application.Commands;
+using Binebase.Exchange.AccountService.Contracts.Commands;
 using Binebase.Exchange.AccountService.Infrastructure;
 using Binebase.Exchange.Common.Api;
 using Binebase.Exchange.Common.Application;

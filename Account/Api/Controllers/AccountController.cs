@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.AccountService.Application.Commands;
-using Binebase.Exchange.AccountService.Application.Queries;
+﻿using Binebase.Exchange.AccountService.Application.Queries;
 using Binebase.Exchange.AccountService.Contracts.Commands;
 using Binebase.Exchange.Common.Api.Controllers;
 using Microsoft.AspNetCore.Http;

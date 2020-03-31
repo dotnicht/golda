@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.AccountService.Application.Commands;
-using Binebase.Exchange.AccountService.Contracts.Commands;
+﻿using Binebase.Exchange.AccountService.Contracts.Commands;
 using Binebase.Exchange.AccountService.Domain;
 using Binebase.Exchange.AccountService.Domain.Aggregates;
 using Binebase.Exchange.AccountService.Domain.Exceptions;

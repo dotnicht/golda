@@ -4,11 +4,9 @@ using Binebase.Exchange.AccountService.Domain.Aggregates;
 using Binebase.Exchange.AccountService.Domain.Events;
 using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Common.Domain;
 using MediatR;
 using NEventStore;
 using NEventStore.Domain.Persistence;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,9 +20,9 @@ namespace Binebase.Exchange.AccountService.Application
         IRequestHandler<TransactionsQuery, TransactionsQueryResult>
     {
         private readonly IRepository _repository;
-        private IStoreEvents _storeEvents;
+        private readonly IStoreEvents _storeEvents;
         private readonly IDateTime _dateTime;
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public QueryHandler(IRepository repository, IStoreEvents storeEvents, IDateTime dateTime, IMapper mapper) 
             => (_repository, _storeEvents, _dateTime, _mapper) = (repository, storeEvents, dateTime, mapper);

@@ -330,6 +330,104 @@
           }
         }
       }
+    },
+    "/api/Asset/Lock": {
+      "post": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Lock",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LockAssetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Asset/Unlock": {
+      "post": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Unlock",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlockAssetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Asset/Currency": {
+      "post": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Currency",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAssetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Currency2",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveAssetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {

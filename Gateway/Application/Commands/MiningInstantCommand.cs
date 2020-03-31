@@ -26,7 +26,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IApplicationDbContext _context;
             private readonly IDateTime _dateTime;
             private readonly IMapper _mapper;
-            private readonly ILogger _logger;
 
             public MiningInstantCommandHandler(
                 ICalculationService calculationService,
@@ -37,8 +36,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IDateTime dateTime,
                 IMapper mapper,
                 ILogger<MiningInstantCommandHandler> logger)
-                => (_calculationService, _accountService, _currentUserService, _identityService, _context, _dateTime, _mapper, _logger)
-                    = (calculationService, accountService, currentUserService, identityService, context, dateTime, mapper, logger);
+                => (_calculationService, _accountService, _currentUserService, _identityService, _context, _dateTime, _mapper)
+                    = (calculationService, accountService, currentUserService, identityService, context, dateTime, mapper);
 
             public async Task<MiningInstantCommandResult> Handle(MiningInstantCommand request, CancellationToken cancellationToken)
             {
