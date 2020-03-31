@@ -2,9 +2,14 @@ using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Exceptions;
+using Serilog.Sinks.Elasticsearch;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Api
@@ -13,6 +18,9 @@ namespace Binebase.Exchange.Gateway.Api
     {
         public async static Task Main(string[] args)
         {
+            //configure logging first
+            ConfigureLogging();
+
             var host = CreateWebHostBuilder(args).Build();
 
             using (var scope = host.Services.CreateScope())
@@ -34,13 +42,45 @@ namespace Binebase.Exchange.Gateway.Api
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
             => WebHost.CreateDefaultBuilder(args)
-                 .ConfigureLogging(logging =>
-                 {
-                     logging.ClearProviders();
-                     logging.AddConsole();
-                     logging.AddAzureWebAppDiagnostics();
-                     logging.AddEventSourceLogger();
-                 })
+                 //.ConfigureLogging(logging =>
+                 //{
+                 //    logging.ClearProviders();
+                 //    logging.AddConsole();
+                 //    logging.AddAzureWebAppDiagnostics();
+                 //    logging.AddEventSourceLogger();
+                 //})
+                .UseSerilog()
                 .UseStartup<Startup>();
+
+        private static void ConfigureLogging()
+        {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile(
+                    $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json",
+                    optional: true)
+                .Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
+                .Enrich.WithMachineName()
+                .WriteTo.Debug()
+                .WriteTo.Console()
+                .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))
+                .Enrich.WithProperty("Environment", environment)
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+        }
+
+        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
+        {
+            return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
+            {
+                AutoRegisterTemplate = true,
+                IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
+            };
+        }
     }
 }
