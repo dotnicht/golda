@@ -1,19 +1,16 @@
+using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Infrastructure.Services;
+using Binebase.Exchange.Gateway.Api.Services;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Infrastructure.Identity;
+using Binebase.Exchange.Gateway.Infrastructure.Persistence;
+using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Binebase.Exchange.Gateway.Infrastructure.Identity;
-using Binebase.Exchange.Gateway.Infrastructure.Persistence;
-using Binebase.Exchange.Common.Application.Interfaces;
-
-using Binebase.Exchange.Common.Infrastructure.Services;
-
-using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Application;
-using Binebase.Exchange.Gateway.Infrastructure.Services;
-using Binebase.Exchange.Gateway.Api.Services;
 
 namespace Admin
 {
@@ -34,26 +31,22 @@ namespace Admin
                     Configuration.GetConnectionString("DefaultConnection")));
 
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
 
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddControllersWithViews();
-            // services.AddServices(Assembly.GetExecutingAssembly());
             services.AddMvc().AddRazorOptions(options =>
             {
                 options.ViewLocationFormats.Add("/{0}.cshtml");
             });
 
-            services.Configure<AccountService.Configuration>(Configuration.GetSection("AccountService.Configuration"));
             services.AddOptions();
             services.AddHttpContextAccessor();
             services.AddHttpClient<IAccountService, AccountService>();
             services.AddTransient<ICurrentUserService, CurrentUserService>();
-            //services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IDateTime, DateTimeService>();
             services.Configure<AccountService.Configuration>(Configuration.GetSection("AccountService.Configuration"));
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
