@@ -63,7 +63,6 @@ namespace Binebase.Exchange.Common.Infrastructure
         }
 
         public static async Task<TResponse> Post<TRequest, TResponse>(this HttpClient target, string path, TRequest request) where TRequest : IRequest<TResponse>
-        public static Task<TResponse> Get<TRequest, TResponse>(this HttpClient source, string path, TRequest request) where TRequest : IRequest<TResponse>
         {
             var response = await target.PostAsync(path, new StringContent(JsonConvert.SerializeObject(request)));
             var content = await response.Content.ReadAsStringAsync();

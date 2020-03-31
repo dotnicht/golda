@@ -1416,7 +1416,7 @@
             "format": "decimal"
           },
           "type": {
-            "$ref": "#/components/schemas/TransactionType"
+            "$ref": "#/components/schemas/MiningType"
           }
         }
       },

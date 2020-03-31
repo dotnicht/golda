@@ -15,7 +15,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             public DateTime Created { get; set; }
             public decimal Amount { get; set; }
             public decimal Balance { get; set; }
-            public TransactionType Type { get; set; }
+            public MiningType Type { get; set; }
         }
     }
 }
