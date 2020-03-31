@@ -316,22 +316,46 @@
             "type": "string",
             "format": "guid"
           },
-          "amount": {
-            "type": "number",
-            "format": "decimal"
+          "assetId": {
+            "type": "string",
+            "format": "guid"
           },
-          "balance": {
-            "type": "number",
-            "format": "decimal"
+          "type": {
+            "$ref": "#/components/schemas/TransactionType"
           },
           "dateTime": {
             "type": "string",
             "format": "date-time"
           },
-          "currency": {
-            "$ref": "#/components/schemas/Currency"
+          "amount": {
+            "type": "number",
+            "format": "decimal"
           }
         }
+      },
+      "TransactionType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Internal",
+          "Mining",
+          "Exchange",
+          "Deposit",
+          "Widthraw",
+          "Refferal",
+          "Fee",
+          "SignUp"
+        ],
+        "enum": [
+          "Internal",
+          "Mining",
+          "Exchange",
+          "Deposit",
+          "Widthraw",
+          "Refferal",
+          "Fee",
+          "SignUp"
+        ]
       },
       "CreateAccountCommand": {
         "type": "object",
@@ -398,30 +422,6 @@
             "$ref": "#/components/schemas/TransactionType"
           }
         }
-      },
-      "TransactionType": {
-        "type": "string",
-        "description": "",
-        "x-enumNames": [
-          "Internal",
-          "Mining",
-          "Exchange",
-          "Deposit",
-          "Widthraw",
-          "Refferal",
-          "Fee",
-          "SignUp"
-        ],
-        "enum": [
-          "Internal",
-          "Mining",
-          "Exchange",
-          "Deposit",
-          "Widthraw",
-          "Refferal",
-          "Fee",
-          "SignUp"
-        ]
       },
       "CreditCommand": {
         "type": "object",

@@ -747,19 +747,48 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid Id { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public decimal Amount { get; set; }
+        [Newtonsoft.Json.JsonProperty("assetId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid AssetId { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("balance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public decimal Balance { get; set; }
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public TransactionType Type { get; set; }
     
         [Newtonsoft.Json.JsonProperty("dateTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTimeOffset DateTime { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("currency", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public Currency Currency { get; set; }
+        [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public decimal Amount { get; set; }
     
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v12.0.0.0)")]
+    public enum TransactionType
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Internal")]
+        Internal = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Mining")]
+        Mining = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Exchange")]
+        Exchange = 2,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Deposit")]
+        Deposit = 3,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Widthraw")]
+        Widthraw = 4,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Refferal")]
+        Refferal = 5,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Fee")]
+        Fee = 6,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"SignUp")]
+        SignUp = 7,
     
     }
     
@@ -819,35 +848,6 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public TransactionType Type { get; set; }
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v12.0.0.0)")]
-    public enum TransactionType
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"Internal")]
-        Internal = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Mining")]
-        Mining = 1,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Exchange")]
-        Exchange = 2,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Deposit")]
-        Deposit = 3,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Widthraw")]
-        Widthraw = 4,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Refferal")]
-        Refferal = 5,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Fee")]
-        Fee = 6,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"SignUp")]
-        SignUp = 7,
     
     }
     

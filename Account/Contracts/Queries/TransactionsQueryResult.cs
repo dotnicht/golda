@@ -12,10 +12,10 @@ namespace Binebase.Exchange.AccountService.Application.Queries
         public class Transaction : IMapFrom<CreditedEvent>, IMapFrom<DebitedEvent>
         {
             public Guid Id { get; set; }
-            public decimal Amount { get; set; }
-            public decimal Balance { get; set; }
+            public Guid AssetId { get; set; }
+            public TransactionType Type { get; set; }
             public DateTime DateTime { get; set; }
-            public Currency Currency { get; set; }
+            public decimal Amount { get; set; }
         }
     }
 }

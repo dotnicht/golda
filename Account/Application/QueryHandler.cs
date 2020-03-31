@@ -51,11 +51,8 @@ namespace Binebase.Exchange.AccountService.Application
                 throw new NotFoundException(nameof(Account), request.Id);
             }
 
-            // TODO: fix tx.
             using var stream = _storeEvents.OpenStream(request.Id, 0, int.MaxValue);
             var trx = new List<TransactionsQueryResult.Transaction>();
-            var balance = Enum.GetNames(typeof(Currency)).Select(x => Enum.Parse<Currency>(x)).ToDictionary(x => x, x => 0M);
-
             foreach (var commited in stream.CommittedEvents.Where(x => x.Body is DebitedEvent || x.Body is CreditedEvent))
             {
                 var tx = _mapper.Map<TransactionsQueryResult.Transaction>(commited.Body);
@@ -64,9 +61,6 @@ namespace Binebase.Exchange.AccountService.Application
                 {
                     tx.Amount = -tx.Amount;
                 }
-
-                balance[tx.Currency] += tx.Amount;
-                tx.Balance = balance[tx.Currency];
 
                 trx.Add(tx);
             }
