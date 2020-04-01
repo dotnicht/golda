@@ -22,8 +22,8 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         public async Task<ActionResult<SignInCommandResult>> SignInMultiFactor(SignInMultiFactorCommand command)
             => await Mediator.Send(command);
 
-        [HttpPost, ProducesResponseType(typeof(ConfirmCommandResult), StatusCodes.Status200OK)]
-        public async Task<ConfirmCommandResult> Confirm(ConfirmCommand command) 
+        [HttpPost, ProducesResponseType(typeof(SignInCommandResult), StatusCodes.Status200OK)]
+        public async Task<SignInCommandResult> Confirm(ConfirmCommand command) 
             => await Mediator.Send(command);
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
