@@ -31,20 +31,19 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotFoundException(nameof(User), request.Id);
                 }
 
-                // TODO: add exception messages.
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
-                    throw new NotSupportedException("multi_factor_not_enabled");
+                    throw new NotSupportedException(ErrorCode.MultiFactorRequired);
                 }
 
                 if (!await _identityService.CheckUserPassword(user.Id, request.Password))
                 {
-                    throw new SecurityException("invalid_password");
+                    throw new SecurityException(ErrorCode.PasswordMismatch);
                 }
 
                 if (!await _identityService.VerifyTwoFactorToken(user.Id, request.Code))
                 {
-                    throw new SecurityException("invalid_multi_factor_code");
+                    throw new SecurityException(ErrorCode.MultiFactor);
                 }
 
                 var result = _mapper.Map<SignInCommandResult>(user);
