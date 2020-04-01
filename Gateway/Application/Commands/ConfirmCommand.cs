@@ -1,4 +1,5 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using AutoMapper;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using MediatR;
 using System;
 using System.Threading;
@@ -15,15 +16,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         {
             private readonly IIdentityService _identityService;
             private readonly IAccountService _accountService;
+            private readonly IMapper _mapper;
 
-            public ConfirmCommandHandler(IIdentityService identityService, IAccountService accountService)
-                => (_identityService, _accountService) = (identityService, accountService);
+            public ConfirmCommandHandler(IIdentityService identityService, IAccountService accountService, IMapper mapper)
+                => (_identityService, _accountService, _mapper) = (identityService, accountService, mapper);
 
             public async Task<SignInCommandResult> Handle(ConfirmCommand request, CancellationToken cancellationToken)
             {
                 var confirmResult = await _identityService.ConfirmToken(request.Id, request.Code);
-                if (!confirmResult.Succeeded) 
-                { 
+                if (!confirmResult.Succeeded)
+                {
                     throw confirmResult.ToValidationException(nameof(ConfirmCommandHandler)); // TODO: map err codes.
                 }
 
@@ -35,7 +37,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var token = await _identityService.GenerateAuthToken(user);
-                return new SignInCommandResult { Id = user.Id, Email = user.Email, Token = token }; // TODO: use automapper.
+                return _mapper.Map<SignInCommandResult>(user);
             }
         }
     }

@@ -11,5 +11,7 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public DateTime Registered { get; set; }
         public bool Confirmed { get; set; }
         public Guid? ReferralId { get; set; }
+        public string ReferralCode { get; set; }
+
     }
 }

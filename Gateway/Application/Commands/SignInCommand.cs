@@ -1,4 +1,5 @@
-﻿using Binebase.Exchange.Common.Application.Exceptions;
+﻿using AutoMapper;
+using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
@@ -15,8 +16,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         public class SignInCommandHandler : IRequestHandler<SignInCommand, SignInCommandResult>
         {
             private readonly IIdentityService _identityService;
+            private readonly IMapper _mapper;
 
-            public SignInCommandHandler(IIdentityService identityService) => _identityService = identityService;
+            public SignInCommandHandler(IIdentityService identityService, IMapper mapper) =>
+                (_identityService, _mapper) = (identityService, mapper);
 
             public async Task<SignInCommandResult> Handle(SignInCommand request, CancellationToken cancellationToken)
             {
@@ -26,7 +29,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotFoundException(nameof(User), request.Email);
                 }
 
-                var result = new SignInCommandResult { Id = user.Id, Email = user.Email }; // TODO: use automapper.
+                var result = _mapper.Map<SignInCommandResult>(user);
+
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
                     if (!await _identityService.CheckUserPassword(user.Id, request.Password))
