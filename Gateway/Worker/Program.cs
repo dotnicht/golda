@@ -8,9 +8,9 @@ using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Binebase.Exchange.Common.Infrastructure.Services;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
@@ -20,17 +20,19 @@ namespace Worker
 {
     public static class Program
     {
-        public static void Main(string[] args)
-        {
-            //configure logging first
-            ConfigureLogging();
+        public static void Main(string[] args) =>
             CreateHostBuilder(args).Build().Run();
-        }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
-            => Host.CreateDefaultBuilder(args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .UseSerilog()
                 .ConfigureServices((hostContext, services) =>
                     {
+                        var env = hostContext.HostingEnvironment;
+                        var configuration = hostContext.Configuration;
+                        ConfigureLogging(configuration, env);
+
                         services.AddHostedService<Worker>();
 
                         services.AddTransient<IDateTime, DateTimeService>();
@@ -42,32 +44,30 @@ namespace Worker
                         services.AddTransient<IBinanceClient, BinanceClient>();
 
                         services.AddConfigurationProviders(hostContext.Configuration);
-                    })
-                .UseSerilog();
-
-        private static void ConfigureLogging()
-        {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile(
-                    $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json",
-                    optional: true)
-                .Build();
-
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .Enrich.WithExceptionDetails()
-                .Enrich.WithMachineName()
-                .WriteTo.Debug()
-                .WriteTo.Console()
-                .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))
-                .Enrich.WithProperty("Environment", environment)
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
+                    });
         }
 
-        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
+        private static void ConfigureLogging(IConfiguration configuration, IHostEnvironment environment)
+        {
+            LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+                 .Enrich.FromLogContext()
+                 .Enrich.WithExceptionDetails()
+                 .Enrich.WithMachineName()
+                 .WriteTo.Debug()
+                 .WriteTo.Console()
+                 .WriteTo.File(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
+                 .Enrich.WithProperty("Environment", environment)
+                 .ReadFrom.Configuration(configuration);
+
+            if (environment.IsProduction())
+            {
+                loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment.EnvironmentName));
+            }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
+        }
+
+        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
         {
             return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
             {
