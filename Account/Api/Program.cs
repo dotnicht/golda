@@ -2,12 +2,13 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading.Tasks;
 using Serilog;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
 using System.Reflection;
+using System.IO;
 
 namespace Binebase.Exchange.AccountService.Api
 {
@@ -35,6 +36,9 @@ namespace Binebase.Exchange.AccountService.Api
         private static void ConfigureLogging()
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            var isProduction = environment == Environments.Production;
+
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile(
@@ -42,16 +46,22 @@ namespace Binebase.Exchange.AccountService.Api
                     optional: true)
                 .Build();
 
-            Log.Logger = new LoggerConfiguration()
+            LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .Enrich.WithExceptionDetails()
                 .Enrich.WithMachineName()
                 .WriteTo.Debug()
                 .WriteTo.Console()
-                .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))
+                .WriteTo.File(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
                 .Enrich.WithProperty("Environment", environment)
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
+                .ReadFrom.Configuration(configuration);
+
+            if (isProduction)
+            {
+                loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment));
+            }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
         }
 
         private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)

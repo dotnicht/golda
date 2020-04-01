@@ -1,6 +1,5 @@
 using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.CryptoService.Infrastructure;
-using Binebase.Exchange.CryptoService.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -9,7 +8,7 @@ using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
 using System.Reflection;
 using System;
-
+using System.IO;
 namespace Binebase.Exchange.Crypto.Worker
 {
     public sealed class Program
@@ -32,6 +31,9 @@ namespace Binebase.Exchange.Crypto.Worker
         private static void ConfigureLogging()
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            var isProduction = environment == Environments.Production;
+
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile(
@@ -39,16 +41,22 @@ namespace Binebase.Exchange.Crypto.Worker
                     optional: true)
                 .Build();
 
-            Log.Logger = new LoggerConfiguration()
+            LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .Enrich.WithExceptionDetails()
                 .Enrich.WithMachineName()
                 .WriteTo.Debug()
                 .WriteTo.Console()
-                .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))
+                .WriteTo.File(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
                 .Enrich.WithProperty("Environment", environment)
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
+                .ReadFrom.Configuration(configuration);
+
+            if (isProduction)
+            {
+                loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment));
+            }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
         }
 
         private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
