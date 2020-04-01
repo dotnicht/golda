@@ -37,7 +37,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<Unit> Handle(ExchangeCommand request, CancellationToken cancellationToken)
             {
-                var ex = await _exchangeRateService.GetExchangeRate(new Pair(request.Base, request.Quote), false);
+                var ex = await _exchangeRateService.GetExchangeRate(new Pair(request.Base, request.Quote), false, true);
 
                 if (ex == null)
                 {

@@ -23,6 +23,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private Timer _timer;
 
         private readonly Pair[] _supportedPairs;
+        private readonly Pair[] _exchangeExcludePairs;
 
         public ExchangeRateService(
             IOptions<Configuration> options,
@@ -30,19 +31,19 @@ namespace Binebase.Exchange.Gateway.Application.Services
             IDateTime dateTime,
             ICacheClient cacheClient,
             IExchangeRateProvider exchangeRateProvider)
-            => (_configuration, _logger, _dateTime, _cacheClient, _exchangeRateProvider, _supportedPairs)
-                = (options.Value, logger, dateTime, cacheClient, exchangeRateProvider, options.Value.SupportedPairs.Select(x => Pair.Parse(x)).ToArray());
+            => (_configuration, _logger, _dateTime, _cacheClient, _exchangeRateProvider, _supportedPairs, _exchangeExcludePairs)
+                = (options.Value, logger, dateTime, cacheClient, exchangeRateProvider, options.Value.SupportedPairs.Select(x => Pair.Parse(x)).ToArray(), options.Value.ExchangeExcludePairs.Select(x => Pair.Parse(x)).ToArray());
 
-        public async Task<ExchangeRate> GetExchangeRate(Pair pair, bool forceSupported = true)
+        public async Task<ExchangeRate> GetExchangeRate(Pair pair, bool forceSupported = true, bool forceExchange = false)
         {
             if (pair is null)
             {
                 throw new ArgumentNullException(nameof(pair));
             }
 
-            if (forceSupported && !_supportedPairs.Contains(pair))
+            if (forceSupported && !_supportedPairs.Contains(pair) || forceSupported && _exchangeExcludePairs.Contains(pair))
             {
-                throw new NotSupportedException($"Supported currency pairs: {string.Join(' ', _supportedPairs.AsEnumerable())}.");
+                throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
             }
 
             var key = pair.ToString();
@@ -72,7 +73,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             if (!_supportedPairs.Contains(pair))
             {
-                throw new NotSupportedException($"Supported currency pairs: {string.Join(' ', _supportedPairs.AsEnumerable())}.");
+                throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
             }
 
             var key = pair.ToString();
@@ -144,6 +145,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             public bool AllowFallbackClientRequest { get; set; }
             public bool CacheFallbackResult { get; set; }
             public string[] SupportedPairs { get; set; }
+            public string[] ExchangeExcludePairs { get; set; }
             public decimal BineBaseValue { get; set; }
             public decimal[] BineRange { get; set; }
             public TimeSpan BineRefreshRate { get; set; }
