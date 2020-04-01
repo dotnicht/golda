@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class ConfirmCommand : IRequest<ConfirmCommandResult>
+    public class ConfirmCommand : IRequest<SignInCommandResult>
     {
         public Guid Id { get; set; }
         public string Code { get; set; }
 
-        public class ConfirmCommandHandler : IRequestHandler<ConfirmCommand, ConfirmCommandResult>
+        public class ConfirmCommandHandler : IRequestHandler<ConfirmCommand, SignInCommandResult>
         {
             private readonly IIdentityService _identityService;
             private readonly IAccountService _accountService;
@@ -19,7 +19,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public ConfirmCommandHandler(IIdentityService identityService, IAccountService accountService)
                 => (_identityService, _accountService) = (identityService, accountService);
 
-            public async Task<ConfirmCommandResult> Handle(ConfirmCommand request, CancellationToken cancellationToken)
+            public async Task<SignInCommandResult> Handle(ConfirmCommand request, CancellationToken cancellationToken)
             {
                 var confirmResult = await _identityService.ConfirmToken(request.Id, request.Code);
                 if (!confirmResult.Succeeded) 
@@ -35,7 +35,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var token = await _identityService.GenerateAuthToken(user);
-                return new ConfirmCommandResult { Id = user.Id, Email = user.Email, Token = token };
+                return new SignInCommandResult { Id = user.Id, Email = user.Email, Token = token }; // TODO: use automapper.
             }
         }
     }

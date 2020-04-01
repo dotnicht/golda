@@ -26,12 +26,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotFoundException(nameof(User), request.Email);
                 }
 
-                var result = new SignInCommandResult { Id = user.Id, Email = user.Email };
+                var result = new SignInCommandResult { Id = user.Id, Email = user.Email }; // TODO: use automapper.
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
                     if (!await _identityService.CheckUserPassword(user.Id, request.Password))
                     {
-                        throw new SecurityException("invalid_password");
+                        throw new SecurityException(ErrorCode.PasswordMismatch);
                     }
 
                     var auth = await _identityService.Authenticate(user);
