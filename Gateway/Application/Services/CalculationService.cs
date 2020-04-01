@@ -71,6 +71,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var target = txs
                 .Where(x => x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default)
                 .Take(_configuration.Bonus.StackTimes)
+                .ToArray()
                 .Select((x, i) => new { Index = i, Target = x })
                 .ToDictionary(x => x.Index, x => x.Target);
 
