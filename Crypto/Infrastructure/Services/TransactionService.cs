@@ -134,6 +134,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                 if (operation == "balance")
                 {
+                    // TODO: fix ulong cast.
                     var balance = JsonConvert.DeserializeObject<EtherscanBalanceResponse>(content);
                     if (balance.Result != address.Balance)
                     {
