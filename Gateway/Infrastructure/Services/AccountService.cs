@@ -2,9 +2,7 @@
 using Binebase.Exchange.Common.Infrastructure.Clients.Account;
 using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Domain.Enums;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;

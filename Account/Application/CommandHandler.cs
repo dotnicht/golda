@@ -29,7 +29,7 @@ namespace Binebase.Exchange.AccountService.Application
 
         public async Task<Unit> Handle(NewAccountCommand request, CancellationToken cancellationToken)
         {
-            var account = Get(request.Id);
+            var account = _repository.GetById<Account>(request.Id, int.MaxValue);
             if (account.Exists)
             {
                 throw new AccountException(ErrorCode.AccountExists);
@@ -41,69 +41,35 @@ namespace Binebase.Exchange.AccountService.Application
         }
 
         public async Task<Unit> Handle(AddAssetCommand request, CancellationToken cancellationToken)
-        {
-            var account = Get(request.Id);
-            account.AddAsset(request.AssetId, request.Currency, _dateTime.UtcNow);
-            _repository.Save(account, Guid.NewGuid());
-            return await Task.FromResult(Unit.Value);
-        }
+            => await Action(request.Id, x => x.AddAsset(request.AssetId, request.Currency, _dateTime.UtcNow));
 
         public async Task<Unit> Handle(RemoveAssetCommand request, CancellationToken cancellationToken)
-        {
-            var account = Get(request.Id);
-            account.RemoveAsset(request.AssetId, _dateTime.UtcNow);
-            _repository.Save(account, Guid.NewGuid());
-            return await Task.FromResult(Unit.Value);
-        }
+            => await Action(request.Id, x => x.RemoveAsset(request.AssetId, _dateTime.UtcNow));
 
         public async Task<Unit> Handle(DebitCommand request, CancellationToken cancellationToken)
-        {
-            var account = Get(request.Id);
-            account.Debit(request.AssetId, request.TransactionId, request.Amount, _dateTime.UtcNow, request.Type);
-            _repository.Save(account, Guid.NewGuid());
-            return await Task.FromResult(Unit.Value);
-        }
+            => await Action(request.Id, x => x.Debit(request.AssetId, request.TransactionId, request.Amount, _dateTime.UtcNow, request.Type));
 
         public async Task<Unit> Handle(CreditCommand request, CancellationToken cancellationToken)
-        {
-            var account = Get(request.Id);
-            account.Credit(request.AssetId, request.TransactionId, request.Amount, _dateTime.UtcNow, request.Type);
-            _repository.Save(account, Guid.NewGuid());
-            return await Task.FromResult(Unit.Value);
-        }
+            => await Action(request.Id, x => x.Credit(request.AssetId, request.TransactionId, request.Amount, _dateTime.UtcNow, request.Type));
 
         public async Task<Unit> Handle(LockAccountCommand request, CancellationToken cancellationToken)
-        {
-            var account = Get(request.Id);
-            account.Lock(_dateTime.UtcNow);
-            _repository.Save(account, Guid.NewGuid());
-            return await Task.FromResult(Unit.Value);
-        }
+           => await Action(request.Id, x => x.Lock(_dateTime.UtcNow));
 
         public async Task<Unit> Handle(UnlockAccountCommand request, CancellationToken cancellationToken)
-        {
-            var account = Get(request.Id);
-            account.Unlock(_dateTime.UtcNow);
-            _repository.Save(account, Guid.NewGuid());
-            return await Task.FromResult(Unit.Value);
-        }
+            => await Action(request.Id, x => x.Unlock(_dateTime.UtcNow));
 
         public async Task<Unit> Handle(LockAssetCommand request, CancellationToken cancellationToken)
-        {
-            var account = Get(request.Id);
-            account.Lock(request.AssetId, _dateTime.UtcNow);
-            _repository.Save(account, Guid.NewGuid());
-            return await Task.FromResult(Unit.Value);
-        }
+            => await Action(request.Id, x => x.Lock(request.AssetId, _dateTime.UtcNow));
 
         public async Task<Unit> Handle(UnlockAssetCommand request, CancellationToken cancellationToken)
+            => await Action(request.Id, x => x.Unlock(request.AssetId, _dateTime.UtcNow));
+
+        private async Task<Unit> Action(Guid id, Action<Account> action)
         {
-            var account = Get(request.Id);
-            account.Unlock(request.AssetId, _dateTime.UtcNow);
+            var account = _repository.GetById<Account>(id, int.MaxValue);
+            action(account);
             _repository.Save(account, Guid.NewGuid());
             return await Task.FromResult(Unit.Value);
         }
-
-        private Account Get(Guid id) => _repository.GetById<Account>(id, int.MaxValue);
     }
 }
