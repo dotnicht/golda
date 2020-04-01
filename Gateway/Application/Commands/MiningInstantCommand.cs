@@ -35,8 +35,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IIdentityService identityService,
                 IApplicationDbContext context,
                 IDateTime dateTime,
-                IMapper mapper,
-                ILogger<MiningInstantCommandHandler> logger)
+                IMapper mapper)
                 => (_calculationService, _accountService, _currentUserService, _identityService, _context, _dateTime, _mapper)
                     = (calculationService, accountService, currentUserService, identityService, context, dateTime, mapper);
 
