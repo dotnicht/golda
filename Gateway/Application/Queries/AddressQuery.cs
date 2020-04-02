@@ -17,15 +17,11 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             private readonly ICurrentUserService _currentUserService;
             private readonly ICryptoService _cryptoService;
 
-            private readonly static Currency[] _currencies = new[] { Currency.BTC, Currency.ETH };
-
             public AddressQueryHandler(ICurrentUserService currentUserService, ICryptoService cryptoService)
                 => (_currentUserService, _cryptoService) = (currentUserService, cryptoService);
 
             public async Task<AddressQueryResult> Handle(AddressQuery request, CancellationToken cancellationToken)
-                => _currencies.Contains(request.Currency)
-                    ? new AddressQueryResult { Address = await _cryptoService.GetAddress(_currentUserService.UserId, request.Currency) }
-                    : throw new NotSupportedException($"Supported currencies {string.Join(", ", _currencies)}.");
+                => new AddressQueryResult { Address = await _cryptoService.GetAddress(_currentUserService.UserId, request.Currency) };
         }
     }
 }

@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using QBitNinja.Client;
 using QBitNinja.Client.Models;
 using System;
-using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 

@@ -38,7 +38,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
                         entry.Entity.Created = _dateTime.UtcNow;
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
+                        entry.Entity.LastModifiedBy = _currentUserService.IsAnonymous && entry.Entity.LastModifiedBy == default ? _currentUserService.UserId : entry.Entity.LastModifiedBy;
                         entry.Entity.LastModified = _dateTime.UtcNow;
                         break;
                 }

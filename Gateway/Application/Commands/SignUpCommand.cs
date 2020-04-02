@@ -1,7 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System;
@@ -43,34 +42,35 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     
             public async Task<Unit> Handle(SignUpCommand request, CancellationToken cancellationToken)
             {
-                var (result, userId) = await _identityService.CreateUser(request.Email, request.Password, request.ReferralCode);
+                var id = request.MiningRequestId ?? Guid.NewGuid();
+                var result = await _identityService.CreateUser(id, request.Email, request.Password, request.ReferralCode);
                 if (!result.Succeeded)
                 {
                     throw result.ToValidationException(nameof(SignUpCommandHandler));
                 }
 
-                var ticket = await _identityService.GenerateConfirmationToken(userId);
-                await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(userId));
+                var ticket = await _identityService.GenerateConfirmationToken(id);
+                await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id));
                 
-                await _accountService.Create(userId);
-                await _accountService.AddCurrency(userId, Currency.BINE);
-                await _accountService.AddCurrency(userId, Currency.EURB);
-                await _accountService.AddCurrency(userId, Currency.BTC);
-                await _accountService.AddCurrency(userId, Currency.ETH);
+                await _accountService.Create(id);
+                await _accountService.AddCurrency(id, Currency.BINE);
+                await _accountService.AddCurrency(id, Currency.EURB);
+                await _accountService.AddCurrency(id, Currency.BTC);
+                await _accountService.AddCurrency(id, Currency.ETH);
 
-                await _cryptoService.GenerateAddress(userId, Currency.BTC);
-                await _cryptoService.GenerateAddress(userId, Currency.ETH);
+                await _cryptoService.GenerateAddress(id, Currency.BTC);
+                await _cryptoService.GenerateAddress(id, Currency.ETH);
 
                 var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
                 if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnonymous)
                 {
-                    await _accountService.Debit(userId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
-                    mining.LastModifiedBy = userId;
+                    await _accountService.Debit(id, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
+                    mining.LastModifiedBy = id;
                     mining.IsAnonymous = false;
                     await _context.SaveChangesAsync();
                 }
 
-                await _accountService.Debit(userId, Currency.EURB, 100, Guid.NewGuid(), TransactionType.SignUp);
+                await _accountService.Debit(id, Currency.EURB, 100, Guid.NewGuid(), TransactionType.SignUp);
                 
                 return Unit.Value;
             }

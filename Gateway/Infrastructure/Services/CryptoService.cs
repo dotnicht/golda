@@ -25,7 +25,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         }
 
         public async Task<string> GetAddress(Guid id, Common.Domain.Currency currency)
-            => (await GetAddresses(id))[currency];
+        {
+            var addresses = await GetAddresses(id);
+            return addresses.ContainsKey(currency) ? addresses[currency] : throw new NotSupportedException();
+        }
 
         public async Task<Dictionary<Common.Domain.Currency, string>> GetAddresses(Guid id)
         {

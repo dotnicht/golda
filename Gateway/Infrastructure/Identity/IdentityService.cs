@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Drawing;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -41,12 +40,13 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         public async Task<User> GetUser(Guid userId)
             => _mapper.Map<User>(await _userManager.FindByIdAsync(userId.ToString()));
 
-        public async Task<(Result Result, Guid UserId)> CreateUser(string userName, string password, string code)
+        public async Task<Result> CreateUser(Guid id, string userName, string password, string code)
         {
             var referral = _userManager.Users.SingleOrDefault(x => code != null && x.ReferralCode == code.Trim());
 
             var user = new ApplicationUser
             {
+                Id = id,
                 UserName = userName,
                 Email = userName,
                 Registered = _dateTime.UtcNow,
@@ -55,7 +55,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             };
 
             var result = await _userManager.CreateAsync(user, password);
-            return (result.ToApplicationResult(), user.Id);
+            return result.ToApplicationResult();
         }
 
         public async Task<string> GenerateConfirmationUrl(Guid userId)
