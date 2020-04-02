@@ -22,7 +22,7 @@ namespace Admin.Models
         public DateTime DateTime { get; set; }
         public TransactionType Type { get; set; }
         public Guid CreatedBy { get; set; }
-        public Guid LastModifiedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
         public Guid Id { get; set; }
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }

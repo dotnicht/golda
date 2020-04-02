@@ -28,7 +28,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var amount = await _calculationService.GenerateDefaultReward();
-                var item = new MiningRequest { Id = Guid.NewGuid(), Amount = amount, Balance = amount, IsAnonymous = true };
+                var id = Guid.NewGuid();
+                var item = new MiningRequest { Id = id, CreatedBy = id, Amount = amount, Balance = amount, IsAnonymous = true };
                 _context.MiningRequests.Add(item);
                 await _context.SaveChangesAsync();
                 return _mapper.Map<RequestMiningCommandResult>(item);

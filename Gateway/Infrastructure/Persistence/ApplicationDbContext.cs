@@ -34,7 +34,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = _currentUserService.UserId;
+                        entry.Entity.CreatedBy = _currentUserService.IsAnonymous && entry.Entity.CreatedBy == default ? _currentUserService.UserId : entry.Entity.CreatedBy;
                         entry.Entity.Created = _dateTime.UtcNow;
                         break;
                     case EntityState.Modified:

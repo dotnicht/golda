@@ -41,7 +41,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 throw new ArgumentNullException(nameof(pair));
             }
 
-            if (forceSupported && !_supportedPairs.Contains(pair) || forceSupported && _exchangeExcludePairs.Contains(pair))
+            if (forceSupported && !_supportedPairs.Contains(pair) || forceExchange && _exchangeExcludePairs.Contains(pair))
             {
                 throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
             }
