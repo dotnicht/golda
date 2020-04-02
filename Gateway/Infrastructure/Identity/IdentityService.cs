@@ -42,6 +42,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<Result> CreateUser(Guid id, string userName, string password, string code)
         {
+            if (id == default)
+            {
+                throw new ArgumentException("Empty GUID not allowed.", nameof(id));
+            }
+
             var referral = _userManager.Users.SingleOrDefault(x => code != null && x.ReferralCode == code.Trim());
 
             var user = new ApplicationUser
