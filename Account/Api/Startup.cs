@@ -3,6 +3,7 @@ using Binebase.Exchange.AccountService.Contracts.Commands;
 using Binebase.Exchange.AccountService.Infrastructure;
 using Binebase.Exchange.Common.Api;
 using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Common.Infrastructure;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,7 +32,7 @@ namespace Binebase.Exchange.AccountService.Api
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             (Configuration, Environment) = (configuration, environment);
-            ConfigureLogging(configuration, environment);
+            CommonInfrastructure.ConfigureLogging(Configuration, Environment);
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -97,34 +98,6 @@ namespace Binebase.Exchange.AccountService.Api
             {
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
             });
-        }
-        private static void ConfigureLogging(IConfiguration configuration, IWebHostEnvironment environment)
-        {
-            LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
-                 .Enrich.FromLogContext()
-                 .Enrich.WithExceptionDetails()
-                 .Enrich.WithMachineName()
-                 .WriteTo.Debug()
-                 .WriteTo.Console()
-                 .WriteTo.File(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
-                 .Enrich.WithProperty("Environment", environment)
-                 .ReadFrom.Configuration(configuration);
-
-            if (environment.IsProduction())
-            {
-                loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment.EnvironmentName));
-            }
-
-            Log.Logger = loggerConfiguration.CreateLogger();
-        }
-
-        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
-        {
-            return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
-            {
-                AutoRegisterTemplate = true,
-                IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
-            };
         }
     }
 }
