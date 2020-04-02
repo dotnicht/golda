@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>aspnet-Admin-231BD3D2-9532-47B1-A0F1-BCEE20E1F265</UserSecretsId>
+      <RootNamespace>Binebase.Exchange.Gateway.Admin</RootNamespace>
+      <AssemblyName>Binebase.Exchange.Gateway.Admin</AssemblyName>
   </PropertyGroup>
 
 

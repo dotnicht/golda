@@ -24,7 +24,7 @@ namespace Binebase.Exchange.Common.Infrastructure
 
         public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services)
         {
-            services.AddServices(Assembly.GetExecutingAssembly());            
+            services.AddServices(Assembly.GetExecutingAssembly());
             return services;
         }
 
@@ -96,7 +96,7 @@ namespace Binebase.Exchange.Common.Infrastructure
                      MinimumLogEventLevel = Serilog.Events.LogEventLevel.Warning
                  })
                  .WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
-                 .Enrich.WithProperty("Environment", environment.EnvironmentName)
+                 .Enrich.WithProperty("Environment", $"{environment.EnvironmentName}: {Assembly.GetCallingAssembly().GetName().Name}")
                  .ReadFrom.Configuration(configuration);
 
             if (environment.IsProduction())
@@ -112,7 +112,7 @@ namespace Binebase.Exchange.Common.Infrastructure
             return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
             {
                 AutoRegisterTemplate = true,
-                IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
+                IndexFormat = $"{Assembly.GetCallingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
             };
         }
     }
