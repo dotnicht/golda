@@ -92,7 +92,7 @@ namespace Binebase.Exchange.Common.Infrastructure
                      CustomIcon = ":ghost:",
                      Period = TimeSpan.FromSeconds(10),
                      ShowDefaultAttachments = false,
-                     ShowExceptionAttachments = true,
+                     ShowExceptionAttachments = true,   
                      MinimumLogEventLevel = Serilog.Events.LogEventLevel.Warning
                  })
                  .WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
