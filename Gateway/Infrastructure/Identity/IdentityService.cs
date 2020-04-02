@@ -69,9 +69,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         public async Task<string> GenerateResetPasswordUrl(Guid userId)
             => await Task.FromResult(string.Format(_configuration.ResetPasswordUrlFormat, userId, HttpUtility.UrlEncode(await GeneratePasswordResetToken(userId))));
 
-        public async Task<string> GenerateAuthenticatorUrl(User user, string key)
-            => await Task.FromResult(string.Format(_configuration.AuthenticatorUrlFormat, key, HttpUtility.UrlEncode(user.Email)));
-
         public Task<string> GenerateConfirmationToken(Guid userId)
             => _userManager.GenerateEmailConfirmationTokenAsync(_userManager.Users.Single(u => u.Id == userId));
 
