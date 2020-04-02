@@ -15,12 +15,7 @@ using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using Serilog;
-using Serilog.Exceptions;
-using Serilog.Sinks.Elasticsearch;
-using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace Binebase.Exchange.CryptoService.Api
 {
