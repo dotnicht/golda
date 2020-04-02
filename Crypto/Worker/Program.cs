@@ -1,6 +1,5 @@
 using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.CryptoService.Infrastructure;
-using Binebase.Exchange.CryptoService.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -9,49 +8,52 @@ using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
 using System.Reflection;
 using System;
-
+using System.IO;
 namespace Binebase.Exchange.Crypto.Worker
 {
     public sealed class Program
     {
         public static void Main(string[] args)
         {
-            ConfigureLogging();
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .UseSerilog()
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddHostedService<Worker>();
-                    services.AddInfrastructure(hostContext.Configuration);
-                    services.AddConfigurationProviders(hostContext.Configuration);
-                });
-        private static void ConfigureLogging()
+        public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile(
-                    $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json",
-                    optional: true)
-                .Build();
-
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .Enrich.WithExceptionDetails()
-                .Enrich.WithMachineName()
-                .WriteTo.Debug()
-                .WriteTo.Console()
-                .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))
-                .Enrich.WithProperty("Environment", environment)
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
+            return Host.CreateDefaultBuilder(args)
+            .UseSerilog()
+            .ConfigureServices((hostContext, services) =>
+            {
+                var env = hostContext.HostingEnvironment;
+                var configuration = hostContext.Configuration;
+                ConfigureLogging(configuration, env);
+                services.AddHostedService<Worker>();
+                services.AddInfrastructure(hostContext.Configuration);
+                services.AddConfigurationProviders(hostContext.Configuration);
+            });
         }
 
-        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
+        private static void ConfigureLogging(IConfiguration configuration, IHostEnvironment environment)
+        {
+            LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+                 .Enrich.FromLogContext()
+                 .Enrich.WithExceptionDetails()
+                 .Enrich.WithMachineName()
+                 .WriteTo.Debug()
+                 .WriteTo.Console()
+                 .WriteTo.File(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
+                 .Enrich.WithProperty("Environment", environment)
+                 .ReadFrom.Configuration(configuration);
+
+            if (environment.IsProduction())
+            {
+                loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment.EnvironmentName));
+            }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
+        }
+
+        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
         {
             return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
             {
