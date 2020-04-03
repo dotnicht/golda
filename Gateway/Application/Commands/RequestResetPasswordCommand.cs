@@ -39,7 +39,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (!user.Confirmed)
                 {
-                    throw new NotSupportedException($"User with email {request.Email} not confirmed.");
+                    throw new NotSupportedException(ErrorCode.ConfirmationRequired);
                 }
 
                 await _emailService.SendEmail(new[] { request.Email }, "Reset Password Confirmation", await _identityService.GenerateResetPasswordUrl(user.Id));

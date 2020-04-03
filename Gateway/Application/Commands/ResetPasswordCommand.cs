@@ -42,7 +42,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (!user.Confirmed)
                 {
-                    throw new NotSupportedException($"User with email {user.Email} not confirmed.");
+                    throw new NotSupportedException(ErrorCode.ConfirmationRequired);
                 }
 
                 await _identityService.ResetPassword(request.Id, request.Code, request.Password);

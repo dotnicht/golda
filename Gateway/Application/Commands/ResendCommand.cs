@@ -39,9 +39,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (user.Confirmed)
                 {
-                    throw new NotSupportedException($"User with email {request.Email} already confirmed.");
+                    throw new NotSupportedException(ErrorCode.ConfirmationRequired);
                 }
-                
+
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(user.Id));
 
                 return Unit.Value;

@@ -52,6 +52,9 @@ namespace Binebase.Exchange.Common.Api
                 case NotImplementedException _:
                     code = HttpStatusCode.NotImplemented;
                     break;
+                default:
+                    _logger.LogError(exception, $"Unhanded exception.");
+                    break;
             }
 
             context.Response.ContentType = "application/json";
@@ -62,7 +65,7 @@ namespace Binebase.Exchange.Common.Api
                 result = JsonConvert.SerializeObject(new { Error = new[] { exception.Message } });
             }
 
-            _logger.LogError(exception, $"Unhanded exception is mapped to status code {context.Response.StatusCode}.");
+            _logger.LogWarning(exception, $"Mapped exception logged. Status code {context.Response.StatusCode}.");
 
             return context.Response.WriteAsync(result);
         }

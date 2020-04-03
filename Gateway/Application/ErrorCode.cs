@@ -38,5 +38,9 @@
         /// The error of some operation locked because multi factor requirement.
         /// </summary>
         public const string MultiFactorRequired = "multi_factor_required";
+        /// <summary>
+        /// The operation couldn't perform because the user account is not confirmed.
+        /// </summary>
+        public const string ConfirmationRequired = "confirmation_required";
     }
 }
