@@ -111,6 +111,7 @@ namespace Binebase.Exchange.Common.Infrastructure
         {
             return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
             {
+                ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "Binebase123"),
                 AutoRegisterTemplate = true,
                 IndexFormat = $"{Assembly.GetCallingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
             };
