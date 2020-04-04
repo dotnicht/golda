@@ -42,5 +42,9 @@
         /// The operation couldn't perform because the user account is not confirmed.
         /// </summary>
         public const string ConfirmationRequired = "confirmation_required";
+        /// <summary>
+        /// The operation couldn't perform because the currency is not supported.
+        /// </summary>
+        public const string CurrencyNotSupported = "currency_not_supported";
     }
 }

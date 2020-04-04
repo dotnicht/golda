@@ -7,6 +7,7 @@ using StackExchange.Redis;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
@@ -19,21 +20,21 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         public RedisCacheClient(ILogger<RedisCacheClient> logger, IOptions<Configuration> options) 
             => (_logger, _configuration) = (logger, options.Value);
 
-        public Task Set<T>(string key, T value) where T : class
-            => Set(key, JsonConvert.SerializeObject(value));
+        public Task Set<T>(string key, T value, TimeSpan? expiration = null) where T : class
+            => Set(key, JsonConvert.SerializeObject(value), expiration);
 
-        public async Task Set(string key, string value)
+        public async Task Set(string key, string value, TimeSpan? expiration = null)
         {
             if (key is null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            _logger.LogDebug($"Cache key {key} item set {value}.");
+            _logger.LogDebug($"Cache key {key} item set {value} with {expiration ?? Timeout.InfiniteTimeSpan} expiration.");
             await GetDatabase().StringSetAsync(key, value);
         }
 
-        public async Task Get<T>(string key) where T : class
+        public async Task<T> Get<T>(string key) where T : class
             => JsonConvert.DeserializeObject<T>(await Get(key));
 
         public async Task<string> Get(string key)

@@ -6,77 +6,6 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/Account/Portfolio": {
-      "get": {
-        "tags": [
-          "Account"
-        ],
-        "operationId": "Account_Portfolio",
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PortfolioQueryResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Account/Balance": {
-      "get": {
-        "tags": [
-          "Account"
-        ],
-        "operationId": "Account_Balance",
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "AssetId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BalanceQueryResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Account/Transactions": {
       "get": {
         "tags": [
@@ -120,104 +49,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/NewAccountCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/Account/Currency": {
-      "post": {
-        "tags": [
-          "Account"
-        ],
-        "operationId": "Account_Currency",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddAssetCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Account"
-        ],
-        "operationId": "Account_Currency2",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RemoveAssetCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/Account/Debit": {
-      "post": {
-        "tags": [
-          "Account"
-        ],
-        "operationId": "Account_Debit",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DebitCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/Account/Credit": {
-      "post": {
-        "tags": [
-          "Account"
-        ],
-        "operationId": "Account_Credit",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreditCommand"
               }
             }
           },
@@ -281,12 +112,181 @@
         }
       }
     },
-    "/api/Account/LockAsset": {
+    "/api/Asset/Portfolio": {
+      "get": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Portfolio",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Asset/Balance": {
+      "get": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Balance",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "AssetId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Asset": {
       "post": {
         "tags": [
-          "Account"
+          "Asset"
         ],
-        "operationId": "Account_LockAsset",
+        "operationId": "Asset_Asset",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAssetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Asset2",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveAssetCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Asset/Debit": {
+      "post": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Debit",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DebitCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Asset/Credit": {
+      "post": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_Credit",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreditCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Asset/LockAsset": {
+      "post": {
+        "tags": [
+          "Asset"
+        ],
+        "operationId": "Asset_LockAsset",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -306,12 +306,12 @@
         }
       }
     },
-    "/api/Account/UnlockAsset": {
+    "/api/Asset/UnlockAsset": {
       "post": {
         "tags": [
-          "Account"
+          "Asset"
         ],
-        "operationId": "Account_UnlockAsset",
+        "operationId": "Asset_UnlockAsset",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -334,67 +334,6 @@
   },
   "components": {
     "schemas": {
-      "PortfolioQueryResult": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "portfolio": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/Asset"
-            }
-          }
-        }
-      },
-      "Asset": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "currency": {
-            "$ref": "#/components/schemas/Currency"
-          },
-          "balance": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "isLocked": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Currency": {
-        "type": "string",
-        "description": "",
-        "x-enumNames": [
-          "BINE",
-          "EURB",
-          "BTC",
-          "ETH",
-          "EUR"
-        ],
-        "enum": [
-          "BINE",
-          "EURB",
-          "BTC",
-          "ETH",
-          "EUR"
-        ]
-      },
-      "BalanceQueryResult": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "amount": {
-            "type": "number",
-            "format": "decimal"
-          }
-        }
-      },
       "TransactionsQueryResult": {
         "type": "object",
         "additionalProperties": false,
@@ -464,6 +403,87 @@
           "id": {
             "type": "string",
             "format": "guid"
+          }
+        }
+      },
+      "LockAccountCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "UnlockAccountCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "PortfolioQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "portfolio": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Asset"
+            }
+          }
+        }
+      },
+      "Asset": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "balance": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "isLocked": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Currency": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH",
+          "EUR"
+        ],
+        "enum": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH",
+          "EUR"
+        ]
+      },
+      "BalanceQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
           }
         }
       },
@@ -545,26 +565,6 @@
           },
           "type": {
             "$ref": "#/components/schemas/TransactionType"
-          }
-        }
-      },
-      "LockAccountCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          }
-        }
-      },
-      "UnlockAccountCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
           }
         }
       },

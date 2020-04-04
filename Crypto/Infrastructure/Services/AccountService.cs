@@ -11,10 +11,10 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
     public class AccountService : IAccountService, IHttpClientScoped<IAccountService>
     {
-        private readonly AccountClient _accountClient;
+        private readonly AssetClient _accountClient;
 
         public AccountService(HttpClient httpClient, IOptions<Configuration> options)
-            => _accountClient = new AccountClient(options.Value.AccountService.ToString(), httpClient);
+            => _accountClient = new AssetClient(options.Value.AccountService.ToString(), httpClient);
 
         public async Task Debit(Guid accountId, Common.Domain.Currency currency, decimal amount, Guid externalId)
         {
