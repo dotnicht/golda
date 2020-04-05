@@ -24,6 +24,14 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             _cryptoClient = new CryptoClient(_configuration.Address.ToString(), client);
         }
 
+        public async Task GenerateDefaultAddresses(Guid id)
+        {
+            foreach (var currency in _configuration.Currencies)
+            {
+                await GenerateAddress(id, currency);
+            }
+        }
+
         public async Task<string> GetAddress(Guid id, Common.Domain.Currency currency)
         {
             var addresses = await GetAddresses(id);
@@ -78,6 +86,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         public class Configuration
         {
             public Uri Address { get; set; }
+            public Common.Domain.Currency[] Currencies { get; set; }
         }
     }
 }

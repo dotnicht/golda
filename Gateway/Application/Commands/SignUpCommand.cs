@@ -51,15 +51,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var ticket = await _identityService.GenerateConfirmationToken(id);
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id));
-                
-                await _accountService.Create(id);
-                await _accountService.AddCurrency(id, Currency.BINE);
-                await _accountService.AddCurrency(id, Currency.EURB);
-                await _accountService.AddCurrency(id, Currency.BTC);
-                await _accountService.AddCurrency(id, Currency.ETH);
 
-                await _cryptoService.GenerateAddress(id, Currency.BTC);
-                await _cryptoService.GenerateAddress(id, Currency.ETH);
+                await _accountService.CretateDefaultAccount(id);
+                await _cryptoService.GenerateDefaultAddresses(id);
 
                 var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
                 if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnonymous)

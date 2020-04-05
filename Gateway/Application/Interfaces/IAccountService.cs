@@ -8,6 +8,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
 {
     public interface IAccountService
     {
+        Task CretateDefaultAccount(Guid id);
         Task<decimal> GetBalance(Guid id, Currency currency);
         Task<Dictionary<Currency, decimal>> GetPorfolio(Guid id);
         Task Create(Guid id);
