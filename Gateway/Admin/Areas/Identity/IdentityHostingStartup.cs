@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: HostingStartup(typeof(Admin.Areas.Identity.IdentityHostingStartup))]
-namespace Admin.Areas.Identity
+[assembly: HostingStartup(typeof(Binebase.Exchange.Gateway.Admin.Areas.Identity.IdentityHostingStartup))]
+namespace Binebase.Exchange.Gateway.Admin.Areas.Identity
 {
     public class IdentityHostingStartup : IHostingStartup
     {

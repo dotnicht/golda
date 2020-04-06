@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-namespace Admin
+namespace Binebase.Exchange.Gateway.Admin
 {
     public class Program
     {

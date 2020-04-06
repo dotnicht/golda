@@ -2,7 +2,7 @@
 @page
 @using Admin.Models;
 @addTagHelper *, Admin
-@model Admin.TransactionsModel
+@model Binebase.Exchange.Gateway.Admin.TransactionsModel
 @{
     ViewData["Title"] = Model.ActiveTab == Tab.Deposits ? "Deposits" : "Withdrow";
     string btnActive1 = (Model.ActiveTab == Tab.Deposits) ? "active" : "";

@@ -2,7 +2,7 @@
 using System;
 
 
-namespace Admin.Models
+namespace Binebase.Exchange.Gateway.Admin.Models
 {
     public class User
     {
