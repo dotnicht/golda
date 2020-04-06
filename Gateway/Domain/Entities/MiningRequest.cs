@@ -8,5 +8,6 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public MiningType Type { get; set; }
         public decimal Balance { get; set; }
         public bool IsAnonymous { get; set; }
+        public int Index { get; set; }
     }
 }

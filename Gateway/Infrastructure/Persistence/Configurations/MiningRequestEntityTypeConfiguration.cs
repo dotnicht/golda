@@ -15,6 +15,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Type).HasConversion(new EnumToStringConverter<MiningType>());
             builder.Property(x => x.Amount).HasColumnType(CommonInfrastructure.DecimalFormat);
             builder.Property(x => x.Balance).HasColumnType(CommonInfrastructure.DecimalFormat);
+            builder.Property(x => x.Index).UseIdentityColumn();
         }
     }
 }
