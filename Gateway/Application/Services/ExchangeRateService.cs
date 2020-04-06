@@ -130,7 +130,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             var backward = new ExchangeRate
             {
-                Pair = new Pair(Currency.EUR, Currency.BINE),
+                Pair = new Pair(Currency.EURB, Currency.BINE),
                 DateTime = _dateTime.UtcNow,
                 Rate = (1 - _configuration.ExchangeFee) / rate.Rate
             };
