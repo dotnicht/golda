@@ -44,7 +44,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 return portfolio[currency];
             }
 
-            throw new NotFoundException(ErrorCode.CurrencyNotSupported);
+            throw new NotSupportedException(ErrorCode.CurrencyNotSupported);
         }
 
         public async Task<Dictionary<Common.Domain.Currency, decimal>> GetPorfolio(Guid id)
