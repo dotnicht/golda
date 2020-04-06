@@ -5,7 +5,6 @@ using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,7 +67,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     if (currentUser.ReferralId != null)
                     {
-                        var ammount = _calculationService.InstantMiningFee / 100 * 5;
+                        var ammount = _calculationService.InstantMiningFee / 100 * 5; // TODO: move to config (referral service).
                         await _accountService.Debit(currentUser.ReferralId.Value, Currency.EURB, ammount, mining.Id, TransactionType.Refferal);
                     }
 
