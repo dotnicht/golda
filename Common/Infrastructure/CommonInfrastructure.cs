@@ -89,7 +89,6 @@ namespace Binebase.Exchange.Common.Infrastructure
                   .Enrich.WithMachineName()
                   .WriteTo.Debug()
                   .WriteTo.Console()
-                  .WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
                   .Enrich.WithProperty("Environment", $"{environment.EnvironmentName}: {Assembly.GetCallingAssembly().GetName().Name}")
                   .ReadFrom.Configuration(configuration);
 
@@ -97,17 +96,21 @@ namespace Binebase.Exchange.Common.Infrastructure
             {
                 loggerConfiguration
                     .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment.EnvironmentName))
-                 .WriteTo.Slack(new SlackSinkOptions
-                 {
-                     WebHookUrl = "https://hooks.slack.com/services/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",
-                     CustomChannel = "#errors",
-                     BatchSizeLimit = 20,
-                     CustomIcon = ":ghost:",
-                     Period = TimeSpan.FromSeconds(10),
-                     ShowDefaultAttachments = false,
-                     ShowExceptionAttachments = true,
-                     MinimumLogEventLevel = Serilog.Events.LogEventLevel.Error
-                 });
+                    .WriteTo.Slack(new SlackSinkOptions
+                    {
+                        WebHookUrl = "https://hooks.slack.com/services/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",
+                        CustomChannel = "#errors",
+                        BatchSizeLimit = 20,
+                        CustomIcon = ":ghost:",
+                        Period = TimeSpan.FromSeconds(10),
+                        ShowDefaultAttachments = false,
+                        ShowExceptionAttachments = true,
+                        MinimumLogEventLevel = Serilog.Events.LogEventLevel.Error
+                    });
+            }
+            else
+            {
+                loggerConfiguration.WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMdd}log.log");
             }
 
             Log.Logger = loggerConfiguration.CreateLogger();
@@ -119,24 +122,26 @@ namespace Binebase.Exchange.Common.Infrastructure
             {
                 ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "Binebase123"),
                 AutoRegisterTemplate = true,
-                IndexFormat = $"{Assembly.GetCallingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
+                //IndexFormat = $"{Assembly.GetCallingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM
+                IndexFormat = $"{Assembly.GetEntryAssembly().GetName().Name.ToLower().Replace(".", "-")}"
             };
         }
+
         public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(new[]
-        {
-            TimeSpan.FromSeconds(1),
-            TimeSpan.FromSeconds(2),
-            TimeSpan.FromSeconds(3)
-        },
-        onRetry: (outcome, timespan, retryAttempt, context) =>
-        {
-            Log.Logger.Warning("Delaying for {delay}ms, then making retry {retry}.", timespan.TotalMilliseconds, retryAttempt);
-        });
+                {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(2),
+                    TimeSpan.FromSeconds(3)
+                },
+                onRetry: (outcome, timespan, retryAttempt, context) =>
+                {
+                    Log.Logger.Warning("Delaying for {delay}ms, then making retry {retry}.", timespan.TotalMilliseconds, retryAttempt);
+                });
         }
     }
 }
