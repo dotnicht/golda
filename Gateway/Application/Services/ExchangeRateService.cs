@@ -49,6 +49,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var rate = await _cacheClient.GetLastFromList<ExchangeRate>(pair.ToString());
             if (rate == null)
             {
+                // TODO: refactor.
                 var first = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString());
                 var second = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(Currency.EURB, pair.Quote).ToString());
                 rate = new ExchangeRate 
