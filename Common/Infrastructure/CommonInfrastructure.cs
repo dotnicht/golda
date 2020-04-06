@@ -106,7 +106,7 @@ namespace Binebase.Exchange.Common.Infrastructure
                      Period = TimeSpan.FromSeconds(10),
                      ShowDefaultAttachments = false,
                      ShowExceptionAttachments = true,
-                     MinimumLogEventLevel = Serilog.Events.LogEventLevel.Warning
+                     MinimumLogEventLevel = Serilog.Events.LogEventLevel.Error
                  });
             }
 
