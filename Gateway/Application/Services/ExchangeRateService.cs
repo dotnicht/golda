@@ -46,22 +46,18 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
             }
 
-            var key = pair.ToString();
-            var value = await _cacheClient.GetLastFromList<ExchangeRate>(key);
-
-            if (value == null)
+            var rate = await _cacheClient.GetLastFromList<ExchangeRate>(pair.ToString());
+            if (rate == null)
             {
-                if (_configuration.AllowFallbackClientRequest)
-                {
-                    value = await _exchangeRateProvider.GetExchangeRate(pair);
-                    if (_configuration.CacheFallbackResult)
-                    {
-                        await _cacheClient.AddToList(key, value);
-                    }
-                }
+                var first = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString());
+                var second = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(Currency.EURB, pair.Quote).ToString());
+                rate = new ExchangeRate 
+                { 
+                    Pair = pair, DateTime = _dateTime.UtcNow, Rate = first.Rate * second.Rate
+                };
             }
 
-            return value ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
+            return rate;
         }
 
         public async Task<ExchangeRate[]> GetExchangeRateHistory(Pair pair)
@@ -149,8 +145,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public class Configuration
         {
-            public bool AllowFallbackClientRequest { get; set; }
-            public bool CacheFallbackResult { get; set; }
             public string[] SupportedPairs { get; set; }
             public string[] ExchangeExcludePairs { get; set; }
             public decimal BineBaseValue { get; set; }

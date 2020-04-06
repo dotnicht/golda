@@ -95,6 +95,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     var promotion = await _calculationService.GeneratePromotion(index);
                     if (promotion != null)
                     {
+                        promotion.MiningRequest = mining;
                         _context.Promotions.Add(promotion);
                         await _context.SaveChangesAsync();
                         promotions.Add(promotion);

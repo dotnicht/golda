@@ -160,13 +160,13 @@ namespace Binebase.Exchange.Gateway.Application.Services
                             _ => throw new InvalidOperationException(),
                         };
 
-                        promotion.CurrencyAmount = promotion.TokenAmount * (await _exchangeRateService.GetExchangeRate(new Pair(promotion.Currency, Currency.BINE), false)).Rate;
+                        promotion.CurrencyAmount = promotion.TokenAmount * (await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency), false)).Rate;
                         break;
                     }
                 }
             }
 
-            return await Task.FromResult(promotion);
+            return promotion;
         }
 
         public Task<decimal> GetInstantMiningFee()
