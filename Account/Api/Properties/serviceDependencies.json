@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "EventStoreConnection",
+      "suggestion": "true",
+      "ignored": "true"
+    }
+  }
+}
