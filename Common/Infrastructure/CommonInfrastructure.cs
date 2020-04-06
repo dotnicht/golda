@@ -78,30 +78,31 @@ namespace Binebase.Exchange.Common.Infrastructure
 
         public static void ConfigureLogging(IConfiguration configuration, IHostEnvironment environment)
         {
-            LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+           var loggerConfiguration = new LoggerConfiguration()
                  .Enrich.FromLogContext()
                  .Enrich.WithExceptionDetails()
                  .Enrich.WithMachineName()
                  .WriteTo.Debug()
                  .WriteTo.Console()
-                 .WriteTo.Slack(new SlackSinkOptions
-                 {
-                     WebHookUrl = "https://hooks.slack.com/services/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",
-                     CustomChannel = "#errors",
-                     BatchSizeLimit = 20,
-                     CustomIcon = ":ghost:",
-                     Period = TimeSpan.FromSeconds(10),
-                     ShowDefaultAttachments = false,
-                     ShowExceptionAttachments = true,   
-                     MinimumLogEventLevel = Serilog.Events.LogEventLevel.Warning
-                 })
                  .WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMddHHmm}log.log")
                  .Enrich.WithProperty("Environment", $"{environment.EnvironmentName}: {Assembly.GetCallingAssembly().GetName().Name}")
                  .ReadFrom.Configuration(configuration);
 
             if (environment.IsProduction())
             {
-                loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment.EnvironmentName));
+                loggerConfiguration
+                    .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment.EnvironmentName))
+                    .WriteTo.Slack(new SlackSinkOptions
+                    {
+                        WebHookUrl = "https://hooks.slack.com/services/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",
+                        CustomChannel = "#errors",
+                        BatchSizeLimit = 20,
+                        CustomIcon = ":ghost:",
+                        Period = TimeSpan.FromSeconds(10),
+                        ShowDefaultAttachments = false,
+                        ShowExceptionAttachments = true,
+                        MinimumLogEventLevel = Serilog.Events.LogEventLevel.Warning
+                    });
             }
 
             Log.Logger = loggerConfiguration.CreateLogger();
