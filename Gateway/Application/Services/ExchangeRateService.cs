@@ -61,7 +61,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 }
             }
 
-            return value;
+            return value ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
         }
 
         public async Task<ExchangeRate[]> GetExchangeRateHistory(Pair pair)
@@ -128,9 +128,16 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 }
             }
 
+            var backward = new ExchangeRate
+            {
+                Pair = new Pair(Currency.EUR, Currency.BINE),
+                DateTime = _dateTime.UtcNow,
+                Rate = (1 - _configuration.ExchangeFee) / rate.Rate
+            };
+
             try
             {
-                _cacheClient.AddToList(rate.Pair.ToString(), rate).Wait();
+                Task.WaitAll(_cacheClient.AddToList(rate.Pair.ToString(), rate), _cacheClient.AddToList(backward.Pair.ToString(), backward));
             }
             catch (AggregateException ex)
             {
