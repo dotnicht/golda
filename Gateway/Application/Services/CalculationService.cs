@@ -108,7 +108,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                             Configuration.InstantItem.Category.x2x5 => RandomInRange(2, 5),
                             Configuration.InstantItem.Category.x5x10 => RandomInRange(5, 10),
                             Configuration.InstantItem.Category.x10x100 => RandomInRange(10, 100),
-                            _ => throw new NotSupportedException(),
+                            _ => throw new InvalidOperationException(),
                         };
 
                         break;
@@ -157,10 +157,10 @@ namespace Binebase.Exchange.Gateway.Application.Services
                             Configuration.PromotionItem.Category.LastRange => last * RandomInRange(0.4M, 0.75M),
                             Configuration.PromotionItem.Category.LastAll => last,
                             Configuration.PromotionItem.Category.AllRange => balance * RandomInRange(0.1M, 05M),
-                            _ => throw new NotSupportedException(),
+                            _ => throw new InvalidOperationException(),
                         };
 
-                        promotion.CurrencyAmount = promotion.TokenAmount * (await _exchangeRateService.GetExchangeRate(new Pair(promotion.Currency, Currency.BINE))).Rate;
+                        promotion.CurrencyAmount = promotion.TokenAmount * (await _exchangeRateService.GetExchangeRate(new Pair(promotion.Currency, Currency.BINE), false)).Rate;
                         break;
                     }
                 }

@@ -39,11 +39,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             {
                 var ex = await _exchangeRateService.GetExchangeRate(new Pair(request.Base, request.Quote), false, true);
 
-                if (ex == null)
-                {
-                    throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
-                }
-
                 if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _calculationService.OperationLockMiningCount)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);

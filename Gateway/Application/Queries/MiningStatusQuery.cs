@@ -27,9 +27,9 @@ namespace Binebase.Exchange.Gateway.Application.Queries
 
                 return new MiningStatusQueryResult
                 {
-                    BonusTimeout = _dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default))?.Created 
+                    BonusTimeout = _calculationService.WeeklyTimeout - (_dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default))?.Created) 
                         ?? default,
-                    InstantTimeout = _dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == MiningType.Instant))?.Created 
+                    InstantTimeout = _calculationService.InstantTimeout - (_dateTime.UtcNow - (await minings.FirstOrDefaultAsync(x => x.Type == MiningType.Instant))?.Created) 
                         ?? default,
                     InstantMiningCount = await minings.CountAsync(x => x.Type == MiningType.Instant),
                     InstantBoostMapping = _calculationService.InstantBoostMapping
