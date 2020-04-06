@@ -22,7 +22,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public AccountService(HttpClient client, IOptions<Configuration> options, ICacheClient cacheClient)
             => (_configuration, client.BaseAddress, _accountClient, _assetClient, _cacheClient) 
-                = (options.Value, _configuration.Address, new AccountClient(_configuration.Address.ToString(), client), new AssetClient(_configuration.Address.ToString(), client), cacheClient);
+                = (options.Value, client.BaseAddress = options.Value.Address, new AccountClient(options.Value.Address.ToString(), client), new AssetClient(options.Value.Address.ToString(), client), cacheClient);
 
         public async Task CretateDefaultAccount(Guid id)
         {

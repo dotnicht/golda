@@ -28,11 +28,15 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
             => await Mediator.Send(command);
 
         [HttpPost, AllowAnonymous, ProducesResponseType(typeof(RequestMiningCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<RequestMiningCommandResult>> RequestMining(RequestMiningCommand command) 
+        new public async Task<ActionResult<RequestMiningCommandResult>> Request(RequestMiningCommand command) 
             => await Mediator.Send(command ?? new RequestMiningCommand());
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Promotion(ExchangePromotionCommand command) 
             => Convert(await Mediator.Send(command));
-    }
+
+        [HttpGet, ProducesResponseType(typeof(MiningIndexQueryResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<MiningIndexQueryResult>> Index(MiningIndexQuery query)
+            => await Mediator.Send(query);
+     }
 }

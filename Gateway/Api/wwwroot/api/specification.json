@@ -822,12 +822,12 @@
         ]
       }
     },
-    "/api/Mining/RequestMining": {
+    "/api/Mining/Request": {
       "post": {
         "tags": [
           "Mining"
         ],
-        "operationId": "Mining_RequestMining",
+        "operationId": "Mining_Request",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -875,6 +875,43 @@
         "responses": {
           "204": {
             "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Mining/Index": {
+      "get": {
+        "tags": [
+          "Mining"
+        ],
+        "operationId": "Mining_Index",
+        "requestBody": {
+          "x-name": "query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MiningIndexQuery"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiningIndexQueryResult"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1486,6 +1523,34 @@
           "id": {
             "type": "string",
             "format": "guid"
+          }
+        }
+      },
+      "MiningIndexQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "index": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "MiningIndexQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       }
