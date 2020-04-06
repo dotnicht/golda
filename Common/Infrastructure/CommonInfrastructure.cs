@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Extensions.Http;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
@@ -43,13 +45,16 @@ namespace Binebase.Exchange.Common.Infrastructure
             var method = typeof(HttpClientFactoryServiceCollectionExtensions)
                 .GetMethod(nameof(HttpClientFactoryServiceCollectionExtensions.AddHttpClient), 2, new[] { typeof(IServiceCollection) });
 
+            var method1 = typeof(PollyHttpClientBuilderExtensions)
+               .GetMethod(nameof(PollyHttpClientBuilderExtensions.AddPolicyHandler), new[] { typeof(IHttpClientBuilder), typeof(IAsyncPolicy<HttpResponseMessage>)});
+
             foreach (var type in assembly.GetExportedTypes())
             {
                 foreach (var item in type.GetInterfaces())
                 {
                     if (item.IsGenericType && item.GetGenericTypeDefinition() == typeof(IHttpClientScoped<>))
-                    {
-                        method.MakeGenericMethod(item.GetGenericArguments().Single(), type).Invoke(null, new[] { services });
+                    {            
+                        method1.Invoke(null, new[] { method.MakeGenericMethod(item.GetGenericArguments().Single(), type).Invoke(null, new[] { services }), CommonInfrastructure.GetRetryPolicy() });
                     }
                 }
             }
@@ -115,6 +120,14 @@ namespace Binebase.Exchange.Common.Infrastructure
                 AutoRegisterTemplate = true,
                 IndexFormat = $"{Assembly.GetCallingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
             };
+        }
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
+                                                                            retryAttempt)));
         }
     }
 }

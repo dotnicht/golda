@@ -48,7 +48,7 @@ namespace Admin
 
             services.AddOptions();
             services.AddHttpContextAccessor();
-            services.AddHttpClient<IAccountService, AccountService>();
+            services.AddHttpClient<IAccountService, AccountService>().AddPolicyHandler(CommonInfrastructure.GetRetryPolicy());
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDateTime, DateTimeService>();
             services.Configure<AccountService.Configuration>(Configuration.GetSection("AccountService.Configuration"));
