@@ -21,8 +21,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly ICacheClient _cacheClient;
 
         public AccountService(HttpClient client, IOptions<Configuration> options, ICacheClient cacheClient)
-            => (_configuration, client.BaseAddress, _accountClient, _assetClient, _cacheClient) 
-                = (options.Value, client.BaseAddress = options.Value.Address, new AccountClient(options.Value.Address.ToString(), client), new AssetClient(options.Value.Address.ToString(), client), cacheClient);
+            => (_configuration, _accountClient, _assetClient, _cacheClient) 
+                = (options.Value, new AccountClient(options.Value.Address.ToString(), client), new AssetClient(options.Value.Address.ToString(), client), cacheClient);
 
         public async Task CretateDefaultAccount(Guid id)
         {
@@ -44,7 +44,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 return portfolio[currency];
             }
 
-            throw new NotFoundException(ErrorCode.CurrencyNotSupported);
+            throw new NotSupportedException(ErrorCode.CurrencyNotSupported);
         }
 
         public async Task<Dictionary<Common.Domain.Currency, decimal>> GetPorfolio(Guid id)

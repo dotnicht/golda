@@ -35,7 +35,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         }
 
         public async Task<T> Get<T>(string key) where T : class
-            => JsonConvert.DeserializeObject<T>(await Get(key));
+        {
+            var item = await Get(key);
+            return item == null
+                ? null
+                : JsonConvert.DeserializeObject<T>(item);
+        }
 
         public async Task<string> Get(string key)
         {
