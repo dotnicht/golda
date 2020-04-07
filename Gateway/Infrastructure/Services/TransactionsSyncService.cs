@@ -6,22 +6,26 @@ using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
+using System;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Binebase.Exchange.Gateway.Application.Services
+namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
-    public class TransactionsSyncService : ITransactionsSyncService, IConfigurationProvider<ExchangeRateService.Configuration>
+    public class TransactionsSyncService : ITransactionsSyncService
     {
         private readonly Configuration _configuration;
         private readonly ILogger _logger;
         private readonly ICryptoService _cryptoService;
-        private readonly IIdentityService _identityService;
-        private readonly IApplicationDbContext _context;
-        public TransactionsSyncService(IOptions<Configuration> options, ILogger<TransactionsSyncService> logger, ICryptoService cryptoService, IIdentityService identityService, IApplicationDbContext context) =>
-            (_configuration, _logger, _cryptoService, _identityService, _context) = (options.Value, logger, cryptoService, identityService, context);
+        private readonly IServiceProvider _serviceProvider;
+
+        public TransactionsSyncService(IOptions<Configuration> options, ILogger<TransactionsSyncService> logger, ICryptoService cryptoService, IServiceProvider serviceProvider) =>
+            (_configuration, _logger, _cryptoService, _serviceProvider) = (options.Value, logger, cryptoService, serviceProvider);
 
         public async Task SyncTransactions()
         {
-            var usersIds = _identityService.GetUsersIDs();
+            using var ctx = _serviceProvider.GetRequiredService<IUserContext>();
+            var usersIds = ctx.Users.Select(x => x.Id).ToArray();
 
             foreach (var userId in usersIds)
             {
@@ -34,20 +38,22 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         private void UpdateTransactionsInStore(List<Transaction> userTransactions)
         {
+            using var scope = _serviceProvider.CreateScope();
+            using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
             foreach (var inTransaction in userTransactions)
             {
                 var inputHash = inTransaction.GetHashCode();
-                var existingTrans = _context.Transactions.FirstOrDefault(t => t.Id == inTransaction.Id);
+                var existingTrans = ctx.Transactions.FirstOrDefault(t => t.Id == inTransaction.Id);
                 if (existingTrans != null)
                 {
                     if (!existingTrans.GetHashCode().Equals(inTransaction.GetHashCode()))
                     {
-                        _context.Transactions.Update(inTransaction);
+                        ctx.Transactions.Update(inTransaction);
                     }
                 }
                 else
                 {
-                    _context.Transactions.AddAsync(inTransaction);
+                    ctx.Transactions.AddAsync(inTransaction);
                 }
             }
         }

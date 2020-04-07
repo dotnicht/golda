@@ -18,6 +18,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Binebase.Exchange.Gateway.Worker;
+using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 
 namespace Worker
 {
@@ -36,7 +40,6 @@ namespace Worker
                         services.AddCommonInfrastructure();
                         services.AddHostedService<Worker>();
 
-                        services.AddTransient<IDateTime, DateTimeService>();
                         services.AddSingleton<ICacheClient, RedisCacheClient>();
                         services.AddTransient<IExchangeRateService, ExchangeRateService>();
                         services.AddTransient<IExchangeRateProvider, ExchangeRateProvider>();
@@ -44,16 +47,18 @@ namespace Worker
                         services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
                         services.AddTransient<IBinanceClient, BinanceClient>();
 
-                        services.AddTransient<IIdentityService, IdentityService>();
                         services.AddTransient<ITransactionsSyncService, TransactionsSyncService>();
                         services.AddHttpClient<ICryptoService, CryptoService>().AddPolicyHandler(CommonInfrastructure.GetRetryPolicy());
+
+                        services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection"),
+                             b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
+                        services.AddTransient<ICurrentUserService, SystemUserService>();
+                        services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
+                        services.AddTransient<IUserContext, ApplicationDbContext>();
+
                         services.AddConfigurationProviders(hostContext.Configuration);
                         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-                        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(x => x.SignIn.RequireConfirmedEmail = false)
-                                 .AddDefaultTokenProviders()
-                                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
                     });
         }
     }
