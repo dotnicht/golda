@@ -35,7 +35,7 @@ namespace Worker
 
                         services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
                         services.AddTransient<IBinanceClient, BinanceClient>();
-
+                        services.AddTransient<ITransactionsSyncService, TransactionsSyncService>();
                         services.AddConfigurationProviders(hostContext.Configuration);
                     });
         }

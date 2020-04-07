@@ -2,7 +2,6 @@ using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Common.Application.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,13 +12,13 @@ namespace Worker
         private readonly ILogger _logger;
         private readonly IDateTime _dateTime;
         private readonly IExchangeRateService _exchangeRateService;
-
-        public Worker(ILogger<Worker> logger, IDateTime dateTime, IExchangeRateService exchangeRateService)
-            => (_logger, _dateTime, _exchangeRateService) = (logger, dateTime, exchangeRateService);
+        private readonly ITransactionsSyncService _transactionsSyncService;
+        public Worker(ILogger<Worker> logger, IDateTime dateTime, IExchangeRateService exchangeRateService, ITransactionsSyncService transactionsSyncService)
+            => (_logger, _dateTime, _exchangeRateService, _transactionsSyncService) = (logger, dateTime, exchangeRateService, transactionsSyncService);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var tasks = new[] { _exchangeRateService.Subscribe() };
+            var tasks = new[] { _exchangeRateService.Subscribe(), _transactionsSyncService.SyncTransactions() };
 
             while (!stoppingToken.IsCancellationRequested)
             {
