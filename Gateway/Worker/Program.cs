@@ -49,6 +49,11 @@ namespace Worker
                         services.AddHttpClient<ICryptoService, CryptoService>().AddPolicyHandler(CommonInfrastructure.GetRetryPolicy());
                         services.AddConfigurationProviders(hostContext.Configuration);
                         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+                        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(x => x.SignIn.RequireConfirmedEmail = false)
+                                 .AddDefaultTokenProviders()
+                                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
                     });
         }
     }
