@@ -36,7 +36,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<Unit> Handle(ExchangePromotionCommand request, CancellationToken cancellationToken)
             {
                 // TODO: timeout value to config. 
-                var promotion = _context.Promotions.SingleOrDefault(x => x.Id == request.Id && x.Created > _dateTime.UtcNow - TimeSpan.FromSeconds(10) && !x.IsExchanged);
+                var promotion = _context.Promotions.SingleOrDefault(x => x.Id == request.Id && x.Created > _dateTime.UtcNow - TimeSpan.FromSeconds(15) && !x.IsExchanged);
 
                 if (promotion == null)
                 {
