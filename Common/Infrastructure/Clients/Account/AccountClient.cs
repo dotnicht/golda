@@ -48,14 +48,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AccountException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<TransactionsQueryResult> TransactionsAsync(System.Guid? id)
         {
             return TransactionsAsync(id, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AccountException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<TransactionsQueryResult> TransactionsAsync(System.Guid? id, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -101,7 +101,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AccountException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
                         return default(TransactionsQueryResult);
@@ -118,14 +118,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AccountException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task NewAsync(NewAccountCommand command)
         {
             return NewAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AccountException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task NewAsync(NewAccountCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -167,7 +167,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AccountException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -182,14 +182,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AccountException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task LockAsync(LockAccountCommand command)
         {
             return LockAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AccountException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task LockAsync(LockAccountCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -231,7 +231,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AccountException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -246,14 +246,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AccountException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task UnlockAsync(UnlockAccountCommand command)
         {
             return UnlockAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AccountException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task UnlockAsync(UnlockAccountCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -295,7 +295,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AccountException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -343,7 +343,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                 catch (Newtonsoft.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new AccountException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -362,7 +362,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                 catch (Newtonsoft.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new AccountException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -437,14 +437,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<PortfolioQueryResult> PortfolioAsync(System.Guid? id)
         {
             return PortfolioAsync(id, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<PortfolioQueryResult> PortfolioAsync(System.Guid? id, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -490,7 +490,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AssetException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
                         return default(PortfolioQueryResult);
@@ -507,14 +507,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<BalanceQueryResult> BalanceAsync(System.Guid? id, System.Guid? assetId)
         {
             return BalanceAsync(id, assetId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<BalanceQueryResult> BalanceAsync(System.Guid? id, System.Guid? assetId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -564,7 +564,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AssetException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
                         return default(BalanceQueryResult);
@@ -581,14 +581,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task AssetAsync(AddAssetCommand command)
         {
             return AssetAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task AssetAsync(AddAssetCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -630,7 +630,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AssetException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -645,14 +645,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task Asset2Async(RemoveAssetCommand command)
         {
             return Asset2Async(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task Asset2Async(RemoveAssetCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -694,7 +694,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AssetException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -709,14 +709,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task DebitAsync(DebitCommand command)
         {
             return DebitAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task DebitAsync(DebitCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -758,7 +758,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AssetException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -773,14 +773,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task CreditAsync(CreditCommand command)
         {
             return CreditAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task CreditAsync(CreditCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -822,7 +822,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AssetException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -837,14 +837,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task LockAssetAsync(LockAssetCommand command)
         {
             return LockAssetAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task LockAssetAsync(LockAssetCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -886,7 +886,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AssetException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -901,14 +901,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task UnlockAssetAsync(UnlockAssetCommand command)
         {
             return UnlockAssetAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="AssetException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task UnlockAssetAsync(UnlockAssetCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -950,7 +950,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new AssetException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
                     }
                     finally
@@ -998,7 +998,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                 catch (Newtonsoft.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new AssetException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -1017,7 +1017,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
                 catch (Newtonsoft.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new AssetException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -1299,7 +1299,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))")]
-    public partial class ApiException : System.Exception
+    public partial class AccountException : System.Exception
     {
         public int StatusCode { get; private set; }
 
@@ -1307,7 +1307,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
 
         public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
 
-        public ApiException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception innerException) 
+        public AccountException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception innerException) 
             : base(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + response.Substring(0, response.Length >= 512 ? 512 : response.Length), innerException)
         {
             StatusCode = statusCode;
@@ -1322,11 +1322,46 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))")]
-    public partial class ApiException<TResult> : ApiException
+    public partial class AccountException<TResult> : AccountException
     {
         public TResult Result { get; private set; }
 
-        public ApiException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception innerException) 
+        public AccountException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception innerException) 
+            : base(message, statusCode, response, headers, innerException)
+        {
+            Result = result;
+        }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))")]
+    public partial class AssetException : System.Exception
+    {
+        public int StatusCode { get; private set; }
+
+        public string Response { get; private set; }
+
+        public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
+
+        public AssetException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception innerException) 
+            : base(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + response.Substring(0, response.Length >= 512 ? 512 : response.Length), innerException)
+        {
+            StatusCode = statusCode;
+            Response = response; 
+            Headers = headers;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("HTTP Response: \n\n{0}\n\n{1}", Response, base.ToString());
+        }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))")]
+    public partial class AssetException<TResult> : AssetException
+    {
+        public TResult Result { get; private set; }
+
+        public AssetException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception innerException) 
             : base(message, statusCode, response, headers, innerException)
         {
             Result = result;

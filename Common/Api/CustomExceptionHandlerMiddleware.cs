@@ -1,4 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Exceptions;
+using Binebase.Exchange.Common.Infrastructure.Clients.Account;
+using Binebase.Exchange.Common.Infrastructure.Clients.Crypto;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -41,6 +43,12 @@ namespace Binebase.Exchange.Common.Api
                     result = JsonConvert.SerializeObject(validationException.Failures);
                     break;
                 case NotSupportedException _:
+                    code = HttpStatusCode.BadRequest;
+                    break;
+                case AccountException _:
+                    code = HttpStatusCode.BadRequest;
+                    break;
+                case CryptoException _:
                     code = HttpStatusCode.BadRequest;
                     break;
                 case NotFoundException _:
