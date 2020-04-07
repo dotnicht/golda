@@ -54,7 +54,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Worker", "Crypto\Worker\Wor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin", "Gateway\Admin\Admin.csproj", "{3D67A4F5-B99A-4CB5-A253-3C9ABF893195}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Account\Contracts\Contracts.csproj", "{9F6F4433-2618-49BB-92EA-A48296CEADBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Account\Contracts\Contracts.csproj", "{9F6F4433-2618-49BB-92EA-A48296CEADBF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionsWorker", "Gateway\TransactionsWorker\TransactionsWorker.csproj", "{AEB8BB8C-CE74-4E41-84B6-3D5C6BD93AF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,6 +144,10 @@ Global
 		{9F6F4433-2618-49BB-92EA-A48296CEADBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F6F4433-2618-49BB-92EA-A48296CEADBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F6F4433-2618-49BB-92EA-A48296CEADBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEB8BB8C-CE74-4E41-84B6-3D5C6BD93AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEB8BB8C-CE74-4E41-84B6-3D5C6BD93AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEB8BB8C-CE74-4E41-84B6-3D5C6BD93AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEB8BB8C-CE74-4E41-84B6-3D5C6BD93AF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -167,6 +173,7 @@ Global
 		{4CAB8555-1836-4C03-8CF1-1067A939C7BA} = {DACC5270-9FFE-4DD8-AD25-0125447D3E76}
 		{3D67A4F5-B99A-4CB5-A253-3C9ABF893195} = {FA275063-9127-4A29-810B-E7544D52F381}
 		{9F6F4433-2618-49BB-92EA-A48296CEADBF} = {A213AA32-B7FE-451C-BB30-67B69526ED83}
+		{AEB8BB8C-CE74-4E41-84B6-3D5C6BD93AF7} = {FA275063-9127-4A29-810B-E7544D52F381}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {30F4927D-EBE6-4A00-934F-C1C0FD0906E3}
