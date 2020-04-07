@@ -1,10 +1,10 @@
-﻿using Admin.Models;
+﻿using Binebase.Exchange.Gateway.Admin.Models;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Admin.Helpers
+namespace Binebase.Exchange.Gateway.Admin.Helpers
 {
     public class MapingHelper
     {

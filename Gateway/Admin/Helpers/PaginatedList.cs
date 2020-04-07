@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Admin.Models;
+using Binebase.Exchange.Gateway.Admin.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Admin.Helpers
+namespace Binebase.Exchange.Gateway.Admin.Helpers
 {
     public class PaginatedList<T> : List<T>
     {

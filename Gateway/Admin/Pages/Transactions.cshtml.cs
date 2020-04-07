@@ -7,10 +7,10 @@ using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Admin.Models;
-using Admin.Helpers;
+using Binebase.Exchange.Gateway.Admin.Models;
+using Binebase.Exchange.Gateway.Admin.Helpers;
 
-namespace Admin
+namespace Binebase.Exchange.Gateway.Admin
 {
     public class TransactionsModel : PageModel
     {

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Admin.Helpers;
-using Admin.Models;
+using Binebase.Exchange.Gateway.Admin.Helpers;
+using Binebase.Exchange.Gateway.Admin.Models;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Admin.Pages
+namespace Binebase.Exchange.Gateway.Admin.Pages
 {
     public class UsersModel : PageModel
     {

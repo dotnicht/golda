@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Admin.Areas.Identity.Pages.Account.Manage
+namespace Binebase.Exchange.Gateway.Admin.Areas.Identity.Pages.Account.Manage
 {
     public static class ManageNavPages
     {
