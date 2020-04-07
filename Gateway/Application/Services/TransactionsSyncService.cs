@@ -16,7 +16,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private readonly ICryptoService _cryptoService;
         private readonly IIdentityService _identityService;
         private readonly IApplicationDbContext _context;
-        public TransactionsSyncService(IOptions<Configuration> options, ILogger<ExchangeRateService> logger, ICryptoService cryptoService, IIdentityService identityService, IApplicationDbContext context) =>
+        public TransactionsSyncService(IOptions<Configuration> options, ILogger<TransactionsSyncService> logger, ICryptoService cryptoService, IIdentityService identityService, IApplicationDbContext context) =>
             (_configuration, _logger, _cryptoService, _identityService, _context) = (options.Value, logger, cryptoService, identityService, context);
 
         public async Task SyncTransactions()
