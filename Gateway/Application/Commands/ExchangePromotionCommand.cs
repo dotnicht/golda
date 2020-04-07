@@ -3,7 +3,6 @@ using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
-using Binebase.Exchange.Gateway.Domain.Enums;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using MediatR;
 using System;
@@ -45,7 +44,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency));
-
+                // TODO: get fixed ex rate from promotion.
                 await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, promotion.Id, TransactionType.Exchange);
                 await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, promotion.Id, TransactionType.Exchange);
 
