@@ -41,11 +41,29 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
                     throw new ValidationException();
                 }
 
-                address = _context.Addresses.SingleOrDefault(x => x.AccountId == request.Id && x.Currency == request.Currency && x.Type == AddressType.Withdraw && x.Public == request.Public)
-                    ?? _context.Addresses.Add(new Address { AccountId = request.Id, Currency = request.Currency, Type = AddressType.Withdraw, Public = request.Public, GeneratedBlock = await _blockchainService.CurrentIndex(request.Currency) }).Entity;
+                var index = await _blockchainService.CurrentIndex(request.Currency);
 
-                var hash = await _blockchainService.PublishTransaction(request.Currency, request.Amount, request.Public);
-                return new PublishTransactionCommandResult { Hash = hash };
+                address = _context.Addresses.SingleOrDefault(x => x.AccountId == request.Id && x.Currency == request.Currency && x.Type == AddressType.Withdraw && x.Public == request.Public)
+                    ?? _context.Addresses.Add(new Address { AccountId = request.Id, Currency = request.Currency, Type = AddressType.Withdraw, Public = request.Public, GeneratedBlock = index }).Entity;
+
+                await _context.SaveChangesAsync();
+
+                var result = await _blockchainService.PublishTransaction(request.Currency, request.Amount, request.Public);
+
+                var tx = new Transaction
+                { 
+                    Id = Guid.NewGuid(),
+                    AddressId = address.Id,
+                    Amount = request.Amount,
+                    RawAmount = result.Amount,
+                    Hash = result.Hash,
+                    Direction = TransactionDirection.Outbound
+                };
+
+                _context.Transactions.Add(tx);
+                await _context.SaveChangesAsync();
+
+                return new PublishTransactionCommandResult { Hash = result.Hash };
             }
         }
     }
