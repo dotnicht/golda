@@ -5,18 +5,18 @@ using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
+using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
+using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
+using Binebase.Exchange.Gateway.Worker;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Binebase.Exchange.Gateway.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Binebase.Exchange.Gateway.Worker;
-using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 
 namespace Worker
 {

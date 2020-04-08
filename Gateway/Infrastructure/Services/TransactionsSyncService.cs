@@ -1,12 +1,12 @@
 ﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using System.Linq;
-using System.Threading.Tasks;
 using Binebase.Exchange.Gateway.Domain.Entities;
+using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using System;
-using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
