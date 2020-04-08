@@ -18,20 +18,29 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly ILogger _logger;
         private readonly ICryptoService _cryptoService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public TransactionsSyncService(IOptions<Configuration> options, ILogger<TransactionsSyncService> logger, ICryptoService cryptoService, IServiceProvider serviceProvider) =>
-            (_configuration, _logger, _cryptoService, _serviceProvider) = (options.Value, logger, cryptoService, serviceProvider);
+
+        public TransactionsSyncService(IOptions<Configuration> options, ILogger<TransactionsSyncService> logger, ICryptoService cryptoService, IServiceProvider serviceProvider, IServiceScopeFactory scopeFactory) =>
+             (_configuration, _logger, _cryptoService, _serviceProvider, _scopeFactory) = (options.Value, logger, cryptoService, serviceProvider, scopeFactory);
 
         public async Task SyncTransactions()
         {
-            using var ctx = _serviceProvider.GetRequiredService<IUserContext>();
-            var usersIds = ctx.Users.Select(x => x.Id).ToArray();
 
-            foreach (var userId in usersIds)
-            {
-                var userTransactions = _cryptoService.GetTransactions(userId);
-                UpdateTransactionsInStore(userTransactions.Result.ToList());
-            }
+                Guid[] usersIds;
+
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var context = scope.ServiceProvider.GetService<IUserContext>();
+                    usersIds = context.Users.Select(x => x.Id).ToArray();
+                }
+
+                foreach (var userId in usersIds)
+                {
+                    var userTransactions = _cryptoService.GetTransactions(userId);
+                    UpdateTransactionsInStore(userTransactions.Result.ToList());
+                }
+
 
             await Task.CompletedTask;
         }
