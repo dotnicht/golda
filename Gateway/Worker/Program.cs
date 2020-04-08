@@ -7,16 +7,13 @@ using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
-using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
-using Binebase.Exchange.Gateway.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -59,6 +56,7 @@ namespace Worker
 
                         services.AddConfigurationProviders(hostContext.Configuration);
                         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+                        services.Configure<CryptoService.Configuration>(hostContext.Configuration.GetSection("CryptoService.Configuration"));
                     });
         }
     }
