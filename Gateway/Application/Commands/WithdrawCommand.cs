@@ -33,12 +33,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IIdentityService identityService,
                 ICalculationService calculationService,
                 ICurrentUserService currentUserService)
-                => (_context, _cryptoService, _accountService, _identityService, _calculationService, _currentUserService) 
+                => (_context, _cryptoService, _accountService, _identityService, _calculationService, _currentUserService)
                     = (context, cryptoService, accountService, identityService, calculationService, currentUserService);
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {
-                /*
                 if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _calculationService.OperationLockMiningCount)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);
@@ -53,7 +52,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     throw new SecurityException(ErrorCode.MultiFactor);
                 }
-                */
+
                 var id = Guid.NewGuid();
                 await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Widthraw);
                 return new WithdrawCommandResult { Hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id) };
