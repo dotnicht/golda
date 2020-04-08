@@ -838,17 +838,17 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         }
     
         /// <exception cref="AssetException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task LockAssetAsync(LockAssetCommand command)
+        public System.Threading.Tasks.Task LockAsync(LockAssetCommand command)
         {
-            return LockAssetAsync(command, System.Threading.CancellationToken.None);
+            return LockAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="AssetException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task LockAssetAsync(LockAssetCommand command, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task LockAsync(LockAssetCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Asset/LockAsset");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Asset/Lock");
     
             var client_ = _httpClient;
             try
@@ -902,17 +902,17 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         }
     
         /// <exception cref="AssetException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task UnlockAssetAsync(UnlockAssetCommand command)
+        public System.Threading.Tasks.Task UnlockAsync(UnlockAssetCommand command)
         {
-            return UnlockAssetAsync(command, System.Threading.CancellationToken.None);
+            return UnlockAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="AssetException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task UnlockAssetAsync(UnlockAssetCommand command, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task UnlockAsync(UnlockAssetCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Asset/UnlockAsset");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Asset/Unlock");
     
             var client_ = _httpClient;
             try
