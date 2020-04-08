@@ -66,7 +66,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 if (type != MiningType.Default && amount > 0)
                 {
                     mining.Type = type;
-                    mining.Amount += amount;
+                    mining.Amount = amount;
                     await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining);
                 }
 

@@ -15,7 +15,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 {
     public class MiningInstantCommand : IRequest<MiningInstantCommandResult>
     {
-        public bool Boost { get; set; }
+        public int? Boost { get; set; }
 
         public class MiningInstantCommandHandler : IRequestHandler<MiningInstantCommand, MiningInstantCommandResult>
         {
@@ -55,6 +55,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var mapping = _calculationService.InstantBoostMapping.Select(x => new { x.Key, x.Value }).OrderBy(x => x.Key);
                 var index = _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant);
 
+                if (index < mapping.SingleOrDefault(x => x.Value == request.Boost)?.Key)
+                {
+                    throw new NotSupportedException(ErrorCode.InsufficientMinings);
+                }
+
                 mining = new MiningRequest
                 {
                     Id = Guid.NewGuid(),
@@ -63,7 +68,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var currentUser = await _identityService.GetUser(_currentUserService.UserId);
 
-                for (var i = 0; i < (request.Boost ? mapping.FirstOrDefault(x => x.Value <= index)?.Value ?? 1 : 1); i++)
+                for (var i = 0; i < (request.Boost != null ? mapping.FirstOrDefault(x => x.Value <= request.Boost)?.Key ?? 1 : 1); i++)
                 {
                     if (currentUser.ReferralId != null)
                     {
