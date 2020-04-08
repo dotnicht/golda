@@ -52,7 +52,7 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
 
                 var tx = new Transaction
                 { 
-                    Id = Guid.NewGuid(),
+                    Id = request.ExternalId,
                     AddressId = address.Id,
                     Amount = request.Amount,
                     RawAmount = result.Amount,
