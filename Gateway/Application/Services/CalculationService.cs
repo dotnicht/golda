@@ -95,7 +95,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             if (Random() < _configuration.Instant.Probability)
             {
                 var rate = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, Currency.EURB));
-                bine = _configuration.Instant.Fee * rate.Rate;
+                bine = _configuration.Instant.Fee / rate.Rate;
                 var rnd = Random();
 
                 foreach (var range in _configuration.Instant.Categories.OrderBy(x => x.Value))
