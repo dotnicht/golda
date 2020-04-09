@@ -86,9 +86,9 @@ namespace Binebase.Exchange.Gateway.Admin
                     case "Balance":
                         TransactionsIQ = TransactionsIQ.Where(t => t.Balance.ToString().Contains(searchString)).ToList();
                         break;
-                    case "UserId":
-                        TransactionsIQ = TransactionsIQ.Where(t => t.UserId.ToString().Contains(searchString)).ToList();
-                        break;
+                    //case "UserId":
+                    //    TransactionsIQ = TransactionsIQ.Where(t => t.UserId.ToString().Contains(searchString)).ToList();
+                    //    break;
                     case "Type":
                         TransactionsIQ = TransactionsIQ.Where(t => t.Type.ToString().Contains(searchString)).ToList();
                         break;

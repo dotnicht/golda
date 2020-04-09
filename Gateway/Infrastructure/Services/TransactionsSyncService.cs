@@ -38,7 +38,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     {
                         //_logger.LogDebug($"Processing transactions for user with id{userId.ToString()}.");
                         var userTransactions = await _cryptoService.GetTransactions(userId);
-                        await UpdateTransactionsInStore(userTransactions);
+                        await UpdateTransactionsInStore(userTransactions, userId);
                     }
                 }
                 catch (Exception ex)
@@ -50,12 +50,13 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             await Task.Delay(_configuration.TransactionsSyncTimeout);
         }
 
-        private async Task UpdateTransactionsInStore(Transaction[] userTransactions)
+        private async Task UpdateTransactionsInStore(Transaction[] userTransactions, Guid userId)
         {
             using var scope = _serviceProvider.CreateScope();
             using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
             foreach (var inTransaction in userTransactions)
             {
+                inTransaction.CreatedBy = userId;
                 var inputHash = inTransaction.GetHashCode();
                 var existingTrans = ctx.Transactions.FirstOrDefault(t => t.Id == inTransaction.Id);
                 if (existingTrans != null)
