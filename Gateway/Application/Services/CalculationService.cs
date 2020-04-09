@@ -119,7 +119,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return bine;
         }
 
-        public async Task<Promotion> GeneratePromotion(int index)
+        public async Task<Promotion> GeneratePromotion(int index, decimal last)
         {
             // TODO: remove magic numbers.
             var promotion = null as Promotion;
@@ -146,7 +146,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
                 rnd = Random();
                 var balance = await _accountService.GetBalance(_currentUserService.UserId, Currency.BINE);
-                var last = (await _accountService.GetTransactions(_currentUserService.UserId)).OrderByDescending(x => x.DateTime).First().Amount;
 
                 foreach (var category in _configuration.Promotion.Categories.OrderBy(x => x.Value))
                 {

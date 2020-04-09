@@ -78,14 +78,18 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     }
 
                     await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionType.Fee);
-                    mining.Amount += await _calculationService.GenerateInstantReward();
+                    var value = await _calculationService.GenerateInstantReward();
 
-                    var promotion = await _calculationService.GeneratePromotion(index);
-                    if (promotion != null)
+                    if (value > 0)
                     {
-                        promotion.MiningRequestId = mining.Id;
-                        _context.Promotions.Add(promotion);
-                        promotions.Add(promotion);
+                        mining.Amount += value;
+                        var promotion = await _calculationService.GeneratePromotion(index, value);
+                        if (promotion != null)
+                        {
+                            promotion.MiningRequestId = mining.Id;
+                            _context.Promotions.Add(promotion);
+                            promotions.Add(promotion);
+                        }
                     }
                 }
 
