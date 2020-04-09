@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Services
 {
-    public class CalculationService : ICalculationService, IConfigurationProvider<CalculationService.Configuration>, ITransient<ICalculationService>
+    public class CalculationService : ICalculationService
     {
         private readonly IApplicationDbContext _context;
         private readonly IAccountService _accountService;
@@ -20,14 +21,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private readonly IIdentityService _identityService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTime _dateTime;
-        private readonly Configuration _configuration;
-
-        public TimeSpan MiningRequestWindow => _configuration.MiningRequestWindow;
-        public TimeSpan WeeklyTimeout => _configuration.Weekly.Timeout;
-        public TimeSpan InstantTimeout => _configuration.Instant.Timeout;
-        public decimal InstantMiningFee => _configuration.Instant.Fee;
-        public Dictionary<int, int> InstantBoostMapping => _configuration.Instant.BoostMapping.ToDictionary(x => int.Parse(x.Key), x => x.Value);
-        public int OperationLockMiningCount => _configuration.Instant.OperationLockMiningCount;
+        private readonly MiningCalculation _configuration;
 
         public CalculationService(
             IApplicationDbContext context,
@@ -36,7 +30,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             IIdentityService identityService,
             ICurrentUserService currentUserService,
             IDateTime dateTime,
-            IOptions<Configuration> options)
+            IOptions<MiningCalculation> options)
             => (_context, _accountService, _exchangeRateService, _identityService, _currentUserService, _dateTime, _configuration)
                 = (context, accountService, exchangeRateService, identityService, currentUserService, dateTime, options.Value);
 
@@ -104,10 +98,10 @@ namespace Binebase.Exchange.Gateway.Application.Services
                     {
                         bine *= range.Key switch
                         {
-                            Configuration.InstantItem.Category.x2 => 2,
-                            Configuration.InstantItem.Category.x2x5 => RandomInRange(2, 5),
-                            Configuration.InstantItem.Category.x5x10 => RandomInRange(5, 10),
-                            Configuration.InstantItem.Category.x10x100 => RandomInRange(10, 100),
+                            MiningCalculation.InstantItem.Category.x2 => 2,
+                            MiningCalculation.InstantItem.Category.x2x5 => RandomInRange(2, 5),
+                            MiningCalculation.InstantItem.Category.x5x10 => RandomInRange(5, 10),
+                            MiningCalculation.InstantItem.Category.x10x100 => RandomInRange(10, 100),
                             _ => throw new InvalidOperationException(),
                         };
 
@@ -154,9 +148,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
                     {
                         promotion.TokenAmount = category.Key switch
                         {
-                            Configuration.PromotionItem.Category.LastRange => last * RandomInRange(0.4M, 0.75M),
-                            Configuration.PromotionItem.Category.LastAll => last,
-                            Configuration.PromotionItem.Category.AllRange => balance * RandomInRange(0.1M, 05M),
+                            MiningCalculation.PromotionItem.Category.LastRange => last * RandomInRange(0.4M, 0.75M),
+                            MiningCalculation.PromotionItem.Category.LastAll => last,
+                            MiningCalculation.PromotionItem.Category.AllRange => balance * RandomInRange(0.1M, 05M),
                             _ => throw new InvalidOperationException(),
                         };
 
@@ -168,12 +162,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             return promotion;
         }
-
-        public Task<decimal> GetInstantMiningFee()
-            => Task.FromResult(_configuration.Instant.Fee);
-
-        public Task<TimeSpan> GetMiningRequestWindow()
-            => Task.FromResult(_configuration.MiningRequestWindow);
 
         private async Task<decimal> GetInternalBalance()
         {
@@ -188,64 +176,5 @@ namespace Binebase.Exchange.Gateway.Application.Services
             => Random() * (end - start) + start;
 
         private decimal Random() => (decimal)new Random().NextDouble();
-
-        public class Configuration
-        {
-            public TimeSpan MiningRequestWindow { get; set; }
-            public decimal[] DefaultRange { get; set; }
-            public decimal BalanceTreshold { get; set; }
-            public WeeklyItem Weekly { get; set; }
-            public BonusItem Bonus { get; set; }
-            public InstantItem Instant { get; set; }
-            public PromotionItem Promotion { get; set; }
-
-            public class WeeklyItem
-            {
-                public TimeSpan Timeout { get; set; }
-                public decimal[] Coefficients { get; set; }
-                public decimal Probability { get; set; }
-            }
-
-            public class BonusItem
-            {
-                public TimeSpan Timeout { get; set; }
-                public TimeSpan Window { get; set; }
-                public int StackTimes { get; set; }
-                public decimal Probability { get; set; }
-                public decimal[] Range { get; set; }
-            }
-
-            public class InstantItem
-            {
-                public TimeSpan Timeout { get; set; }
-                public Dictionary<string, int> BoostMapping { get; set; }
-                public decimal Probability { get; set; }
-                public decimal Fee { get; set; }
-                public Dictionary<Category, decimal> Categories { get; set; }
-                public int OperationLockMiningCount { get; set; }
-
-                public enum Category
-                {
-                    x2,
-                    x2x5,
-                    x5x10,
-                    x10x100
-                }
-            }
-
-            public class PromotionItem
-            {
-                public decimal Probability { get; set; }
-                public Dictionary<Currency, decimal> Currencies { get; set; }
-                public Dictionary<Category, decimal> Categories { get; set; }
-
-                public enum Category
-                {
-                    LastRange,
-                    LastAll,
-                    AllRange
-                }
-            }
-        }
     }
 }

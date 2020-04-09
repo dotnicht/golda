@@ -1,8 +1,10 @@
 ﻿using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading;
@@ -23,22 +25,22 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly ICryptoService _cryptoService;
             private readonly IAccountService _accountService;
             private readonly IIdentityService _identityService;
-            private readonly ICalculationService _calculationService;
             private readonly ICurrentUserService _currentUserService;
+            private readonly MiningCalculation _configuration;
 
             public WithdrawCommandHandler(
                 IApplicationDbContext context,
                 ICryptoService cryptoService,
                 IAccountService accountService,
                 IIdentityService identityService,
-                ICalculationService calculationService,
-                ICurrentUserService currentUserService)
-                => (_context, _cryptoService, _accountService, _identityService, _calculationService, _currentUserService)
-                    = (context, cryptoService, accountService, identityService, calculationService, currentUserService);
+                ICurrentUserService currentUserService,
+                IOptions<MiningCalculation> options)
+                => (_context, _cryptoService, _accountService, _identityService, _currentUserService, _configuration)
+                    = (context, cryptoService, accountService, identityService, currentUserService, options.Value);
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {
-                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _calculationService.OperationLockMiningCount)
+                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.Instant.OperationLockMiningCount)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);
                 }

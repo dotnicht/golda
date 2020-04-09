@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IApplicationDbContext _context;
             private readonly IDateTime _dateTime;
             private readonly IMapper _mapper;
+            private readonly MiningCalculation _configuration;
 
             public MiningInstantCommandHandler(
                 ICalculationService calculationService,
@@ -34,9 +37,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IIdentityService identityService,
                 IApplicationDbContext context,
                 IDateTime dateTime,
-                IMapper mapper)
-                => (_calculationService, _accountService, _currentUserService, _identityService, _context, _dateTime, _mapper)
-                    = (calculationService, accountService, currentUserService, identityService, context, dateTime, mapper);
+                IMapper mapper,
+                IOptions<MiningCalculation> options)
+                => (_calculationService, _accountService, _currentUserService, _identityService, _context, _dateTime, _mapper, _configuration)
+                    = (calculationService, accountService, currentUserService, identityService, context, dateTime, mapper, options.Value);
 
             public async Task<MiningInstantCommandResult> Handle(MiningInstantCommand request, CancellationToken cancellationToken)
             {
@@ -45,14 +49,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     .FirstOrDefault(
                         x => x.Type == MiningType.Instant
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
-                        && x.Created > _dateTime.UtcNow - _calculationService.InstantTimeout);
+                        && x.Created > _dateTime.UtcNow - _configuration.Instant.Timeout);
 
                 if (mining != null)
                 {
                     throw new NotSupportedException(ErrorCode.MiningInstantTimeout);
                 }
 
-                var mapping = _calculationService.InstantBoostMapping.Select(x => new { x.Key, x.Value }).OrderBy(x => x.Key);
+                var mapping = _configuration.Instant.BoostMapping.Select(x => new { Key = int.Parse(x.Key), x.Value }).OrderBy(x => x.Key);
                 var index = _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant);
 
                 if (index < mapping.SingleOrDefault(x => x.Value == request.Boost)?.Key)
@@ -72,11 +76,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     if (currentUser.ReferralId != null)
                     {
-                        var ammount = _calculationService.InstantMiningFee / 100 * 5; // TODO: move to config (referral service).
+                        var ammount = _configuration.Instant.Fee / 100 * 5; // TODO: move to config (referral service).
                         await _accountService.Debit(currentUser.ReferralId.Value, Currency.EURB, ammount, mining.Id, TransactionType.Refferal);
                     }
 
-                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionType.Fee);
+                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _configuration.Instant.Fee, mining.Id, TransactionType.Fee);
                     mining.Amount += await _calculationService.GenerateInstantReward();
                 }
 

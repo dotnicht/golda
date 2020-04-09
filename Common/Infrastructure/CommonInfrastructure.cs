@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application;
-using Binebase.Exchange.Common.Infrastructure.Interfaces;
+using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Infrastructure.Services;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,6 @@ using Serilog.Sinks.Elasticsearch;
 using Serilog.Sinks.Slack;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -26,42 +26,10 @@ namespace Binebase.Exchange.Common.Infrastructure
 
         public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services)
         {
-            services.AddServices(Assembly.GetExecutingAssembly());
+            services.AddTransient<IDateTime, DateTimeService>();
             return services;
         }
-
-        public static IServiceCollection AddHttpClients(this IServiceCollection services, Assembly assembly)
-        {
-            if (services is null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (assembly is null)
-            {
-                throw new ArgumentNullException(nameof(assembly));
-            }
-
-            var addHttpClientMethod = typeof(HttpClientFactoryServiceCollectionExtensions)
-                .GetMethod(nameof(HttpClientFactoryServiceCollectionExtensions.AddHttpClient), 2, new[] { typeof(IServiceCollection) });
-
-            var addPolicyHandlerMethod = typeof(PollyHttpClientBuilderExtensions)
-               .GetMethod(nameof(PollyHttpClientBuilderExtensions.AddPolicyHandler), new[] { typeof(IHttpClientBuilder), typeof(IAsyncPolicy<HttpResponseMessage>) });
-
-            foreach (var type in assembly.GetExportedTypes())
-            {
-                foreach (var item in type.GetInterfaces())
-                {
-                    if (item.IsGenericType && item.GetGenericTypeDefinition() == typeof(IHttpClientScoped<>))
-                    {
-                        addPolicyHandlerMethod.Invoke(null, new[] { addHttpClientMethod.MakeGenericMethod(item.GetGenericArguments().Single(), type).Invoke(null, new[] { services }), CommonInfrastructure.GetRetryPolicy() });
-                    }
-                }
-            }
-
-            return services;
-        }
-
+       
         public static async Task<TResponse> Get<TResponse>(this HttpClient target, Uri source)
         {
             if (target is null)
@@ -129,6 +97,7 @@ namespace Binebase.Exchange.Common.Infrastructure
 
         public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
+            // TODO: add policy to config.
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)

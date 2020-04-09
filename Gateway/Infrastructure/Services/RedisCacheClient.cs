@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
-    public sealed class RedisCacheClient : ICacheClient, IDisposable, IConfigurationProvider<RedisCacheClient.Configuration>, ISingleton<ICacheClient>
+    public sealed class RedisCacheClient : ICacheClient, IDisposable
     {
         private readonly ILogger _logger;
         private readonly Configuration _configuration;

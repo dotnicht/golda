@@ -1,7 +1,7 @@
 ﻿using Binebase.Exchange.Common.Application;
-using MediatR;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Binebase.Exchange.Gateway.Application
 {
@@ -10,8 +10,8 @@ namespace Binebase.Exchange.Gateway.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddApplicationCommon();
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddServices(Assembly.GetExecutingAssembly());
+            services.AddTransient<ICalculationService, CalculationService>();
+            services.AddTransient<IExchangeRateService, ExchangeRateService>();
             return services;
         }
     }
