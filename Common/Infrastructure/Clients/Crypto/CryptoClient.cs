@@ -48,14 +48,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="CryptoException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<GenerateAddressCommandResult> AddressesAsync(GenerateAddressCommand command)
         {
             return AddressesAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="CryptoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<GenerateAddressCommandResult> AddressesAsync(GenerateAddressCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -99,7 +99,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new CryptoException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
                         return default(GenerateAddressCommandResult);
@@ -116,14 +116,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="CryptoException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<AddressesQueryResult> Addresses2Async(System.Guid? id)
         {
             return Addresses2Async(id, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="CryptoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<AddressesQueryResult> Addresses2Async(System.Guid? id, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -169,7 +169,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new CryptoException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
                         return default(AddressesQueryResult);
@@ -186,14 +186,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="CryptoException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<PublishTransactionCommandResult> TransactionsAsync(PublishTransactionCommand command)
         {
             return TransactionsAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="CryptoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<PublishTransactionCommandResult> TransactionsAsync(PublishTransactionCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -237,7 +237,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new CryptoException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
                         return default(PublishTransactionCommandResult);
@@ -254,14 +254,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
             }
         }
     
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="CryptoException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<TransactionsQueryResult> Transactions2Async(TransactionsQuery query)
         {
             return Transactions2Async(query, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// <exception cref="CryptoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<TransactionsQueryResult> Transactions2Async(TransactionsQuery query, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -305,7 +305,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                         if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new CryptoException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
                         return default(TransactionsQueryResult);
@@ -355,7 +355,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                 catch (Newtonsoft.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
+                    throw new CryptoException(message, (int)response.StatusCode, responseText, headers, exception);
                 }
             }
             else
@@ -374,7 +374,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                 catch (Newtonsoft.Json.JsonException exception)
                 {
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
-                    throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
+                    throw new CryptoException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
         }
@@ -566,7 +566,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))")]
-    public partial class ApiException : System.Exception
+    public partial class CryptoException : System.Exception
     {
         public int StatusCode { get; private set; }
 
@@ -574,7 +574,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
 
         public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
 
-        public ApiException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception innerException) 
+        public CryptoException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception innerException) 
             : base(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + response.Substring(0, response.Length >= 512 ? 512 : response.Length), innerException)
         {
             StatusCode = statusCode;
@@ -589,11 +589,11 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))")]
-    public partial class ApiException<TResult> : ApiException
+    public partial class CryptoException<TResult> : CryptoException
     {
         public TResult Result { get; private set; }
 
-        public ApiException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception innerException) 
+        public CryptoException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception innerException) 
             : base(message, statusCode, response, headers, innerException)
         {
             Result = result;
