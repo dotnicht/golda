@@ -67,6 +67,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 };
 
                 var currentUser = await _identityService.GetUser(_currentUserService.UserId);
+                var promotions = new List<Promotion>();
 
                 for (var i = 0; i < (request.Boost != null ? mapping.FirstOrDefault(x => x.Value <= request.Boost)?.Key ?? 1 : 1); i++)
                 {
@@ -78,13 +79,15 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                     await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionType.Fee);
                     mining.Amount += await _calculationService.GenerateInstantReward();
+
+                    var promotion = await _calculationService.GeneratePromotion(index);
+                    if (promotion != null)
+                    {
+                        promotion.MiningRequestId = mining.Id;
+                        _context.Promotions.Add(promotion);
+                        promotions.Add(promotion);
+                    }
                 }
-
-                _context.MiningRequests.Add(mining);
-                await _context.SaveChangesAsync();
-
-                var result = _mapper.Map<MiningInstantCommandResult>(mining);
-                var promotions = new List<Promotion>();
 
                 if (mining.Amount > 0)
                 {
@@ -97,16 +100,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     }
 
                     await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
-                    var promotion = await _calculationService.GeneratePromotion(index);
-                    if (promotion != null)
-                    {
-                        promotion.MiningRequest = mining;
-                        _context.Promotions.Add(promotion);
-                        await _context.SaveChangesAsync();
-                        promotions.Add(promotion);
-                    }
                 }
 
+                _context.MiningRequests.Add(mining);
+                await _context.SaveChangesAsync();
+
+                var result = _mapper.Map<MiningInstantCommandResult>(mining);
                 result.Promotions =  _mapper.Map<MiningInstantCommandResult.PromotionItem[]>(promotions);
 
                 return result;

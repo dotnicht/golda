@@ -12,7 +12,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
             builder.HasKey(x => x.Id);
             builder.Property(x => x.CurrencyAmount).HasColumnType(CommonInfrastructure.DecimalFormat);
             builder.Property(x => x.TokenAmount).HasColumnType(CommonInfrastructure.DecimalFormat);
-            builder.HasOne(x => x.MiningRequest).WithOne();
+            builder.HasOne(x => x.MiningRequest).WithMany();
         }
     }
 }
