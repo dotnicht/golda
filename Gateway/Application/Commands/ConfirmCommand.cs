@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
 using System;
 using System.Threading;
@@ -30,6 +32,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var user = await _identityService.GetUser(request.Id);
+                if (user == null)
+                {
+                    throw new NotFoundException(nameof(User), request.Id);
+                }
+
                 var authResult = await _identityService.Authenticate(user);
                 if (!authResult.Succeeded)
                 {
