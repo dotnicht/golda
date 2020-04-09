@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Application.Queries
 {
-    public class TransactionsQuery : IRequest<TransactionsQueryResult>, IIdContainer
+    public class TransactionsQuery : IRequest<TransactionsQueryResult>
     {
         public Guid Id { get; set; }
 

@@ -1,11 +1,17 @@
 ﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.CryptoService.Domain.Entities;
 using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Application.Interfaces
 {
     public interface IBlockchainService
     {
-        Task<(string Hash, ulong Amount)> PublishTransaction(Currency currency, decimal amount, string address);
-        Task<ulong> CurrentIndex(Currency currency);
+        Currency Currency { get; }
+        Task<string> GenerateAddress(uint index);
+        Task<bool> ValidateAddress(string address);
+        Task<ulong> CurrentIndex();
+        Task<decimal> GetBalance(string address);
+        Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address);
+        Task<Transaction[]> GetTransactions(string address);
     }
 }

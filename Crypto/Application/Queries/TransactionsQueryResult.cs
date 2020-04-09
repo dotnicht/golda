@@ -11,7 +11,7 @@ namespace Binebase.Exchange.CryptoService.Application.Queries
     {
         public Transaction[] Transactions { get; set; }
 
-        public class Transaction : IIdContainer, IMapFrom<Domain.Entities.Transaction>
+        public class Transaction : IMapFrom<Domain.Entities.Transaction>
         {
             public Guid Id { get; set; }
             public Currency Currency { get; set; }
