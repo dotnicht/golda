@@ -63,8 +63,6 @@ namespace Binebase.Exchange.CryptoService.Api
 
                 configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
-
-            services.AddConfigurationProviders(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

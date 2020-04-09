@@ -17,20 +17,20 @@ using System.Web;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 {
-    public class IdentityService : IIdentityService, IConfigurationProvider<IdentityService.Configuration>, ITransient<IIdentityService>
+    public class IdentityService : IIdentityService
     {
         private readonly IDateTime _dateTime;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly Configuration _configuration;
+        private readonly Configuration.Identity _configuration;
 
         public IdentityService(
             IDateTime dateTime,
             IMapper mapper,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IOptions<Configuration> options)
+            IOptions<Configuration.Identity> options)
             => (_userManager, _signInManager, _dateTime, _mapper, _configuration)
                 = (userManager, signInManager, dateTime, mapper, options.Value);
 
@@ -176,14 +176,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
             await _signInManager.SignInAsync(app, true);
             return Result.Success();
-        }
-
-        public class Configuration
-        {
-            public string AuthSecret { get; set; }
-            public string ConfirmationUrlFormat { get; set; }
-            public string ResetPasswordUrlFormat { get; set; }
-            public string AuthenticatorUrlFormat { get; set; }
         }
     }
 }

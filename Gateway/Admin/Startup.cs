@@ -51,7 +51,6 @@ namespace Binebase.Exchange.Gateway.Admin
             services.AddHttpClient<IAccountService, AccountService>().AddPolicyHandler(CommonInfrastructure.GetRetryPolicy());
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDateTime, DateTimeService>();
-            services.Configure<AccountService.Configuration>(Configuration.GetSection("AccountService.Configuration"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

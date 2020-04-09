@@ -1,5 +1,4 @@
 ﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Security.Claims;
@@ -7,7 +6,7 @@ using System.Threading;
 
 namespace Binebase.Exchange.Gateway.Api.Services
 {
-    public class CurrentUserService : ICurrentUserService, IScoped<ICurrentUserService>
+    public class CurrentUserService : ICurrentUserService
     {
         private readonly Lazy<Guid?> _userId;
 

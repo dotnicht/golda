@@ -1,5 +1,4 @@
 ﻿using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
@@ -15,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
-    public class TransactionService : ITransactionService, IHttpClientScoped<ITransactionService>
+    public class TransactionService : ITransactionService
     {
         private readonly Configuration _configuration;
         private readonly IServiceProvider _serviceProvider;

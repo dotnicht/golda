@@ -1,9 +1,7 @@
-﻿using Binebase.Exchange.Common.Application.Exceptions;
-using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Common.Infrastructure.Clients.Account;
-using Binebase.Exchange.Common.Infrastructure.Interfaces;
+﻿using Binebase.Exchange.Common.Infrastructure.Clients.Account;
 using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -13,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
-    public class AccountService : IAccountService, IConfigurationProvider<AccountService.Configuration>, IHttpClientScoped<IAccountService>
+    public class AccountService : IAccountService
     {
-        private readonly Configuration _configuration;
+        private readonly Account _configuration;
         private readonly AccountClient _accountClient;
         private readonly AssetClient _assetClient;
         private readonly ICacheClient _cacheClient;
 
-        public AccountService(HttpClient client, IOptions<Configuration> options, ICacheClient cacheClient)
+        public AccountService(HttpClient client, IOptions<Account> options, ICacheClient cacheClient)
             => (_configuration, _accountClient, _assetClient, _cacheClient) 
                 = (options.Value, new AccountClient(options.Value.Address.ToString(), client), new AssetClient(options.Value.Address.ToString(), client), cacheClient);
 
@@ -129,13 +127,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             }
 
             return portfolio;
-        }
-
-        public class Configuration
-        {
-            public Uri Address { get; set; }
-            public Common.Domain.Currency[] Currencies { get; set; }
-            public TimeSpan PortfolioCacheExpiration { get; set; }
         }
     }
 }

@@ -1,4 +1,3 @@
-using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.CryptoService.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,14 +16,13 @@ namespace Binebase.Exchange.Crypto.Worker
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-            .UseSerilog()
-            .ConfigureServices((hostContext, services) =>
-            {
-                CommonInfrastructure.ConfigureLogging(hostContext.Configuration, hostContext.HostingEnvironment);
-                services.AddHostedService<Worker>();
-                services.AddInfrastructure(hostContext.Configuration);
-                services.AddConfigurationProviders(hostContext.Configuration);
-            });
+                .UseSerilog()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    CommonInfrastructure.ConfigureLogging(hostContext.Configuration, hostContext.HostingEnvironment);
+                    services.AddHostedService<Worker>();
+                    services.AddInfrastructure(hostContext.Configuration);
+                });
         }
     }
 }

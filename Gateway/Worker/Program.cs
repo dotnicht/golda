@@ -1,6 +1,5 @@
 using Binance.Net;
 using Binance.Net.Interfaces;
-using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Common.Infrastructure.Services;
@@ -28,15 +27,13 @@ namespace Worker
 
                         services.AddHostedService<Worker>();
 
-                        services.AddTransient<IDateTime, DateTimeService>();
-                        services.AddSingleton<ICacheClient, RedisCacheClient>();
-                        services.AddTransient<IExchangeRateService, ExchangeRateService>();
-                        services.AddTransient<IExchangeRateProvider, ExchangeRateProvider>();
-
                         services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
-                        services.AddTransient<IBinanceClient, BinanceClient>();
+                        services.AddSingleton<ICacheClient, RedisCacheClient>();
+                        services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
 
-                        services.AddConfigurationProviders(hostContext.Configuration);
+                        services.AddTransient<IDateTime, DateTimeService>();
+                        services.AddTransient<IExchangeRateService, ExchangeRateService>();
+                        services.AddTransient<IBinanceClient, BinanceClient>();
                     });
         }
     }

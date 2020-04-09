@@ -1,7 +1,6 @@
-﻿using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Common.Infrastructure.Clients.Crypto;
-using Binebase.Exchange.Common.Infrastructure.Interfaces;
+﻿using Binebase.Exchange.Common.Infrastructure.Clients.Crypto;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -12,12 +11,12 @@ using TransactionType = Binebase.Exchange.Common.Domain.TransactionType;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
-    public class CryptoService : ICryptoService, IConfigurationProvider<CryptoService.Configuration>, IHttpClientScoped<ICryptoService>
+    public class CryptoService : ICryptoService
     {
-        private readonly Configuration _configuration;
+        private readonly Crypto _configuration;
         private readonly CryptoClient _cryptoClient;
 
-        public CryptoService(HttpClient client, IOptions<Configuration> options)
+        public CryptoService(HttpClient client, IOptions<Crypto> options)
         {
             _configuration = options.Value;
             client.BaseAddress = _configuration.Address;
@@ -81,12 +80,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         {
             var result = await _cryptoClient.TransactionsAsync(new PublishTransactionCommand { Id = id, Currency = (Currency)currency, Amount = amount, Public = address, ExternalId = externalId });
             return result.Hash;
-        }
-
-        public class Configuration
-        {
-            public Uri Address { get; set; }
-            public Common.Domain.Currency[] Currencies { get; set; }
         }
     }
 }

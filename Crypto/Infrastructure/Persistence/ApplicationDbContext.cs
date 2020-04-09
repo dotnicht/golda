@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : DbContext, IApplicationDbContext, IScoped<IApplicationDbContext>
+    public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         private readonly IDateTime _dateTime;
 

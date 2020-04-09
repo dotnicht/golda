@@ -8,16 +8,17 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
     public sealed class RedisCacheClient : ICacheClient, IDisposable
     {
         private readonly ILogger _logger;
-        private readonly Configuration _configuration;
+        private readonly Redis _configuration;
         private ConnectionMultiplexer _redis;
 
-        public RedisCacheClient(ILogger<RedisCacheClient> logger, IOptions<Configuration> options) 
+        public RedisCacheClient(ILogger<RedisCacheClient> logger, IOptions<Redis> options) 
             => (_logger, _configuration) = (logger, options.Value);
 
         public Task Set<T>(string key, T value, TimeSpan? expiration = null) where T : class
@@ -120,11 +121,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             }
 
             return _redis.GetDatabase();
-        }
-
-        public class Configuration
-        {
-            public string ConnectionString { get; set; }
         }
     }
 }

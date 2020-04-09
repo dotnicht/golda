@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
-    public class ExchangeRateProvider : IExchangeRateProvider, ISingleton<IExchangeRateProvider>
+    public class ExchangeRateProvider : IExchangeRateProvider
     {
         private readonly IBinanceClient _binanceClient;
         private readonly IBinanceSocketClient _binanceSocketClient;
