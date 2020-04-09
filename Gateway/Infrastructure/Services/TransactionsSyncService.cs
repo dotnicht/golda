@@ -77,7 +77,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public class Configuration
         {
-            public int TransactionsSyncTimeout { get; set; }
+            public TimeSpan TransactionsSyncTimeout { get; set; }
         }
     }
 }

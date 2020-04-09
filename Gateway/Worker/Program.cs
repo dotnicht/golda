@@ -55,6 +55,7 @@ namespace Worker
                         services.AddConfigurationProviders(hostContext.Configuration);
                         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
                         services.Configure<CryptoService.Configuration>(hostContext.Configuration.GetSection("CryptoService.Configuration"));
+                        services.Configure<TransactionsSyncService.Configuration>(hostContext.Configuration.GetSection("TransactionsSyncService.Configuration"));
                     });
         }
     }
