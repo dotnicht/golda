@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Interfaces
 {
     public interface ITransactionsSyncService
     {
-        Task SyncTransactions();
+        Task SyncTransactions(CancellationToken cancellationToken);
     }
 }

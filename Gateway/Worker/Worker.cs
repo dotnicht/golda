@@ -18,7 +18,7 @@ namespace Worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var tasks = new[] { _exchangeRateService.Subscribe(), _transactionsSyncService.SyncTransactions() };
+            var tasks = new[] { _exchangeRateService.Subscribe(), _transactionsSyncService.SyncTransactions(stoppingToken) };
 
             while (!stoppingToken.IsCancellationRequested)
             {

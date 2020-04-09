@@ -6,11 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Binebase.Exchange.Common.Infrastructure.Interfaces;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
-    public class TransactionsSyncService : ITransactionsSyncService
+    public class TransactionsSyncService : ITransactionsSyncService, IHttpClientScoped<ITransactionsSyncService>
     {
         private readonly Configuration _configuration;
         private readonly ILogger _logger;
@@ -20,20 +22,32 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         public TransactionsSyncService(IOptions<Configuration> options, ILogger<TransactionsSyncService> logger, ICryptoService cryptoService, IServiceProvider serviceProvider) =>
              (_configuration, _logger, _cryptoService, _serviceProvider) = (options.Value, logger, cryptoService, serviceProvider);
 
-        public async Task SyncTransactions()
+        public async Task SyncTransactions(CancellationToken cancellationToken)
         {
-            using var scope = _serviceProvider.CreateScope();
-            using var ctx = scope.ServiceProvider.GetRequiredService<IUserContext>();
-
-            Guid[] usersIds = ctx.Users.Select(x => x.Id).ToArray();
-
-            foreach (var userId in usersIds)
+            _logger.LogDebug($"Start transactions synchronizations task at: {DateTime.UtcNow}.");
+            while (!cancellationToken.IsCancellationRequested)
             {
-                var userTransactions = await _cryptoService.GetTransactions(userId);
-                await UpdateTransactionsInStore(userTransactions);
-            }
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    using var ctx = scope.ServiceProvider.GetRequiredService<IUserContext>();
 
-            await Task.CompletedTask;
+                    Guid[] usersIds = ctx.Users.Select(x => x.Id).ToArray();
+
+                    foreach (var userId in usersIds)
+                    {
+                        //_logger.LogDebug($"Processing transactions for user with id{userId.ToString()}.");
+                        var userTransactions = await _cryptoService.GetTransactions(userId);
+                        await UpdateTransactionsInStore(userTransactions);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error while sync transactions.");
+                }
+            }
+            _logger.LogDebug($"End transactions synchronizations task at: {DateTime.UtcNow}.");
+            await Task.Delay(_configuration.TransactionsSyncTimeout);
         }
 
         private async Task UpdateTransactionsInStore(Transaction[] userTransactions)
@@ -48,11 +62,13 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 {
                     if (existingTrans.Hash != inTransaction.Hash)
                     {
+                        _logger.LogDebug($"Update in store transaction with id: {existingTrans.Id}.");
                         ctx.Transactions.Update(inTransaction);
                     }
                 }
                 else
                 {
+                    _logger.LogDebug($"Add to store transaction with id: {inTransaction.Id}.");
                     await ctx.Transactions.AddAsync(inTransaction);
                 }
             }
@@ -61,7 +77,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public class Configuration
         {
-            public string SomeConfig { get; set; }
+            public int TransactionsSyncTimeout { get; set; }
         }
     }
 }
