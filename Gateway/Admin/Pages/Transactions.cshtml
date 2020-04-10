@@ -45,7 +45,7 @@
                     </ul>
                 </div>
             </th>
-            <th>
+            @*<th>
                 <div class="btn-group">
                     <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].UserId)</a>
@@ -57,7 +57,7 @@
                         <li><a href="#">Smartphone</a></li>
                     </ul>
                 </div>
-            </th>
+            </th>*@
             <th>
                 <div class="btn-group">
                     <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
@@ -114,16 +114,14 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
-                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Type)</a>
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Hash)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        @foreach (var source in Model.Sources)
-                        {
-                            <li><a asp-page="/Transactions" asp-route-currentFilterFieldName="Source" asp-route-currentFilter=@source>@source</a></li>
-                        }
+                        <li><a href="#">Tablet</a></li>
+                        <li><a href="#">Smartphone</a></li>
                     </ul>
                 </div>
             </th>
@@ -135,9 +133,9 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        @foreach (var type in Model.Types)
+                        @foreach (var source in Model.Sources)
                         {
-                            <li><a asp-page="/Transactions" asp-route-currentFilterFieldName="Type" asp-route-currentFilter=@type>@type</a></li>
+                            <li><a asp-page="/Transactions" asp-route-currentFilterFieldName="Source" asp-route-currentFilter=@source>@source</a></li>
                         }
                     </ul>
                 </div>
@@ -176,11 +174,12 @@
         {
             <tr>
                 <td>@item.Id</td>
-                <td>@item.UserId</td>
+                @*<td>@item.UserId</td>*@
                 <td>@item.Currency</td>
                 <td>@item.Amount</td>
                 <td>@item.Balance</td>
                 <td>@item.DateTime</td>
+                <td>@item.Hash</td>
                 <td>@item.Type</td>
                 <td>@item.CreatedBy</td>
                 <td>@item.Created</td>

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -39,6 +40,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<User> GetUser(Guid userId)
             => _mapper.Map<User>(await _userManager.FindByIdAsync(userId.ToString()));
+
+        public List<Guid> GetUsersIDs() =>
+             _userManager.Users.Select(u => u.Id).ToList();
 
         public async Task<Result> CreateUser(Guid id, string userName, string password, string code)
         {
@@ -114,7 +118,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             return (result.ToString().ToLowerInvariant(), string.Format(_configuration.AuthenticatorUrlFormat, key, HttpUtility.UrlEncode(user.Email)));
         }
 
-        public async Task<bool> GetTwoFactorEnabled(Guid userId) 
+        public async Task<bool> GetTwoFactorEnabled(Guid userId)
             => await _userManager.GetTwoFactorEnabledAsync(_userManager.Users.Single(u => u.Id == userId));
 
         public async Task<Result> SetTwoFactorAuthentication(Guid userId, bool isEnabled)
@@ -123,10 +127,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             return result.ToApplicationResult();
         }
 
-        public async Task<bool> VerifyTwoFactorToken(Guid userId, string token) 
+        public async Task<bool> VerifyTwoFactorToken(Guid userId, string token)
             => await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);
 
-        public async Task<bool> CheckUserPassword(Guid userId, string password) 
+        public async Task<bool> CheckUserPassword(Guid userId, string password)
             => await _userManager.CheckPasswordAsync(_userManager.Users.Single(u => u.Id == userId), password);
 
         public async Task<string> GenerateAuthToken(User user)

@@ -62,6 +62,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     Id = tx.Id,
                     Currency = (Common.Domain.Currency)tx.Currency,
                     Amount = tx.Amount,
+                    Hash = tx.Hash,
                     Type = tx.Direction switch
                     {
                         TransactionDirection.Inbound => TransactionType.Deposit,

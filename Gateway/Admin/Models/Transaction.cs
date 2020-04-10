@@ -26,5 +26,6 @@ namespace Binebase.Exchange.Gateway.Admin.Models
         public Guid Id { get; set; }
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
+        public string Hash { get; set; }
     }
 }

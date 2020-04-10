@@ -10,10 +10,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binebase.Exchange.Gateway.Domain;
 using Binebase.Exchange.Gateway.Domain.Entities;
+using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext, IScoped<IApplicationDbContext>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext, IUserContext, IScoped<IApplicationDbContext>
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTime _dateTime;
