@@ -4,6 +4,7 @@ using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using MediatR;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,10 +18,10 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
 
         public class GenerateAddressCommandHandler : IRequestHandler<GenerateAddressCommand, GenerateAddressCommandResult>
         {
-            private readonly IBlockchainService[] _blockchainServices;
+            private readonly IEnumerable<IBlockchainService> _blockchainServices;
             private readonly IApplicationDbContext _context;
 
-            public GenerateAddressCommandHandler(IBlockchainService[] blockchainServices, IApplicationDbContext context)
+            public GenerateAddressCommandHandler(IEnumerable<IBlockchainService> blockchainServices, IApplicationDbContext context)
                 => (_blockchainServices, _context) = (blockchainServices, context);
 
             public async Task<GenerateAddressCommandResult> Handle(GenerateAddressCommand request, CancellationToken cancellationToken)

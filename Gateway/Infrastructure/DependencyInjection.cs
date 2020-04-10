@@ -3,6 +3,7 @@ using Binance.Net.Interfaces;
 using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
@@ -66,7 +67,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                 };
             });
 
-            services.AddCommonInfrastructure();
+            services.AddCommonInfrastructure(configuration);
 
             services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
             services.AddSingleton<ICacheClient, RedisCacheClient>();
@@ -76,10 +77,17 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IIdentityService, IdentityService>();
 
-            services.AddHttpClient<IAccountService, AccountService>();
-            services.AddHttpClient<ICryptoService, CryptoService>();
+            services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy(); ;
+            services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy(); ;
 
             services.AddAuthentication();
+
+            services.Configure<Account>(configuration.GetSection("Infrastructure.Account"));
+            services.Configure<Crypto>(configuration.GetSection("Infrastructure.Crypto"));
+            services.Configure<Email>(configuration.GetSection("Infrastructure.Account"));
+            services.Configure<Configuration.Identity>(configuration.GetSection("Infrastructure.Account"));
+            services.Configure<Redis>(configuration.GetSection("Infrastructure.Account"));
+
             return services;
         }
 

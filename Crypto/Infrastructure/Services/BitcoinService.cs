@@ -1,6 +1,9 @@
-﻿using Binebase.Exchange.Common.Domain;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Enums;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NBitcoin;
 using QBitNinja.Client;

@@ -5,6 +5,7 @@ using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using MediatR;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,9 +23,9 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
         public class PublishTransactionCommandHandler : IRequestHandler<PublishTransactionCommand, PublishTransactionCommandResult>
         {
             private readonly IApplicationDbContext _context;
-            private readonly IBlockchainService[] _blockchainServices;
+            private readonly IEnumerable<IBlockchainService> _blockchainServices;
 
-            public PublishTransactionCommandHandler(IApplicationDbContext context, IBlockchainService[] blockchainServices)
+            public PublishTransactionCommandHandler(IApplicationDbContext context, IEnumerable<IBlockchainService> blockchainServices)
                 => (_context, _blockchainServices) = (context, blockchainServices);
 
             public async Task<PublishTransactionCommandResult> Handle(PublishTransactionCommand request, CancellationToken cancellationToken)

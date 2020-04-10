@@ -18,7 +18,7 @@ namespace Binebase.Exchange.AccountService.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddCommonInfrastructure();
+            services.AddCommonInfrastructure(configuration);
 
             // TODO: wrap event store into singleton service.
             services.AddSingleton(x => Wireup

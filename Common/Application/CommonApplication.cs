@@ -15,7 +15,6 @@ namespace Binebase.Exchange.Common.Application
             services.AddMediatR(Assembly.GetCallingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
-
             return services;
         }
     }

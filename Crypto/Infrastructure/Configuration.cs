@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using System;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure
 {
-    public class Configuration
+    public class Configuration : IConfig
     {
         public bool IsTestNet { get; set; }
         public string Mnemonic { get; set; }

@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.Common.Application;
-using Binebase.Exchange.Common.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Infrastructure.Services;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +13,8 @@ using Serilog.Sinks.Elasticsearch;
 using Serilog.Sinks.Slack;
 using System;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -24,12 +25,49 @@ namespace Binebase.Exchange.Common.Infrastructure
     {
         public const string DecimalFormat = "decimal(18,8)";
 
-        public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services)
+        public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IDateTime, DateTimeService>();
-            return services;
+            var mi = typeof(OptionsConfigurationServiceCollectionExtensions)
+                .GetMethod(nameof(OptionsConfigurationServiceCollectionExtensions.Configure), 1, new[] { typeof(IServiceCollection), typeof(IConfigurationSection) });
+
+            /*
+            AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Where(x => !x.IsDynamic)
+                .SelectMany(x => x.GetExportedTypes())
+                .Where(x => x.GetInterface(nameof(IConfig)) != null)
+                .ToList()
+                .ForEach(x => mi.MakeGenericMethod(x).Invoke(null, new object[] { services, configuration.GetSection($"{x.Assembly.GetName().Name.Split(".").Last()}.{x.Name}") }));
+                **/
+
+            return services.AddTransient<IDateTime, DateTimeService>();
         }
-       
+
+        public static IHttpClientBuilder AddRetryPolicy(this IHttpClientBuilder httpClientBuilder)
+        {
+            if (httpClientBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(httpClientBuilder));
+            }
+
+            // TODO: add policy to config.
+            httpClientBuilder.AddPolicyHandler(HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(new[]
+                    {
+                        TimeSpan.FromSeconds(1),
+                        TimeSpan.FromSeconds(2),
+                        TimeSpan.FromSeconds(3)
+                    },
+                    onRetry: (outcome, timespan, retryAttempt, context) =>
+                    {
+                        Log.Logger.Warning("Delaying for {delay}ms, then making retry {retry}.", timespan.TotalMilliseconds, retryAttempt);
+                    }));
+
+            return httpClientBuilder;
+        }
+
         public static async Task<TResponse> Get<TResponse>(this HttpClient target, Uri source)
         {
             if (target is null)
@@ -93,24 +131,6 @@ namespace Binebase.Exchange.Common.Infrastructure
                 //IndexFormat = $"{Assembly.GetCallingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM
                 IndexFormat = $"{Assembly.GetEntryAssembly().GetName().Name.ToLower().Replace(".", "-")}"
             };
-        }
-
-        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-        {
-            // TODO: add policy to config.
-            return HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(new[]
-                {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(3)
-                },
-                onRetry: (outcome, timespan, retryAttempt, context) =>
-                {
-                    Log.Logger.Warning("Delaying for {delay}ms, then making retry {retry}.", timespan.TotalMilliseconds, retryAttempt);
-                });
         }
     }
 }

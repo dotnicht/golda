@@ -90,6 +90,7 @@ namespace Binebase.Exchange.Gateway.Api
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
             app.UseSerilogRequestLogging();
             app.UseCustomExceptionHandler();
             app.UseHealthChecks("/health");

@@ -1,6 +1,5 @@
-﻿using MediatR;
+﻿using Binebase.Exchange.Common.Application;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Binebase.Exchange.AccountService.Application
 {
@@ -8,7 +7,7 @@ namespace Binebase.Exchange.AccountService.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddApplicationCommon();
             return services;
         }
     }

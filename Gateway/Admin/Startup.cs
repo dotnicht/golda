@@ -30,15 +30,15 @@ namespace Binebase.Exchange.Gateway.Admin
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCommonInfrastructure();
+            services.AddCommonInfrastructure(Configuration);
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
-
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             services.AddRazorPages();
             services.AddControllersWithViews();
             services.AddMvc().AddRazorOptions(options =>
@@ -46,9 +46,8 @@ namespace Binebase.Exchange.Gateway.Admin
                 options.ViewLocationFormats.Add("/{0}.cshtml");
             });
 
-            services.AddOptions();
             services.AddHttpContextAccessor();
-            services.AddHttpClient<IAccountService, AccountService>().AddPolicyHandler(CommonInfrastructure.GetRetryPolicy());
+            services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDateTime, DateTimeService>();
         }

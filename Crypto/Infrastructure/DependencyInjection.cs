@@ -12,14 +12,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddCommonInfrastructure();
+            services.AddCommonInfrastructure(configuration);
             services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+            services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
             services.AddHttpClient<IAccountService, AccountService>();
             services.AddHttpClient<IBlockchainService, EthereumService>();
             services.AddTransient<IBlockchainService, BitcoinService>();
             services.AddTransient<ITransactionService, TransactionService>();
-            services.Configure<Configuration>(configuration.GetSection("Infrastructure.Configuration"));
             return services;
         }
     }

@@ -3,6 +3,7 @@ using Binance.Net.Interfaces;
 using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Common.Infrastructure.Services;
+using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
@@ -34,6 +35,10 @@ namespace Worker
                         services.AddTransient<IDateTime, DateTimeService>();
                         services.AddTransient<IExchangeRateService, ExchangeRateService>();
                         services.AddTransient<IBinanceClient, BinanceClient>();
+
+                        services.Configure<ExchangeRates>(hostContext.Configuration.GetSection("Infrastructure.ExchangeRates"));
+                        services.Configure<ExchangeRates>(hostContext.Configuration.GetSection("Infrastructure.ExchangeRates"));
+
                     });
         }
     }
