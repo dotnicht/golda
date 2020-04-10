@@ -28,9 +28,9 @@ namespace Binebase.Exchange.AccountService.Api.Controllers
         public async Task<IActionResult> Credit(CreditCommand command) => Convert(await Mediator.Send(command));
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> LockAsset(LockAssetCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> Lock(LockAssetCommand command) => Convert(await Mediator.Send(command));
 
         [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UnlockAsset(UnlockAssetCommand command) => Convert(await Mediator.Send(command));
+        public async Task<IActionResult> Unlock(UnlockAssetCommand command) => Convert(await Mediator.Send(command));
     }
 }

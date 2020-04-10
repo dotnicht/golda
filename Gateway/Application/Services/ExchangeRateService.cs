@@ -50,6 +50,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             if (rate == null)
             {
                 // TODO: refactor.
+                // TODO: check double convert.
                 var first = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString());
                 var second = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(Currency.EURB, pair.Quote).ToString());
                 rate = new ExchangeRate 

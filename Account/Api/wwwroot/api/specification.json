@@ -281,12 +281,12 @@
         }
       }
     },
-    "/api/Asset/LockAsset": {
+    "/api/Asset/Lock": {
       "post": {
         "tags": [
           "Asset"
         ],
-        "operationId": "Asset_LockAsset",
+        "operationId": "Asset_Lock",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -306,12 +306,12 @@
         }
       }
     },
-    "/api/Asset/UnlockAsset": {
+    "/api/Asset/Unlock": {
       "post": {
         "tags": [
           "Asset"
         ],
-        "operationId": "Asset_UnlockAsset",
+        "operationId": "Asset_Unlock",
         "requestBody": {
           "x-name": "command",
           "content": {

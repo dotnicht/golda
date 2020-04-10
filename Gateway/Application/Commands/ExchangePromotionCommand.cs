@@ -43,7 +43,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotFoundException(nameof(Promotion), request.Id);
                 }
 
-                var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency));
+                var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency), false);
                 // TODO: get fixed ex rate from promotion.
                 await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, promotion.Id, TransactionType.Exchange);
                 await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, promotion.Id, TransactionType.Exchange);
