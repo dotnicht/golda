@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binebase.Exchange.Common.Infrastructure.Interfaces;
+using Binebase.Exchange.Common.Application;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
@@ -24,30 +25,31 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public async Task SyncTransactions(CancellationToken cancellationToken)
         {
-            _logger.LogDebug($"Start transactions synchronizations task at: {DateTime.UtcNow}.");
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    using var scope = _serviceProvider.CreateScope();
-                    using var ctx = scope.ServiceProvider.GetRequiredService<IUserContext>();
-
-                    Guid[] usersIds = ctx.Users.Select(x => x.Id).ToArray();
-
-                    foreach (var userId in usersIds)
+                    using (new ElapsedTimer(_logger, $"CryptoTxProcess"))
                     {
-                        //_logger.LogDebug($"Processing transactions for user with id{userId.ToString()}.");
-                        var userTransactions = await _cryptoService.GetTransactions(userId);
-                        await UpdateTransactionsInStore(userTransactions, userId);
+                        using var scope = _serviceProvider.CreateScope();
+                        using var ctx = scope.ServiceProvider.GetRequiredService<IUserContext>();
+
+                        var usersIds = ctx.Users.Select(x => x.Id).ToArray();
+
+                        foreach (var userId in usersIds)
+                        {
+                            var userTransactions = await _cryptoService.GetTransactions(userId);
+                            await UpdateTransactionsInStore(userTransactions, userId);
+                        }
                     }
+
+                    await Task.Delay(_configuration.TransactionsSyncTimeout);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Error while sync transactions.");
                 }
             }
-            _logger.LogDebug($"End transactions synchronizations task at: {DateTime.UtcNow}.");
-            await Task.Delay(_configuration.TransactionsSyncTimeout);
         }
 
         private async Task UpdateTransactionsInStore(Transaction[] userTransactions, Guid userId)
@@ -57,7 +59,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             foreach (var inTransaction in userTransactions)
             {
                 inTransaction.CreatedBy = userId;
-                var inputHash = inTransaction.GetHashCode();
                 var existingTrans = ctx.Transactions.FirstOrDefault(t => t.Id == inTransaction.Id);
                 if (existingTrans != null)
                 {
@@ -73,6 +74,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     await ctx.Transactions.AddAsync(inTransaction);
                 }
             }
+
             await ctx.SaveChangesAsync();
         }
 
