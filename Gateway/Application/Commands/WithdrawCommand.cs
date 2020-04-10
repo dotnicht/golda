@@ -33,7 +33,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IIdentityService identityService,
                 ICalculationService calculationService,
                 ICurrentUserService currentUserService)
-                => (_context, _cryptoService, _accountService, _identityService, _calculationService, _currentUserService) 
+                => (_context, _cryptoService, _accountService, _identityService, _calculationService, _currentUserService)
                     = (context, cryptoService, accountService, identityService, calculationService, currentUserService);
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)

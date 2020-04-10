@@ -47,28 +47,25 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.MiningBonusTimeout);
                 }
 
-                var (amount, type) = await _calculationService.GenerateWeeklyReward();
+                var (amount, type) = await _calculationService.GenerateBonusReward();
 
-                mining = new MiningRequest 
-                { 
+                if (type == MiningType.Default && amount == 0)
+                {
+                    (amount, type) = await _calculationService.GenerateWeeklyReward();
+                }
+
+                mining = new MiningRequest
+                {
                     Id = Guid.NewGuid(),
                     Amount = amount,
                     Type = type,
                     Balance = amount + _context.MiningRequests.Where(x => x.CreatedBy == _currentUserService.UserId).Sum(x => x.Amount)
                 };
 
+                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining);
+
                 _context.MiningRequests.Add(mining);
                 await _context.SaveChangesAsync();
-
-                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
-                (amount, type) = await _calculationService.GenerateBonusReward();
-
-                if (type != MiningType.Default && amount > 0)
-                {
-                    mining.Type = type;
-                    mining.Amount += amount;
-                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining);
-                }
 
                 return _mapper.Map<MiningBonusCommandResult>(mining);
             }
