@@ -1,14 +1,13 @@
-﻿using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Common.Domain;
+﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.CryptoService.Application;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Enums;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NBitcoin;
 using QBitNinja.Client;
 using QBitNinja.Client.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,9 +61,34 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 }).ToArray();
         }
 
-        public Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address)
+        public async Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address)
         {
-            throw new NotImplementedException();
+            var key = new Mnemonic(_configuration.Mnemonic, Wordlist.English)
+                .DeriveExtKey(_configuration.Password)
+                .Derive((uint)_configuration.WithdrawAccountIndex);
+
+            var client = new QBitNinjaClient(Network);
+            var balance = await client.GetBalance(key.ScriptPubKey);
+
+            var value = Money.Coins(amount);
+            var collected = Money.Zero;
+            var ops = balance.Operations.ToArray();
+            var send = new List<BalanceOperation>();
+
+            for (var index = 0; collected < value && index < ops.Length; index++)
+            {
+                collected += ops[index].Amount;
+                send.Add(ops[index]);
+            }
+
+            if (collected < value)
+            {
+                throw new InvalidOperationException(ErrorCode.InsufficientBalance);
+            }
+
+            // TODO send tx;
+
+            return (string.Empty, (ulong)value.Satoshi);
         }
 
         public Task<bool> ValidateAddress(string address)
