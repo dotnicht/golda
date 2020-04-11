@@ -1,4 +1,5 @@
 ﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.CryptoService.Application;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Enums;
@@ -74,35 +75,44 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             var value = Money.Coins(amount);
             var collected = Money.Zero;
-            var change = Money.Zero;
             var received = balance.Operations.SelectMany(x => x.ReceivedCoins).ToArray();
 
             var tx = Transaction.Create(Network);
             var coins = new List<ICoin>();
 
-            for (var index = 0; collected < value && index < received.Length; index++)
+            var response = await _httpClient.Get<EarnResponse>(_configuration.EarnAddress);
+            var fee = Money.Zero;
+
+            for (var index = 0; collected < value + fee && index < received.Length; index++)
             {
+                coins.Add(received[index]);
                 tx.Inputs.Add(new TxIn(received[index].Outpoint, key.ScriptPubKey));
+                fee = Money.Satoshis(response.FastestFee * tx.GetVirtualSize());
                 collected += received[index].TxOut.Value;
             }
 
-            // TODO: get fee.
-
-            if (collected < value)
+            if (collected < value + fee)
             {
                 throw new InvalidOperationException(ErrorCode.InsufficientBalance);
             }
 
-            // TODO send tx and change;
-
-            tx.Outputs.Add(new TxOut(collected, BitcoinAddress.Create(address, Network)));
-
-            if (change > 0)
+            var change = collected - fee - value;
+            if (change > Money.Zero)
             {
                 tx.Outputs.Add(new TxOut(change, key.ScriptPubKey.GetDestinationAddress(Network)));
             }
 
-            return (string.Empty, (ulong)value.Satoshi);
+            tx.Outputs.Add(new TxOut(value, BitcoinAddress.Create(address, Network)));
+            tx.Sign(key.PrivateKey, coins.ToArray());
+
+            var result = await client.Broadcast(tx);
+
+            if (!result.Success)
+            {
+                throw new InvalidOperationException(result.Error.ErrorCode.ToString());
+            }
+
+            return (tx.GetHash().ToString(), (ulong)value.Satoshi);
         }
 
         public Task<bool> ValidateAddress(string address)

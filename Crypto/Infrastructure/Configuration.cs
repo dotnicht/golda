@@ -14,5 +14,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
         public TimeSpan TransactionPoolingTimeout { get; set; }
         public string EtherscanUrlFormat { get; set; }
         public Uri EthereumNode { get; set; }
+        public Uri EarnAddress { get; set; }
     }
 }

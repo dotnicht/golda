@@ -18,7 +18,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
             services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
             services.AddHttpClient<IAccountService, AccountService>();
             services.AddHttpClient<IBlockchainService, EthereumService>();
-            services.AddTransient<IBlockchainService, BitcoinService>();
+            services.AddHttpClient<IBlockchainService, BitcoinService>();
             services.AddTransient<ITransactionService, TransactionService>();
             services.Configure<Configuration>(configuration.GetSection("Infrastructure.Configuration"));
             return services;
