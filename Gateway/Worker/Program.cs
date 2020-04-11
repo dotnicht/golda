@@ -6,6 +6,7 @@ using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,9 +37,8 @@ namespace Worker
                         services.AddTransient<IExchangeRateService, ExchangeRateService>();
                         services.AddTransient<IBinanceClient, BinanceClient>();
 
-                        services.Configure<ExchangeRates>(hostContext.Configuration.GetSection("Infrastructure.ExchangeRates"));
-                        services.Configure<ExchangeRates>(hostContext.Configuration.GetSection("Infrastructure.ExchangeRates"));
-
+                        services.Configure<ExchangeRates>(hostContext.Configuration.GetSection("Application.ExchangeRate"));
+                        services.Configure<Redis>(hostContext.Configuration.GetSection("Infrastructure.Redis"));
                     });
         }
     }

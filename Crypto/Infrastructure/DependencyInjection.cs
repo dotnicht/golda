@@ -20,6 +20,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
             services.AddHttpClient<IBlockchainService, EthereumService>();
             services.AddTransient<IBlockchainService, BitcoinService>();
             services.AddTransient<ITransactionService, TransactionService>();
+            services.Configure<Configuration>(configuration.GetSection("Infrastructure.Configuration"));
             return services;
         }
     }

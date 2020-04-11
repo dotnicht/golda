@@ -33,7 +33,6 @@ namespace Binebase.Exchange.CryptoService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
-            services.AddApplicationCommon();
             services.AddInfrastructure(Configuration);
 
             services.AddHttpContextAccessor();

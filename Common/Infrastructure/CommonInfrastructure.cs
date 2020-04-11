@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
 using Serilog;
+using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
 using Serilog.Sinks.Slack;
@@ -111,12 +112,12 @@ namespace Binebase.Exchange.Common.Infrastructure
                         Period = TimeSpan.FromSeconds(10),
                         ShowDefaultAttachments = false,
                         ShowExceptionAttachments = true,
-                        MinimumLogEventLevel = Serilog.Events.LogEventLevel.Error
+                        MinimumLogEventLevel = LogEventLevel.Error
                     });
             }
             else
             {
-                loggerConfiguration.WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMdd}log.log");
+                loggerConfiguration.WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMdd}.log");
             }
 
             Log.Logger = loggerConfiguration.CreateLogger();
@@ -128,7 +129,6 @@ namespace Binebase.Exchange.Common.Infrastructure
             {
                 ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "Binebase123"),
                 AutoRegisterTemplate = true,
-                //IndexFormat = $"{Assembly.GetCallingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM
                 IndexFormat = $"{Assembly.GetEntryAssembly().GetName().Name.ToLower().Replace(".", "-")}"
             };
         }
