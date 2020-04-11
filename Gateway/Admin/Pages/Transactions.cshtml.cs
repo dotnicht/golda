@@ -116,7 +116,7 @@ namespace Binebase.Exchange.Gateway.Admin
             #region filteringLists
             Currencies = TransactionsIQ.Select(t => t.Currency.ToString()).Distinct().ToList();
             Sources = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
-            UserIds = TransactionsIQ.Select(t => t.UserId.ToString()).Distinct().ToList();
+            UserIds = TransactionsIQ.Select(t => t.CreatedBy.ToString()).Distinct().ToList();
             Types = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
             #endregion
 
