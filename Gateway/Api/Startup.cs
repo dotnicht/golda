@@ -32,7 +32,7 @@ namespace Binebase.Exchange.Gateway.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplication();
+            services.AddApplication(Configuration);
             services.AddInfrastructure(Configuration);
             services.AddHttpContextAccessor();
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
