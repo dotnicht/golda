@@ -43,7 +43,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(user.Id));
-
                 return Unit.Value;
             }
         }

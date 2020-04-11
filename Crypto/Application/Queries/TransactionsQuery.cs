@@ -15,7 +15,7 @@ namespace Binebase.Exchange.CryptoService.Application.Queries
         public Guid Id { get; set; }
 
         public class TransactionsQueryHandler : IRequestHandler<TransactionsQuery, TransactionsQueryResult>
-        {
+        {   
             private readonly IApplicationDbContext _context;
             private readonly IMapper _mapper;
 

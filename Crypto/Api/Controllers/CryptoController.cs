@@ -22,7 +22,7 @@ namespace Binebase.Exchange.CryptoService.Api.Controllers
             => await Mediator.Send(command);
 
         [HttpGet, ProducesResponseType(typeof(TransactionsQueryResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionsQueryResult>> Transactions(TransactionsQuery query)
+        public async Task<ActionResult<TransactionsQueryResult>> Transactions([FromQuery]TransactionsQuery query)
             => await Mediator.Send(query);
     }
 }
