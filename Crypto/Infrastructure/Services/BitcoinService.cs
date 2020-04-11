@@ -9,6 +9,7 @@ using QBitNinja.Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
@@ -16,13 +17,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
     public class BitcoinService : IBlockchainService
     {
         private readonly Configuration _configuration;
+        private readonly HttpClient _httpClient;
 
         private Network Network => _configuration.IsTestNet ? Network.TestNet : Network.Main;
 
         public Currency Currency => Currency.BTC;
 
-        public BitcoinService(IOptions<Configuration> options) 
-            => _configuration = options.Value;
+        public BitcoinService(IOptions<Configuration> options, HttpClient httpClient)
+            => (_configuration, _httpClient) = (options.Value, httpClient);
 
         public async Task<ulong> CurrentIndex()
         {
@@ -51,14 +53,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
             return balance.Operations.Select(x => new Domain.Entities.Transaction
-                {
-                    Direction = TransactionDirection.Inbound,
-                    Confirmed = x.FirstSeen.DateTime,
-                    Hash = x.TransactionId.ToString(),
-                    Block = (ulong)x.Height,
-                    RawAmount = (ulong)x.Amount.Satoshi,
-                    Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
-                }).ToArray();
+            {
+                Direction = TransactionDirection.Inbound,
+                Confirmed = x.FirstSeen.DateTime,
+                Hash = x.TransactionId.ToString(),
+                Block = (ulong)x.Height,
+                RawAmount = (ulong)x.Amount.Satoshi,
+                Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
+            }).ToArray();
         }
 
         public async Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address)
@@ -72,21 +74,33 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             var value = Money.Coins(amount);
             var collected = Money.Zero;
-            var ops = balance.Operations.ToArray();
-            var send = new List<BalanceOperation>();
+            var change = Money.Zero;
+            var received = balance.Operations.SelectMany(x => x.ReceivedCoins).ToArray();
 
-            for (var index = 0; collected < value && index < ops.Length; index++)
+            var tx = Transaction.Create(Network);
+            var coins = new List<ICoin>();
+
+            for (var index = 0; collected < value && index < received.Length; index++)
             {
-                collected += ops[index].Amount;
-                send.Add(ops[index]);
+                tx.Inputs.Add(new TxIn(received[index].Outpoint, key.ScriptPubKey));
+                collected += received[index].TxOut.Value;
             }
+
+            // TODO: get fee.
 
             if (collected < value)
             {
                 throw new InvalidOperationException(ErrorCode.InsufficientBalance);
             }
 
-            // TODO send tx;
+            // TODO send tx and change;
+
+            tx.Outputs.Add(new TxOut(collected, BitcoinAddress.Create(address, Network)));
+
+            if (change > 0)
+            {
+                tx.Outputs.Add(new TxOut(change, key.ScriptPubKey.GetDestinationAddress(Network)));
+            }
 
             return (string.Empty, (ulong)value.Satoshi);
         }
@@ -104,6 +118,13 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             }
 
             return Task.FromResult(result);
+        }
+
+        private class EarnResponse
+        {
+            public int FastestFee { get; set; }
+            public int HalfHourFee { get; set; }
+            public int HourFee { get; set; }
         }
     }
 }
