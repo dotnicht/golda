@@ -51,7 +51,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 handle(rate);
             });
 
-            _logger.LogInformation($"Subscribed to {symbol} Binance ticker.");
+            _logger.LogInformation("Subscribed to {symbol} Binance ticker.", symbol);
 
             await Task.CompletedTask;
         }

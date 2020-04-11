@@ -1,14 +1,13 @@
 ﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
-using Binebase.Exchange.Gateway.Infrastructure.Configuration;
+using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
@@ -31,7 +30,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 throw new ArgumentNullException(nameof(key));
             }
 
-            _logger.LogDebug($"Cache key {key} item set {value} with {expiration ?? Timeout.InfiniteTimeSpan} expiration.");
+            _logger.LogDebug("Cache key {key} item set {value} with {expiration} expiration.", key, value, expiration ?? Timeout.InfiniteTimeSpan);
             await GetDatabase().StringSetAsync(key, value);
         }
 
@@ -63,7 +62,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 throw new ArgumentNullException(nameof(key));
             }
 
-            _logger.LogDebug($"Cache key {key} item added {value}.");
+            _logger.LogDebug("Cache key {key} item added {value}.", key, value);
             await GetDatabase().ListRightPushAsync(key, value);
         }
 
@@ -110,7 +109,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 }
                 catch (RedisConnectionException ex)
                 {
-                    _logger.LogError(ex, $"An error occurred while connecting to Redis instance.");
+                    _logger.LogError(ex, "An error occurred while connecting to Redis instance.");
                     throw;
                 }
             }
