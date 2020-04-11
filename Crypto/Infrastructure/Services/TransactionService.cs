@@ -46,7 +46,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                     foreach (var address in addresses)
                     {
-                        _logger.LogDebug($"Processing {currency} address {address.Public}. Account Id {address.AccountId}.");
+                        _logger.LogDebug("Processing {currency} address {address}. Account Id {accountId}.", currency, address.Public, address.AccountId);
                         var txs = new List<Transaction>();
 
                         foreach (var tx in await service.GetTransactions(address.Public))
