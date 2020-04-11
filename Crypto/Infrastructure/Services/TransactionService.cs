@@ -71,7 +71,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Subscription to {currency} blockchain failed.");
+                    _logger.LogError(ex, "Subscription to {currency} blockchain failed.", currency);
                 }
 
                 await Task.Delay(_configuration.TransactionPoolingTimeout);
