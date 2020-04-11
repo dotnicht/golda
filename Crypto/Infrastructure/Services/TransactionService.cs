@@ -20,19 +20,25 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly IAccountService _accountService;
         private readonly ILogger _logger;
-        private readonly IBlockchainService _blockchainService;
+        private readonly IEnumerable<IBlockchainService> _blockchainServices;
 
-        public TransactionService(IOptions<Configuration> options, IServiceProvider serviceProvider, IAccountService accountService, ILogger<TransactionService> logger, IBlockchainService blockchainService)
-            => (_configuration, _serviceProvider, _accountService, _logger, _blockchainService) = (options.Value, serviceProvider, accountService, logger, blockchainService);
+        public TransactionService(
+            IOptions<Configuration> options,
+            IServiceProvider serviceProvider,
+            IAccountService accountService,
+            ILogger<TransactionService> logger,
+            IEnumerable<IBlockchainService> blockchainServices)
+            => (_configuration, _serviceProvider, _accountService, _logger, _blockchainServices) = (options.Value, serviceProvider, accountService, logger, blockchainServices);
 
-        public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
+        public async Task Subscribe(Currency currency, AddressType type, CancellationToken cancellationToken)
         {
+            var service = _blockchainServices.Single(x => x.Currency == currency);
+            var context = _serviceProvider.GetRequiredService<IApplicationDbContext>();
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var context = _serviceProvider.GetRequiredService<IApplicationDbContext>();
-
                     var addresses = context.Addresses
                         .Include(x => x.Transactions)
                         .Where(x => x.Currency == currency && x.Type == AddressType.Deposit)
@@ -43,7 +49,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                         _logger.LogDebug($"Processing {currency} address {address.Public}. Account Id {address.AccountId}.");
                         var txs = new List<Transaction>();
 
-                        foreach (var tx in await _blockchainService.GetTransactions(address.Public))
+                        foreach (var tx in await service.GetTransactions(address.Public))
                         {
                             if (address.Transactions.All(x => x.Hash != tx.Hash))
                             {

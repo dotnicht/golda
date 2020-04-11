@@ -22,7 +22,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public Currency Currency => Currency.BTC;
 
-        public BitcoinService(IOptions<Configuration> options) => _configuration = options.Value;
+        public BitcoinService(IOptions<Configuration> options) 
+            => _configuration = options.Value;
 
         public async Task<ulong> CurrentIndex()
         {

@@ -22,7 +22,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         private readonly Configuration _configuration;
         private readonly HttpClient _httpClient;
 
-        public EthereumService(IOptions<Configuration> options, HttpClient httpClient) => (_configuration, _httpClient) = (options.Value, httpClient);
+        public EthereumService(IOptions<Configuration> options, HttpClient httpClient) 
+            => (_configuration, _httpClient) = (options.Value, httpClient);
 
         public Currency Currency => Currency.ETH;
 
