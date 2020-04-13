@@ -14,7 +14,6 @@ using Serilog.Sinks.Elasticsearch;
 using Serilog.Sinks.Slack;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -28,19 +27,6 @@ namespace Binebase.Exchange.Common.Infrastructure
 
         public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var mi = typeof(OptionsConfigurationServiceCollectionExtensions)
-                .GetMethod(nameof(OptionsConfigurationServiceCollectionExtensions.Configure), 1, new[] { typeof(IServiceCollection), typeof(IConfigurationSection) });
-
-            /*
-            AppDomain.CurrentDomain
-                .GetAssemblies()
-                .Where(x => !x.IsDynamic)
-                .SelectMany(x => x.GetExportedTypes())
-                .Where(x => x.GetInterface(nameof(IConfig)) != null)
-                .ToList()
-                .ForEach(x => mi.MakeGenericMethod(x).Invoke(null, new object[] { services, configuration.GetSection($"{x.Assembly.GetName().Name.Split(".").Last()}.{x.Name}") }));
-                **/
-
             return services.AddTransient<IDateTime, DateTimeService>();
         }
 
@@ -63,7 +49,7 @@ namespace Binebase.Exchange.Common.Infrastructure
                     },
                     onRetry: (outcome, timespan, retryAttempt, context) =>
                     {
-                        Log.Logger.Warning("Delaying for {delay}ms, then making retry {retry}.", timespan.TotalMilliseconds, retryAttempt);
+                        Log.Logger.Warning("Delaying for {delay}, then making retry {retry}.", timespan, retryAttempt);
                     }));
 
             return httpClientBuilder;
