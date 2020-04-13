@@ -14,7 +14,7 @@ using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext, IUserContext
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTime _dateTime;

@@ -77,8 +77,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IIdentityService, IdentityService>();
 
-            services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy(); ;
-            services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy(); ;
+            services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
+            services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy();
 
             services.AddAuthentication();
 

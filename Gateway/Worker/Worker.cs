@@ -12,8 +12,8 @@ namespace Worker
         private readonly ILogger _logger;
         private readonly IDateTime _dateTime;
         private readonly IExchangeRateService _exchangeRateService;
-        private readonly ITransactionsSyncService _transactionsSyncService;
-        public Worker(ILogger<Worker> logger, IDateTime dateTime, IExchangeRateService exchangeRateService, ITransactionsSyncService transactionsSyncService)
+        private readonly ITransactionService _transactionsSyncService;
+        public Worker(ILogger<Worker> logger, IDateTime dateTime, IExchangeRateService exchangeRateService, ITransactionService transactionsSyncService)
             => (_logger, _dateTime, _exchangeRateService, _transactionsSyncService) = (logger, dateTime, exchangeRateService, transactionsSyncService);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

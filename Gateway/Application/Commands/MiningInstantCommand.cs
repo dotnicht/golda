@@ -81,7 +81,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                         await _accountService.Debit(currentUser.ReferralId.Value, Currency.EURB, ammount, mining.Id, TransactionType.Refferal);
                     }
 
-                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _calculationService.InstantMiningFee, mining.Id, TransactionType.Fee);
+                    await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _configuration.Instant.Fee, mining.Id, TransactionType.Fee);
                     var value = await _calculationService.GenerateInstantReward();
 
                     if (value > 0)

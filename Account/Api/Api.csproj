@@ -6,13 +6,11 @@
     <AssemblyName>Binebase.Exchange.AccountService.Api</AssemblyName>
     <IsPackable>true</IsPackable>
     <UserSecretsId>f1e72b25-0938-4dad-ba99-6375a572001c</UserSecretsId>
-    <!--<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>-->
   </PropertyGroup>
 
   <ItemGroup>
     <Content Update="appsettings.Development.json">
       <DependentUpon>appsettings.json</DependentUpon>
-
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="appsettings.json">
@@ -24,7 +22,6 @@
     </Content>
     <Content Update="appsettings.Test.json">
       <DependentUpon>appsettings.json</DependentUpon>
-
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -9,5 +9,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Configuration
     {
         public Uri Address { get; set; }
         public Currency[] Currencies { get; set; }
+        public TimeSpan TransactionsSyncTimeout { get; set; }
     }
 }
