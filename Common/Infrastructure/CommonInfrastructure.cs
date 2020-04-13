@@ -88,7 +88,12 @@ namespace Binebase.Exchange.Common.Infrastructure
             if (environment.IsProduction())
             {
                 loggerConfiguration
-                    .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment.EnvironmentName))
+                    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
+                    {
+                        ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "Binebase123"),
+                        AutoRegisterTemplate = true,
+                        IndexFormat = $"{Assembly.GetEntryAssembly().GetName().Name.ToLower().Replace(".", "-")}"
+                    })
                     .WriteTo.Slack(new SlackSinkOptions
                     {
                         WebHookUrl = "https://hooks.slack.com/services/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",
@@ -107,16 +112,6 @@ namespace Binebase.Exchange.Common.Infrastructure
             }
 
             Log.Logger = loggerConfiguration.CreateLogger();
-        }
-
-        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
-        {
-            return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
-            {
-                ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "Binebase123"),
-                AutoRegisterTemplate = true,
-                IndexFormat = $"{Assembly.GetEntryAssembly().GetName().Name.ToLower().Replace(".", "-")}"
-            };
         }
     }
 }
