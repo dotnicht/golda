@@ -95,8 +95,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (mining.Amount > 0)
                 {
-                    mining.Balance = mining.Amount + _context.MiningRequests.Where(x => x.CreatedBy == _currentUserService.UserId).Sum(x => x.Amount);
-
                     if (currentUser.ReferralId != null)
                     {
                         var ammount = mining.Amount / 100 * 5;

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,18 @@ namespace Binebase.Exchange.Gateway.Application.Queries
                 => (_context, _currentUserService, _mapper) = (context, currentUserService, mapper);
 
             public async Task<MiningsQueryResult> Handle(MiningsQuery request, CancellationToken cancellationToken)
-                => await Task.FromResult(new MiningsQueryResult { Minings = _mapper.Map<MiningsQueryResult.Mining[]>(_context.MiningRequests.Where(x => x.CreatedBy == _currentUserService.UserId)) });
+            {
+                var minings =  await _context.MiningRequests.OrderBy(x => x.Created).Where(x => x.CreatedBy == _currentUserService.UserId).ToArrayAsync();
+                var result = _mapper.Map<MiningsQueryResult.Mining[]>(minings);
+                var balance = 0M;
+                foreach (var mining in result)
+                {
+                    balance += mining.Amount;
+                    mining.Balance = balance;
+                }
+
+                return new MiningsQueryResult { Minings = result };
+            }
         }
     }
 }
