@@ -88,6 +88,58 @@ namespace Binebase.Exchange.Common.Infrastructure
             return JsonConvert.DeserializeObject<TResponse>(content);
         }
 
+        public static IHostBuilder ConfigureSerilog(this IHostBuilder hostBuilder, IConfiguration configuration, IHostEnvironment environment)
+        {
+            if (hostBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(hostBuilder));
+            }
+
+            if (configuration is null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            hostBuilder.UseSerilog((context, config) =>
+            {
+                config.Enrich.FromLogContext()
+                  .Enrich.WithExceptionDetails()
+                  .Enrich.WithMachineName()
+                  .WriteTo.Debug()
+                  .WriteTo.Console()
+                  .Enrich.WithProperty("Environment", $"{environment.EnvironmentName}: {Assembly.GetCallingAssembly().GetName().Name}")
+                  .ReadFrom.Configuration(configuration);
+
+                if (environment.IsProduction())
+                {
+                    config
+                        .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
+                        {
+                            ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "Binebase123"),
+                            AutoRegisterTemplate = true,
+                            IndexFormat = $"{Assembly.GetEntryAssembly().GetName().Name.ToLower().Replace(".", "-")}"
+                        })
+                        .WriteTo.Slack(new SlackSinkOptions
+                        {
+                            WebHookUrl = "https://hooks.slack.com/services/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",
+                            CustomChannel = "#errors",
+                            BatchSizeLimit = 20,
+                            CustomIcon = ":ghost:",
+                            Period = TimeSpan.FromSeconds(10),
+                            ShowDefaultAttachments = false,
+                            ShowExceptionAttachments = true,
+                            MinimumLogEventLevel = LogEventLevel.Error
+                        });
+                }
+                else
+                {
+                    config.WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMdd}.log");
+                }
+            });
+
+            return hostBuilder;
+        }
+
         public static void ConfigureLogging(IConfiguration configuration, IHostEnvironment environment)
         {
             var loggerConfiguration = new LoggerConfiguration()

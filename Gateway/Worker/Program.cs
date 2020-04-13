@@ -5,6 +5,7 @@ using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
@@ -52,7 +53,7 @@ namespace Worker
                         services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
                         services.AddTransient<IUserContext, ApplicationDbContext>();
 
-                        services.Configure<TransactionService.Configuration>(hostContext.Configuration.GetSection("TransactionsSyncService.Configuration"));
+                        services.Configure<Crypto>(hostContext.Configuration.GetSection("Infrastructure.Crypto"));
                     });
         }
     }
