@@ -71,7 +71,8 @@ namespace Binebase.Exchange.Gateway.Admin.Helpers
                  LastModifiedBy = transaction.LastModifiedBy,
                  Id = transaction.Id,
                  Created = transaction.Created,
-                 LastModified = transaction.LastModified
+                 LastModified = transaction.LastModified,
+                 Hash = transaction.Hash
              };
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Binebase.Exchange.Common.Application.Models;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Interfaces
@@ -24,5 +25,6 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<Result> SetTwoFactorAuthentication(Guid userId, bool isEnabled);
         Task<bool> VerifyTwoFactorToken(Guid userId, string token);
         Task<bool> CheckUserPassword(Guid userId, string password);
+        List<Guid> GetUsersIDs();
     }
 }

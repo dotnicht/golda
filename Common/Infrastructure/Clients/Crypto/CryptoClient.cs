@@ -255,26 +255,28 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
         }
     
         /// <exception cref="CryptoException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<TransactionsQueryResult> Transactions2Async(TransactionsQuery query)
+        public System.Threading.Tasks.Task<TransactionsQueryResult> Transactions2Async(System.Guid? id)
         {
-            return Transactions2Async(query, System.Threading.CancellationToken.None);
+            return Transactions2Async(id, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="CryptoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<TransactionsQueryResult> Transactions2Async(TransactionsQuery query, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<TransactionsQueryResult> Transactions2Async(System.Guid? id, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Crypto/Transactions");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Crypto/Transactions?");
+            if (id != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("Id") + "=").Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(query, _settings.Value));
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
@@ -553,15 +555,6 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
     
         [System.Runtime.Serialization.EnumMember(Value = @"Outbound")]
         Outbound = 2,
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class TransactionsQuery 
-    {
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
-    
     
     }
 

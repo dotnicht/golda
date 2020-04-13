@@ -1,5 +1,4 @@
 ﻿using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Gateway.Domain.Enums;
 using System;
 
 namespace Binebase.Exchange.Gateway.Domain.Entities
@@ -11,5 +10,6 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public decimal Balance { get; set; }
         public DateTime DateTime { get; set; }
         public TransactionType Type { get; set; }
+        public string Hash { get; set; }
     }
 }

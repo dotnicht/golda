@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Binebase.Exchange.Gateway.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Admin.Models;
@@ -15,8 +13,7 @@ namespace Binebase.Exchange.Gateway.Admin
     public class TransactionsModel : PageModel
     {
         private readonly ILogger<TransactionsModel> _logger;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IAccountService _accountService;
+        private IApplicationDbContext _dbContext;
         private List<Binebase.Exchange.Gateway.Domain.Entities.Transaction> _allTransactions;
         private IList<Guid> UserIDs { get; set; }
         private List<TransactionExt> _transactions;
@@ -36,11 +33,10 @@ namespace Binebase.Exchange.Gateway.Admin
 
         public List<TransactionExt> TransactionsIQ { get; set; }
         public PaginatedList<TransactionExt> Transactions { get; set; }
-        public TransactionsModel(ILogger<TransactionsModel> logger, UserManager<ApplicationUser> userManager, IAccountService accountService)
+        public TransactionsModel(ILogger<TransactionsModel> logger, IApplicationDbContext dbContext)
         {
+            _dbContext = dbContext;
             _logger = logger;
-            _userManager = userManager;
-            _accountService = accountService;
             _allTransactions = new List<Binebase.Exchange.Gateway.Domain.Entities.Transaction>();
             _transactions = new List<TransactionExt>();
             PageSize = 10;
@@ -50,14 +46,9 @@ namespace Binebase.Exchange.Gateway.Admin
         {
             ActiveTab = aTab;
 
-            UserIDs = (from u in _userManager.Users select u.Id).ToList();
-            foreach (var id in UserIDs)
-            {
-                var trans = await _accountService.GetTransactions(id);
-                _allTransactions.AddRange(trans);
-                _transactions.AddRange(MapingHelper.MapToTransactionExt(trans, id));
-
-            }
+            var inTransactions = _dbContext.Transactions.ToList();
+            _allTransactions.AddRange(inTransactions);
+            _transactions.AddRange(MapingHelper.MapToTransactionExt(inTransactions));
 
             CurrentSort = sortOrder;
             NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -95,9 +86,9 @@ namespace Binebase.Exchange.Gateway.Admin
                     case "Balance":
                         TransactionsIQ = TransactionsIQ.Where(t => t.Balance.ToString().Contains(searchString)).ToList();
                         break;
-                    case "UserId":
-                        TransactionsIQ = TransactionsIQ.Where(t => t.UserId.ToString().Contains(searchString)).ToList();
-                        break;
+                    //case "UserId":
+                    //    TransactionsIQ = TransactionsIQ.Where(t => t.UserId.ToString().Contains(searchString)).ToList();
+                    //    break;
                     case "Type":
                         TransactionsIQ = TransactionsIQ.Where(t => t.Type.ToString().Contains(searchString)).ToList();
                         break;
@@ -125,7 +116,7 @@ namespace Binebase.Exchange.Gateway.Admin
             #region filteringLists
             Currencies = TransactionsIQ.Select(t => t.Currency.ToString()).Distinct().ToList();
             Sources = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
-            UserIds = TransactionsIQ.Select(t => t.UserId.ToString()).Distinct().ToList();
+            UserIds = TransactionsIQ.Select(t => t.CreatedBy.ToString()).Distinct().ToList();
             Types = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
             #endregion
 

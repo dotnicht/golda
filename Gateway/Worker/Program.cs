@@ -1,3 +1,4 @@
+using AutoMapper;
 using Binance.Net;
 using Binance.Net.Interfaces;
 using Binebase.Exchange.Common.Application.Interfaces;
@@ -8,9 +9,15 @@ using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
+using Binebase.Exchange.Gateway.Worker;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using System;
 
 namespace Worker
 {
@@ -26,7 +33,7 @@ namespace Worker
                 .ConfigureServices((hostContext, services) =>
                     {
                         CommonInfrastructure.ConfigureLogging(hostContext.Configuration, hostContext.HostingEnvironment);
-
+                        services.AddCommonInfrastructure();
                         services.AddHostedService<Worker>();
 
                         services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
@@ -37,8 +44,20 @@ namespace Worker
                         services.AddTransient<IExchangeRateService, ExchangeRateService>();
                         services.AddTransient<IBinanceClient, BinanceClient>();
 
-                        services.Configure<ExchangeRates>(hostContext.Configuration.GetSection("Application.ExchangeRate"));
-                        services.Configure<Redis>(hostContext.Configuration.GetSection("Infrastructure.Redis"));
+                        services.AddTransient<ITransactionsSyncService, TransactionsSyncService>();
+                        services.AddHttpClient<ICryptoService, CryptoService>().AddPolicyHandler(CommonInfrastructure.GetRetryPolicy());
+
+                        services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection"),
+                             b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
+                        services.AddTransient<ICurrentUserService, SystemUserService>();
+                        services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
+                        services.AddTransient<IUserContext, ApplicationDbContext>();
+
+                        services.AddConfigurationProviders(hostContext.Configuration);
+                        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+                        services.Configure<CryptoService.Configuration>(hostContext.Configuration.GetSection("CryptoService.Configuration"));
+                        services.Configure<TransactionsSyncService.Configuration>(hostContext.Configuration.GetSection("TransactionsSyncService.Configuration"));
                     });
         }
     }

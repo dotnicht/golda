@@ -62,8 +62,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     Id = Guid.NewGuid(),
                     Amount = amount,
-                    Type = type,
-                    Balance = amount + _context.MiningRequests.Where(x => x.CreatedBy == _currentUserService.UserId).Sum(x => x.Amount)
+                    Type = type
                 };
 
                 await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining);

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
 using System;
 using System.Threading;
@@ -23,21 +25,27 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<SignInCommandResult> Handle(ConfirmCommand request, CancellationToken cancellationToken)
             {
-                var confirmResult = await _identityService.ConfirmToken(request.Id, request.Code);
-                if (!confirmResult.Succeeded)
+                var result = await _identityService.ConfirmToken(request.Id, request.Code);
+                if (!result.Succeeded)
                 {
-                    throw confirmResult.ToValidationException(nameof(ConfirmCommandHandler)); // TODO: map err codes.
+                    throw result.ToValidationException(nameof(ConfirmCommandHandler)); // TODO: map err codes.
                 }
 
                 var user = await _identityService.GetUser(request.Id);
-                var authResult = await _identityService.Authenticate(user);
-                if (!authResult.Succeeded)
+                if (user == null)
                 {
-                    throw authResult.ToSecurityException();
+                    throw new NotFoundException(nameof(User), request.Id);
                 }
 
-                var token = await _identityService.GenerateAuthToken(user);
-                return _mapper.Map<SignInCommandResult>(user);
+                result = await _identityService.Authenticate(user);
+                if (!result.Succeeded)
+                {
+                    throw result.ToSecurityException();
+                }
+
+                var sign = _mapper.Map<SignInCommandResult>(user);
+                sign.Token = await _identityService.GenerateAuthToken(user);
+                return sign;
             }
         }
     }

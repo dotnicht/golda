@@ -51,7 +51,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(Guid id)
         {
-            var txs = await _cryptoClient.Transactions2Async(new TransactionsQuery { Id = id });
+            var txs = await _cryptoClient.Transactions2Async(id);
             var result = new List<Domain.Entities.Transaction>();
 
             foreach (var tx in txs.Transactions)
@@ -61,6 +61,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     Id = tx.Id,
                     Currency = (Common.Domain.Currency)tx.Currency,
                     Amount = tx.Amount,
+                    Hash = tx.Hash,
                     Type = tx.Direction switch
                     {
                         TransactionDirection.Inbound => TransactionType.Deposit,
