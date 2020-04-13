@@ -1,8 +1,10 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading;
@@ -21,24 +23,24 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         {
             private readonly IIdentityService _identityService;
             private readonly IEmailService _emailService;
-            private readonly ICalculationService _calculationService;
             private readonly IAccountService _accountService;
             private readonly ICryptoService _cryptoService;
             private readonly IDateTime _dateTime;
             private readonly IApplicationDbContext _context;
             private readonly ILogger _logger;
+            private readonly MiningCalculation _configuration;
 
             public SignUpCommandHandler(
                 IIdentityService identityService,
                 IEmailService emailService,
-                ICalculationService calculationService,
                 IAccountService accountService,
                 ICryptoService cryptoService,
                 IDateTime dateTime,
                 IApplicationDbContext context,
-                ILogger<SignUpCommandHandler> logger)
-                => (_identityService, _emailService, _calculationService, _accountService, _cryptoService, _dateTime, _context, _logger)
-                    = (identityService, emailService, calculationService, accountService, cryptoService, dateTime, context, logger);
+                ILogger<SignUpCommandHandler> logger,
+                IOptions<MiningCalculation> options)
+                => (_identityService, _emailService, _accountService, _cryptoService, _dateTime, _context, _logger, _configuration)
+                    = (identityService, emailService, accountService, cryptoService, dateTime, context, logger, options.Value);
                     
             public async Task<Unit> Handle(SignUpCommand request, CancellationToken cancellationToken)
             {
@@ -56,7 +58,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _cryptoService.GenerateDefaultAddresses(id);
 
                 var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
-                if (mining != null && mining.Created + _calculationService.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnonymous)
+                if (mining != null && mining.Created + _configuration.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnonymous)
                 {
                     await _accountService.Debit(id, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
                     mining.LastModifiedBy = id;

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading;
@@ -22,6 +24,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IApplicationDbContext _context;
             private readonly IDateTime _dateTime;
             private readonly IMapper _mapper;
+            private readonly MiningCalculation _configuration;
 
             public MiningBonusCommandHandler(
                 ICurrentUserService currentUserService,
@@ -29,9 +32,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IAccountService accountService,
                 IApplicationDbContext context,
                 IDateTime dateTime,
-                IMapper mapper)
-                => (_currentUserService, _calculationService, _accountService, _context, _dateTime, _mapper)
-                    = (currentUserService, calculationService, accountService, context, dateTime, mapper);
+                IMapper mapper,
+                IOptions<MiningCalculation> options)
+                => (_currentUserService, _calculationService, _accountService, _context, _dateTime, _mapper, _configuration)
+                    = (currentUserService, calculationService, accountService, context, dateTime, mapper, options.Value);
 
             public async Task<MiningBonusCommandResult> Handle(MiningBonusCommand request, CancellationToken cancellationToken)
             {
@@ -40,7 +44,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     .FirstOrDefault(
                         x => (x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default)
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
-                        && x.Created > _dateTime.UtcNow - _calculationService.WeeklyTimeout);
+                        && x.Created > _dateTime.UtcNow - _configuration.Weekly.Timeout);
 
                 if (mining != null)
                 {

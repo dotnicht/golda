@@ -1,5 +1,4 @@
 ﻿using Binebase.Exchange.Common.Infrastructure.Clients.Account;
-using Binebase.Exchange.Common.Infrastructure.Interfaces;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Microsoft.Extensions.Options;
 using System;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 {
-    public class AccountService : IAccountService, IHttpClientScoped<IAccountService>
+    public class AccountService : IAccountService
     {
         private readonly AssetClient _accountClient;
 

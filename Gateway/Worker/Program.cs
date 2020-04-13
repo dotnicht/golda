@@ -1,10 +1,11 @@
-using AutoMapper;
 using Binance.Net;
 using Binance.Net.Interfaces;
-using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Infrastructure;
+using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
@@ -16,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using System;
 
 namespace Worker
 {
@@ -32,18 +32,19 @@ namespace Worker
                 .ConfigureServices((hostContext, services) =>
                     {
                         CommonInfrastructure.ConfigureLogging(hostContext.Configuration, hostContext.HostingEnvironment);
-                        services.AddCommonInfrastructure();
+                        services.AddCommonInfrastructure(hostContext.Configuration);
                         services.AddHostedService<Worker>();
 
-                        services.AddSingleton<ICacheClient, RedisCacheClient>();
-                        services.AddTransient<IExchangeRateService, ExchangeRateService>();
-                        services.AddTransient<IExchangeRateProvider, ExchangeRateProvider>();
-
                         services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
+                        services.AddSingleton<ICacheClient, RedisCacheClient>();
+                        services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
+
+                        services.AddTransient<IDateTime, DateTimeService>();
+                        services.AddTransient<IExchangeRateService, ExchangeRateService>();
                         services.AddTransient<IBinanceClient, BinanceClient>();
 
-                        services.AddTransient<ITransactionsSyncService, TransactionsSyncService>();
-                        services.AddHttpClient<ICryptoService, CryptoService>().AddPolicyHandler(CommonInfrastructure.GetRetryPolicy());
+                        services.AddTransient<ITransactionService, TransactionService>();
+                        services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy();
 
                         services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection"),
                              b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
@@ -52,10 +53,7 @@ namespace Worker
                         services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
                         services.AddTransient<IUserContext, ApplicationDbContext>();
 
-                        services.AddConfigurationProviders(hostContext.Configuration);
-                        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-                        services.Configure<CryptoService.Configuration>(hostContext.Configuration.GetSection("CryptoService.Configuration"));
-                        services.Configure<TransactionsSyncService.Configuration>(hostContext.Configuration.GetSection("TransactionsSyncService.Configuration"));
+                        services.Configure<Crypto>(hostContext.Configuration.GetSection("Infrastructure.Crypto"));
                     });
         }
     }

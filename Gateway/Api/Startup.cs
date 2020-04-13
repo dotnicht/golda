@@ -1,11 +1,10 @@
 using Binebase.Exchange.Common.Api;
-using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Common.Infrastructure;
+using Binebase.Exchange.Gateway.Api.Services;
 using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
-using Binebase.Exchange.Gateway.Infrastructure.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,7 +16,6 @@ using NSwag;
 using NSwag.Generation.Processors.Security;
 using Serilog;
 using System.Linq;
-using System.Reflection;
 
 namespace Binebase.Exchange.Gateway.Api
 {
@@ -34,9 +32,8 @@ namespace Binebase.Exchange.Gateway.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplication();
+            services.AddApplication(Configuration);
             services.AddInfrastructure(Configuration);
-            services.AddServices(Assembly.GetExecutingAssembly());
             services.AddHttpContextAccessor();
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
@@ -78,9 +75,7 @@ namespace Binebase.Exchange.Gateway.Api
                 configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
 
-            services.AddConfigurationProviders(Configuration);
-            services.Configure<AccountService.Configuration>(Configuration.GetSection("AccountService.Configuration"));
-            services.Configure<CryptoService.Configuration>(Configuration.GetSection("CryptoService.Configuration"));
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -95,6 +90,7 @@ namespace Binebase.Exchange.Gateway.Api
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
             app.UseSerilogRequestLogging();
             app.UseCustomExceptionHandler();
             app.UseHealthChecks("/health");

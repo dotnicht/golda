@@ -10,12 +10,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Binebase.Exchange.Gateway.Application.Configuration;
 
 namespace Binebase.Exchange.Gateway.Application.Services
 {
-    public sealed class ExchangeRateService : IExchangeRateService, IConfigurationProvider<ExchangeRateService.Configuration>, ISingleton<IExchangeRateService>, IDisposable
+    public sealed class ExchangeRateService : IExchangeRateService, IDisposable
     {
-        private readonly Configuration _configuration;
+        private readonly ExchangeRates _configuration;
         private readonly ILogger _logger;
         private readonly IDateTime _dateTime;
         private readonly ICacheClient _cacheClient;
@@ -26,7 +27,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private readonly Pair[] _exchangeExcludePairs;
 
         public ExchangeRateService(
-            IOptions<Configuration> options,
+            IOptions<ExchangeRates> options,
             ILogger<ExchangeRateService> logger,
             IDateTime dateTime,
             ICacheClient cacheClient,
@@ -144,15 +145,5 @@ namespace Binebase.Exchange.Gateway.Application.Services
         }
 
         public void Dispose() => _timer?.Dispose();
-
-        public class Configuration
-        {
-            public string[] SupportedPairs { get; set; }
-            public string[] ExchangeExcludePairs { get; set; }
-            public decimal BineBaseValue { get; set; }
-            public decimal[] BineRange { get; set; }
-            public TimeSpan BineRefreshRate { get; set; }
-            public decimal ExchangeFee { get; set; }
-        }
     }
 }

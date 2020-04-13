@@ -1,6 +1,7 @@
 using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
+using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace Binebase.Exchange.Crypto.Worker
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var tasks = new[] { Currency.BTC, Currency.ETH }
-                .Select(x => _services.CreateScope().ServiceProvider.GetRequiredService<ITransactionService>().Subscribe(x, stoppingToken))
+                .Select(x => _services.CreateScope().ServiceProvider.GetRequiredService<ITransactionService>().Subscribe(x, AddressType.Deposit, stoppingToken))
                 .ToArray();
 
             while (!stoppingToken.IsCancellationRequested)

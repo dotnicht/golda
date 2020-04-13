@@ -22,8 +22,8 @@ namespace Binebase.Exchange.CryptoService.Application.Queries
 
             public async Task<AddressesQueryResult> Handle(AddressesQuery request, CancellationToken cancellationToken)
             {
-                var tx = _context.Addresses.Where(x => x.AccountId == request.Id);
-                return await Task.FromResult(new AddressesQueryResult { Addresses = _mapper.Map<AddressesQueryResult.Address[]>(tx) });
+                var addresses = _context.Addresses.Where(x => x.AccountId == request.Id);
+                return await Task.FromResult(new AddressesQueryResult { Addresses = _mapper.Map<AddressesQueryResult.Address[]>(addresses) });
             }
         }
     }

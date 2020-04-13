@@ -5,7 +5,7 @@ using System;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class SignInCommandResult : IMapFrom<User>, IIdContainer
+    public class SignInCommandResult : IMapFrom<User>
     {
         public Guid Id { get; set; }
         public string Email { get; set; }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Binebase.Exchange.Common.Application.Interfaces
 {
-    public interface ITransient<TTarget>
+    public interface IConfig
     {
     }
 }

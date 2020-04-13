@@ -1,5 +1,5 @@
-﻿using Binebase.Exchange.Common.Application;
-using Binebase.Exchange.Common.Infrastructure.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Infrastructure.Services;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,12 +8,13 @@ using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
 using Serilog;
+using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
 using Serilog.Sinks.Slack;
 using System;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -24,42 +25,34 @@ namespace Binebase.Exchange.Common.Infrastructure
     {
         public const string DecimalFormat = "decimal(18,8)";
 
-        public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services)
+        public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddServices(Assembly.GetExecutingAssembly());
-            return services;
+            return services.AddTransient<IDateTime, DateTimeService>();
         }
 
-        public static IServiceCollection AddHttpClients(this IServiceCollection services, Assembly assembly)
+        public static IHttpClientBuilder AddRetryPolicy(this IHttpClientBuilder httpClientBuilder)
         {
-            if (services is null)
+            if (httpClientBuilder is null)
             {
-                throw new ArgumentNullException(nameof(services));
+                throw new ArgumentNullException(nameof(httpClientBuilder));
             }
 
-            if (assembly is null)
-            {
-                throw new ArgumentNullException(nameof(assembly));
-            }
-
-            var addHttpClientMethod = typeof(HttpClientFactoryServiceCollectionExtensions)
-                .GetMethod(nameof(HttpClientFactoryServiceCollectionExtensions.AddHttpClient), 2, new[] { typeof(IServiceCollection) });
-
-            var addPolicyHandlerMethod = typeof(PollyHttpClientBuilderExtensions)
-               .GetMethod(nameof(PollyHttpClientBuilderExtensions.AddPolicyHandler), new[] { typeof(IHttpClientBuilder), typeof(IAsyncPolicy<HttpResponseMessage>) });
-
-            foreach (var type in assembly.GetExportedTypes())
-            {
-                foreach (var item in type.GetInterfaces())
-                {
-                    if (item.IsGenericType && item.GetGenericTypeDefinition() == typeof(IHttpClientScoped<>))
+            // TODO: add policy to config.
+            httpClientBuilder.AddPolicyHandler(HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(new[]
                     {
-                        addPolicyHandlerMethod.Invoke(null, new[] { addHttpClientMethod.MakeGenericMethod(item.GetGenericArguments().Single(), type).Invoke(null, new[] { services }), CommonInfrastructure.GetRetryPolicy() });
-                    }
-                }
-            }
+                        TimeSpan.FromSeconds(1),
+                        TimeSpan.FromSeconds(2),
+                        TimeSpan.FromSeconds(3)
+                    },
+                    onRetry: (outcome, timespan, retryAttempt, context) =>
+                    {
+                        Log.Logger.Warning("Delaying for {delay}, then making retry {retry}.", timespan, retryAttempt);
+                    }));
 
-            return services;
+            return httpClientBuilder;
         }
 
         public static async Task<TResponse> Get<TResponse>(this HttpClient target, Uri source)
@@ -105,12 +98,12 @@ namespace Binebase.Exchange.Common.Infrastructure
                         Period = TimeSpan.FromSeconds(10),
                         ShowDefaultAttachments = false,
                         ShowExceptionAttachments = true,
-                        MinimumLogEventLevel = Serilog.Events.LogEventLevel.Error
+                        MinimumLogEventLevel = LogEventLevel.Error
                     });
             }
             else
             {
-                loggerConfiguration.WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMdd}log.log");
+                loggerConfiguration.WriteTo.File(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + $"\\logs\\{DateTime.UtcNow:yyyyMMdd}.log");
             }
 
             Log.Logger = loggerConfiguration.CreateLogger();
@@ -122,26 +115,8 @@ namespace Binebase.Exchange.Common.Infrastructure
             {
                 ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "Binebase123"),
                 AutoRegisterTemplate = true,
-                //IndexFormat = $"{Assembly.GetCallingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM
                 IndexFormat = $"{Assembly.GetEntryAssembly().GetName().Name.ToLower().Replace(".", "-")}"
             };
-        }
-
-        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-        {
-            return HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(new[]
-                {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(3)
-                },
-                onRetry: (outcome, timespan, retryAttempt, context) =>
-                {
-                    Log.Logger.Warning("Delaying for {delay}ms, then making retry {retry}.", timespan.TotalMilliseconds, retryAttempt);
-                });
         }
     }
 }

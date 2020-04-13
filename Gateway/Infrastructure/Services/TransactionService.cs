@@ -1,5 +1,7 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,19 +10,17 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Binebase.Exchange.Common.Infrastructure.Interfaces;
-using Binebase.Exchange.Common.Application;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
-    public class TransactionsSyncService : ITransactionsSyncService, IHttpClientScoped<ITransactionsSyncService>
+    public class TransactionService : ITransactionService
     {
-        private readonly Configuration _configuration;
+        private readonly Crypto _configuration;
         private readonly ILogger _logger;
         private readonly ICryptoService _cryptoService;
         private readonly IServiceProvider _serviceProvider;
 
-        public TransactionsSyncService(IOptions<Configuration> options, ILogger<TransactionsSyncService> logger, ICryptoService cryptoService, IServiceProvider serviceProvider) =>
+        public TransactionService(IOptions<Crypto> options, ILogger<TransactionService> logger, ICryptoService cryptoService, IServiceProvider serviceProvider) =>
              (_configuration, _logger, _cryptoService, _serviceProvider) = (options.Value, logger, cryptoService, serviceProvider);
 
         public async Task SyncTransactions(CancellationToken cancellationToken)
@@ -29,7 +29,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             {
                 try
                 {
-                    using (new ElapsedTimer(_logger, $"CryptoTxProcess"))
+                    using (new ElapsedTimer(_logger, "CryptoTxProcess"))
                     {
                         using var scope = _serviceProvider.CreateScope();
                         using var ctx = scope.ServiceProvider.GetRequiredService<IUserContext>();
@@ -47,7 +47,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error while sync transactions.");
+                    _logger.LogError(ex, "Error while sync transactions.");
                 }
             }
         }
@@ -76,11 +76,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             }
 
             await ctx.SaveChangesAsync();
-        }
-
-        public class Configuration
-        {
-            public TimeSpan TransactionsSyncTimeout { get; set; }
         }
     }
 }

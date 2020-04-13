@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class ExchangePromotionCommand : IRequest, IIdContainer
+    public class ExchangePromotionCommand : IRequest
     {
         public Guid Id { get; set; }
 

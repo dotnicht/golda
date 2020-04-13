@@ -1,5 +1,5 @@
 ﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SendGrid;
@@ -10,13 +10,12 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
-    public class EmailService : IEmailService, IConfigurationProvider<EmailService.Configuration>, ITransient<IEmailService>
+    public class EmailService : IEmailService
     {
         private readonly ILogger _logger;
-        private readonly IOptions<Configuration> _options;
+        private readonly Email _configuration;
 
-        public EmailService(ILogger<EmailService> logger, IOptions<Configuration> options) 
-            => (_logger, _options) = (logger, options);
+        public EmailService(ILogger<EmailService> logger, IOptions<Email> options) => (_logger, _configuration) = (logger, options.Value);
 
         public async Task SendEmail(string[] emails, string subject, string message)
         {
@@ -39,20 +38,14 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             {
                 Subject = subject,
                 HtmlContent = message,
-                From = new EmailAddress(_options.Value.FromAddress)
+                From = new EmailAddress(_configuration.FromAddress)
             };
 
             msg.AddTos(emails.Select(x => new EmailAddress(x)).ToList());
 
-            var client = new SendGridClient(_options.Value.ApiKey);
+            var client = new SendGridClient(_configuration.ApiKey);
             var result = await client.SendEmailAsync(msg);
             _logger.LogDebug($"SendGrid response {result.StatusCode}.");
-        }
-
-        public class Configuration
-        {
-            public string ApiKey { get; set; }
-            public string FromAddress { get; set; }
         }
     }
 }

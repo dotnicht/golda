@@ -3,7 +3,7 @@ using System;
 
 namespace Binebase.Exchange.Common.Infrastructure.Services
 {
-    public class DateTimeService : IDateTime, ITransient<IDateTime>
+    public class DateTimeService : IDateTime
     {
         public DateTime UtcNow => DateTime.UtcNow;
     }
