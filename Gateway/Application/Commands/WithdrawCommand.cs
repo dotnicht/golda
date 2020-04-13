@@ -67,7 +67,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 if (_configuration.WithdrawDailyLimit > 0)
                 {
                     var eurb = 0M;
-                    foreach (var tx in _context.Transactions.Where(x => x.DateTime.Date == _dateTime.UtcNow.Date && x.Type == TransactionType.Widthraw && x.CreatedBy == _currentUserService.UserId))
+                    foreach (var tx in _context.Transactions.Where(x => x.DateTime.Date == _dateTime.UtcNow.Date && x.Type == TransactionType.Withdraw && x.CreatedBy == _currentUserService.UserId))
                     {
                         eurb += tx.Amount * (await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency), false)).Rate;
                     }
@@ -79,7 +79,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var id = Guid.NewGuid();
-                await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Widthraw);
+                await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Withdraw);
                 return new WithdrawCommandResult { Hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id) };
             }
         }

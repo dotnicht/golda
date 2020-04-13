@@ -1104,8 +1104,8 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         [System.Runtime.Serialization.EnumMember(Value = @"Deposit")]
         Deposit = 3,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"Widthraw")]
-        Widthraw = 4,
+        [System.Runtime.Serialization.EnumMember(Value = @"Withdraw")]
+        Withdraw = 4,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Refferal")]
         Refferal = 5,

@@ -10,7 +10,7 @@ namespace Binebase.Exchange.Common.Domain
         Mining = 1,
         Exchange = 2,
         Deposit = 3,
-        Widthraw = 4,
+        Withdraw = 4,
         Refferal = 5,
         Fee = 6,
         SignUp = 7

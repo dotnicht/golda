@@ -65,7 +65,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     Type = tx.Direction switch
                     {
                         TransactionDirection.Inbound => TransactionType.Deposit,
-                        TransactionDirection.Outbound => TransactionType.Widthraw,
+                        TransactionDirection.Outbound => TransactionType.Withdraw,
                         TransactionDirection.Internal => TransactionType.Internal,
                         _ => throw new InvalidOperationException(),
                     }
