@@ -52,8 +52,7 @@ namespace Binebase.Exchange.Gateway.Api
                         .SetIsOriginAllowed(_ => true)
                         .AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        );
+                        .AllowAnyHeader());
             });
 
             services.Configure<ApiBehaviorOptions>(options =>

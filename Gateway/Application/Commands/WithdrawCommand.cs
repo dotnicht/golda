@@ -1,8 +1,10 @@
 ﻿using Binebase.Exchange.Common.Application.Exceptions;
+using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
+using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using MediatR;
 using Microsoft.Extensions.Options;
 using System;
@@ -21,38 +23,59 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
         public class WithdrawCommandHandler : IRequestHandler<WithdrawCommand, WithdrawCommandResult>
         {
+            private IDateTime _dateTime;
             private readonly IApplicationDbContext _context;
             private readonly ICryptoService _cryptoService;
             private readonly IAccountService _accountService;
             private readonly IIdentityService _identityService;
             private readonly ICurrentUserService _currentUserService;
-            private readonly MiningCalculation _configuration;
+            private readonly IExchangeRateService _exchangeRateService;
+            private readonly CryptoOperations _configuration;
 
             public WithdrawCommandHandler(
+                IDateTime dateTime,
                 IApplicationDbContext context,
                 ICryptoService cryptoService,
                 IAccountService accountService,
                 IIdentityService identityService,
                 ICurrentUserService currentUserService,
-                IOptions<MiningCalculation> options)
-                => (_context, _cryptoService, _accountService, _identityService, _currentUserService, _configuration)
-                    = (context, cryptoService, accountService, identityService, currentUserService, options.Value);
+                IExchangeRateService exchangeRateService,
+                IOptions<CryptoOperations> options)
+                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _configuration)
+                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, options.Value);
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {
-                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.Instant.OperationLockMiningCount)
+                if (_context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.WithdrawMiningRequirement)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);
                 }
 
-                if (!await _identityService.GetTwoFactorEnabled(_currentUserService.UserId))
+                if (_configuration.WithdrawMultiRequired)
                 {
-                    throw new NotSupportedException(ErrorCode.MultiFactorRequired);
+                    if (!await _identityService.GetTwoFactorEnabled(_currentUserService.UserId))
+                    {
+                        throw new NotSupportedException(ErrorCode.MultiFactorRequired);
+                    }
+
+                    if (!await _identityService.VerifyTwoFactorToken(_currentUserService.UserId, request.Code))
+                    {
+                        throw new SecurityException(ErrorCode.MultiFactor);
+                    }
                 }
 
-                if (!await _identityService.VerifyTwoFactorToken(_currentUserService.UserId, request.Code))
+                if (_configuration.WithdrawDailyLimit > 0)
                 {
-                    throw new SecurityException(ErrorCode.MultiFactor);
+                    var eurb = 0M;
+                    foreach (var tx in _context.Transactions.Where(x => x.DateTime.Date == _dateTime.UtcNow.Date && x.Type == TransactionType.Widthraw && x.CreatedBy == _currentUserService.UserId))
+                    {
+                        eurb += tx.Amount * (await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency), false)).Rate;
+                    }
+
+                    if (_configuration.WithdrawDailyLimit <= eurb)
+                    {
+                        throw new NotSupportedException(ErrorCode.WithdrawLimit);
+                    }
                 }
 
                 var id = Guid.NewGuid();

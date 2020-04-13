@@ -38,7 +38,6 @@ namespace Binebase.Exchange.Gateway.Application.Configuration
             public decimal Probability { get; set; }
             public decimal Fee { get; set; }
             public Dictionary<Category, decimal> Categories { get; set; }
-            public int OperationLockMiningCount { get; set; }
 
             public enum Category
             {

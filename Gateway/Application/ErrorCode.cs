@@ -46,5 +46,9 @@
         /// The operation couldn't perform because the currency is not supported.
         /// </summary>
         public const string CurrencyNotSupported = "currency_not_supported";
+        /// <summary>
+        /// The withdraw limit has been reached.
+        /// </summary>
+        public const string WithdrawLimit = "withdraw_limit";
     }
 }

@@ -25,8 +25,9 @@ namespace Binebase.Exchange.Gateway.Application
             services.AddApplicationCommon();
             services.AddTransient<ICalculationService, CalculationService>();
             services.AddTransient<IExchangeRateService, ExchangeRateService>();
-            services.Configure<ExchangeRates>(configuration.GetSection("Infrastructure.ExchangeRates"));
-            services.Configure<MiningCalculation>(configuration.GetSection("Infrastructure.MiningCalculation"));
+            services.Configure<ExchangeRates>(configuration.GetSection("Application.ExchangeRates"));
+            services.Configure<CryptoOperations>(configuration.GetSection("Application.CryptoOperations"));
+            services.Configure<MiningCalculation>(configuration.GetSection("Application.MiningCalculation"));
             return services;
         }
     }
