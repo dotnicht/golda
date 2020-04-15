@@ -1,0 +1,112 @@
+﻿@page
+@model Binebase.Exchange.Gateway.Admin.Pages.UserBalancesModel
+@{
+    ViewData["Title"] = "UserBalances";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form asp-page="/UserBalances" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by user email:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="/UserBalances">Back to full List</a>
+        </p>
+    </div>
+</form>
+
+<table id="myTable" class="table" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/UserBalances" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.UserBalances[0].UserId)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Tablet</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary" asp-page="/UserBalances" asp-route-sortOrder="@Model.UserNameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.UserBalances[0].Email)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        @foreach (var userName in Model.UsersNames)
+                        {
+                            <li><a asp-page="/UserBalances" asp-route-currentFilterFieldName="UserName" asp-route-currentFilter=@userName>@userName</a></li>
+                        }
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary" asp-page="/UserBalances" asp-route-sortOrder="@Model.CurrencySort"
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.UserBalances[0].Currency)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        @foreach (var currency in Model.Currencies)
+                        {
+                            <li><a asp-page="/UserBalances" asp-route-currentFilterFieldName="Currency" asp-route-currentFilter=@currency>@currency</a></li>
+                        }
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary" asp-page="/UserBalances" asp-route-sortOrder="@Model.BalanceSort"
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.UserBalances[0].Balance)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Tablet</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th />
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.UserBalances)
+        {
+            <tr>
+                @foreach (var property in item.GetType().GetProperties())
+                {
+                    <td>@property.GetValue(item)</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.UserBalances.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.UserBalances.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="/UserBalances"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.UserBalances.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="/UserBalances"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.UserBalances.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
+<div>@Model.UserBalances.PageIndex/@Model.UserBalances.TotalPages  Total: @Model.UserBalancesIQ.Count() users (on page: @Model.UserBalances.Count)</div>
+
