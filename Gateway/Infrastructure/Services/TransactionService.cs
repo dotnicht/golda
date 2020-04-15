@@ -39,6 +39,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                         foreach (var userId in usersIds)
                         {
                             var userTransactions = await _cryptoService.GetTransactions(userId);
+                            // TODO: update tx status.
                             await UpdateTransactionsInStore(userTransactions, userId);
                         }
                     }

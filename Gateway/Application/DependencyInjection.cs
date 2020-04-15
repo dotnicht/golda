@@ -22,7 +22,7 @@ namespace Binebase.Exchange.Gateway.Application
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            services.AddApplicationCommon();
+            services.AddCommonApplication();
             services.AddTransient<ICalculationService, CalculationService>();
             services.AddTransient<IExchangeRateService, ExchangeRateService>();
             services.Configure<ExchangeRates>(configuration.GetSection("Application.ExchangeRates"));

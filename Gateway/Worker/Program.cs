@@ -1,10 +1,11 @@
 using Binance.Net;
 using Binance.Net.Interfaces;
-using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Common.Infrastructure;
-using Binebase.Exchange.Common.Infrastructure.Services;
+using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
+using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
@@ -30,31 +31,40 @@ namespace Worker
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .ConfigureServices((hostContext, services) =>
-                    {
-                        CommonInfrastructure.ConfigureLogging(hostContext.Configuration, hostContext.HostingEnvironment);
-                        services.AddCommonInfrastructure(hostContext.Configuration);
-                        services.AddHostedService<Worker>();
+                {
+                    CommonInfrastructure.ConfigureLogging(hostContext.Configuration, hostContext.HostingEnvironment);
+                    var configuration = hostContext.Configuration;
 
-                        services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
-                        services.AddSingleton<ICacheClient, RedisCacheClient>();
-                        services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
+                    services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-                        services.AddTransient<IDateTime, DateTimeService>();
-                        services.AddTransient<IExchangeRateService, ExchangeRateService>();
-                        services.AddTransient<IBinanceClient, BinanceClient>();
+                    services.AddCommonInfrastructure(configuration);
 
-                        services.AddTransient<ITransactionService, TransactionService>();
-                        services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy();
+                    services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
+                    services.AddSingleton<ICacheClient, RedisCacheClient>();
+                    services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
 
-                        services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection"),
-                             b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                    services.AddTransient<IBinanceClient, BinanceClient>();
+                    services.AddTransient<ITransactionService, TransactionService>();
 
-                        services.AddTransient<ICurrentUserService, SystemUserService>();
-                        services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
-                        services.AddTransient<IUserContext, ApplicationDbContext>();
+                    services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
+                    services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy();
 
-                        services.Configure<Crypto>(hostContext.Configuration.GetSection("Infrastructure.Crypto"));
-                    });
+                    services.Configure<Account>(configuration.GetSection("Infrastructure.Account"));
+                    services.Configure<Crypto>(configuration.GetSection("Infrastructure.Crypto"));
+                    services.Configure<Email>(configuration.GetSection("Infrastructure.Email"));
+                    services.Configure<Redis>(configuration.GetSection("Infrastructure.Redis"));
+
+                    services.AddCommonApplication();
+                    services.AddHostedService<Worker>();
+
+                    services.AddTransient<ICurrentUserService, SystemUserService>();
+                    services.AddTransient<IUserContext, ApplicationDbContext>();
+                    services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
+
+                    services.AddTransient<IExchangeRateService, ExchangeRateService>();
+                    services.Configure<ExchangeRates>(configuration.GetSection("Application.ExchangeRates"));
+                });
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Binebase.Exchange.Common.Application
 {
     public static class CommonApplication
     {
-        public static IServiceCollection AddApplicationCommon(this IServiceCollection services)
+        public static IServiceCollection AddCommonApplication(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());

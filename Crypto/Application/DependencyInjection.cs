@@ -9,7 +9,7 @@ namespace Binebase.Exchange.CryptoService.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddApplicationCommon();
+            services.AddCommonApplication();
             return services;
         }
     }

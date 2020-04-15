@@ -14,7 +14,5 @@ namespace Binebase.Exchange.AccountService.Api
             WebHost.CreateDefaultBuilder(args)
              .UseSerilog()
              .UseStartup<Startup>();
-
-
     }
 }
