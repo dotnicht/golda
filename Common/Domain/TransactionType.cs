@@ -13,6 +13,7 @@ namespace Binebase.Exchange.Common.Domain
         Withdraw = 4,
         Refferal = 5,
         Fee = 6,
-        SignUp = 7
+        SignUp = 7,
+        Compensating = 8
     }
 }

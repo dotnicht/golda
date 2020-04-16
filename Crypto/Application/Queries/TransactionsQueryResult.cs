@@ -16,6 +16,7 @@ namespace Binebase.Exchange.CryptoService.Application.Queries
             public Guid Id { get; set; }
             public Currency Currency { get; set; }
             public TransactionDirection Direction { get; set; }
+            public TransactionStatus Status { get; set; }
             public string Hash { get; set; }
             public decimal Amount { get; set; }
 

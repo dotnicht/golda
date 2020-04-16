@@ -11,5 +11,6 @@ namespace Binebase.Exchange.Gateway.Domain.Entities
         public DateTime DateTime { get; set; }
         public TransactionType Type { get; set; }
         public string Hash { get; set; }
+        public bool Failed { get; set; }
     }
 }

@@ -535,6 +535,10 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public TransactionDirection Direction { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public TransactionStatus Status { get; set; }
+    
         [Newtonsoft.Json.JsonProperty("hash", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hash { get; set; }
     
@@ -555,6 +559,20 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
     
         [System.Runtime.Serialization.EnumMember(Value = @"Outbound")]
         Outbound = 2,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v12.0.0.0)")]
+    public enum TransactionStatus
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Published")]
+        Published = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Confirmed")]
+        Confirmed = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Failed")]
+        Failed = 2,
     
     }
 

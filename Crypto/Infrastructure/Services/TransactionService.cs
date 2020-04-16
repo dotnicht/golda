@@ -18,17 +18,15 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
     {
         private readonly Configuration _configuration;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IAccountService _accountService;
         private readonly ILogger _logger;
         private readonly IEnumerable<IBlockchainService> _blockchainServices;
 
         public TransactionService(
             IOptions<Configuration> options,
             IServiceProvider serviceProvider,
-            IAccountService accountService,
             ILogger<TransactionService> logger,
             IEnumerable<IBlockchainService> blockchainServices)
-            => (_configuration, _serviceProvider, _accountService, _logger, _blockchainServices) = (options.Value, serviceProvider, accountService, logger, blockchainServices);
+            => (_configuration, _serviceProvider, _logger, _blockchainServices) = (options.Value, serviceProvider, logger, blockchainServices);
 
         public async Task Subscribe(Currency currency, AddressType type, CancellationToken cancellationToken)
         {

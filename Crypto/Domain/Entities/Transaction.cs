@@ -12,7 +12,7 @@ namespace Binebase.Exchange.CryptoService.Domain.Entities
         public ulong RawAmount { get; set; }
         public decimal Amount { get; set; }
         public DateTime? Confirmed { get; set; }
-        public TransactionStatus? Status { get; set; }
+        public TransactionStatus Status { get; set; }
         public Guid AddressId { get; set; }
         public Address Address { get; set; }
     }

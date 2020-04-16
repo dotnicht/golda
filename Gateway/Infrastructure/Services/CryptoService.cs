@@ -58,10 +58,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             {
                 var item = new Domain.Entities.Transaction
                 {
+                    CreatedBy = id,
                     Id = tx.Id,
                     Currency = (Common.Domain.Currency)tx.Currency,
                     Amount = tx.Amount,
                     Hash = tx.Hash,
+                    Failed = tx.Status == TransactionStatus.Failed,
                     Type = tx.Direction switch
                     {
                         TransactionDirection.Inbound => TransactionType.Deposit,
