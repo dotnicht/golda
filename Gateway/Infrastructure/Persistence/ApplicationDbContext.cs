@@ -1,16 +1,15 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Common.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
+using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Binebase.Exchange.Gateway.Domain;
-using Binebase.Exchange.Gateway.Domain.Entities;
-using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
 {
