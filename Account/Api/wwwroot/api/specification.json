@@ -383,7 +383,8 @@
           "Withdraw",
           "Refferal",
           "Fee",
-          "SignUp"
+          "SignUp",
+          "Compensating"
         ],
         "enum": [
           "Internal",
@@ -393,7 +394,8 @@
           "Withdraw",
           "Refferal",
           "Fee",
-          "SignUp"
+          "SignUp",
+          "Compensating"
         ]
       },
       "NewAccountCommand": {

@@ -42,6 +42,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             foreach (var operation in new[] { "txlist", "txlistinternal" })
             {
+                // TODO: remove obsolete balance query.
                 var uri = string.Format(_configuration.EtherscanUrlFormat,
                     _configuration.IsTestNet ? "ropsten" : "api",
                     "account",
@@ -50,11 +51,13 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 var response = await _httpClient.GetAsync(uri);
                 var content = await response.Content.ReadAsStringAsync();
 
+                // TODO: handle failed tx.
                 var tx = JsonConvert.DeserializeObject<EtherscanTransactionsResponse>(content).Result
                     .Select(x => new Transaction
                     {
                         Direction = TransactionDirection.Inbound,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
+                        Status = x.Confirmations > _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                         Hash = x.Hash,
                         Block = x.BlockNumber,
                         RawAmount = x.Value,
@@ -102,7 +105,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 public string From { get; set; }
                 public string To { get; set; }
                 public ulong Value { get; set; }
-                public ulong Confirmations { get; set; }
+                public int Confirmations { get; set; }
             }
         }
     }

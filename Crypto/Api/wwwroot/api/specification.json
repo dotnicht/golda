@@ -260,6 +260,9 @@
           "direction": {
             "$ref": "#/components/schemas/TransactionDirection"
           },
+          "status": {
+            "$ref": "#/components/schemas/TransactionStatus"
+          },
           "hash": {
             "type": "string",
             "nullable": true
@@ -282,6 +285,20 @@
           "Internal",
           "Inbound",
           "Outbound"
+        ]
+      },
+      "TransactionStatus": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Published",
+          "Confirmed",
+          "Failed"
+        ],
+        "enum": [
+          "Published",
+          "Confirmed",
+          "Failed"
         ]
       }
     },

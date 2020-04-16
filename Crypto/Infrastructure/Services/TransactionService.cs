@@ -18,17 +18,15 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
     {
         private readonly Configuration _configuration;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IAccountService _accountService;
         private readonly ILogger _logger;
         private readonly IEnumerable<IBlockchainService> _blockchainServices;
 
         public TransactionService(
             IOptions<Configuration> options,
             IServiceProvider serviceProvider,
-            IAccountService accountService,
             ILogger<TransactionService> logger,
             IEnumerable<IBlockchainService> blockchainServices)
-            => (_configuration, _serviceProvider, _accountService, _logger, _blockchainServices) = (options.Value, serviceProvider, accountService, logger, blockchainServices);
+            => (_configuration, _serviceProvider, _logger, _blockchainServices) = (options.Value, serviceProvider, logger, blockchainServices);
 
         public async Task Subscribe(Currency currency, AddressType type, CancellationToken cancellationToken)
         {
@@ -41,7 +39,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 {
                     var addresses = context.Addresses
                         .Include(x => x.Transactions)
-                        .Where(x => x.Currency == currency && x.Type == AddressType.Deposit)
+                        .Where(x => x.Currency == currency && x.Type == type)
                         .ToArray();
 
                     foreach (var address in addresses)
@@ -51,22 +49,23 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                         foreach (var tx in await service.GetTransactions(address.Public))
                         {
-                            if (address.Transactions.All(x => x.Hash != tx.Hash))
+                            var existing = address.Transactions.Where(x => x.Hash == tx.Hash);
+                            if (!existing.Any())
                             {
                                 tx.AddressId = address.Id;
                                 txs.Add(context.Transactions.Add(tx).Entity);
+                                _logger.LogDebug("Adding transaction {hash}. Generated Id {id}.", tx.Hash, tx.Id);
+                            }
+                            else
+                            {
+                                foreach (var item in existing.Where(x => x.Status == TransactionStatus.Published))
+                                {
+                                    item.Status = tx.Status;
+                                }
                             }
                         }
 
                         await context.SaveChangesAsync();
-
-                        if (_configuration.DebitDepositTransactions)
-                        {
-                            foreach (var tx in txs)
-                            {
-                                await _accountService.Debit(address.AccountId, currency, tx.Amount, tx.Id);
-                            }
-                        }
                     }
                 }
                 catch (Exception ex)

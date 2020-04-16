@@ -16,7 +16,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
             services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
             services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
-            services.AddHttpClient<IAccountService, AccountService>();
             services.AddHttpClient<IBlockchainService, EthereumService>();
             services.AddHttpClient<IBlockchainService, BitcoinService>();
             services.AddTransient<ITransactionService, TransactionService>();
