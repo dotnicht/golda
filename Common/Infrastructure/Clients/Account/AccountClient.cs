@@ -1116,6 +1116,9 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Account
         [System.Runtime.Serialization.EnumMember(Value = @"SignUp")]
         SignUp = 7,
     
+        [System.Runtime.Serialization.EnumMember(Value = @"Compensating")]
+        Compensating = 8,
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v12.0.0.0)")]

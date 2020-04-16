@@ -1,5 +1,8 @@
 ﻿using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
+using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,11 +21,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly ILogger _logger;
         private readonly ICryptoService _cryptoService;
         private readonly IAccountService _accountService;
+        private readonly IExchangeRateService _exchangeRateService;
         private readonly IServiceProvider _serviceProvider;
 
         public TransactionService(IOptions<Crypto> options, ILogger<TransactionService> logger, IServiceProvider serviceProvider) =>
-             (_configuration, _logger, _cryptoService, _accountService, _serviceProvider)
-                = (options.Value, logger, serviceProvider.GetRequiredService<ICryptoService>(), serviceProvider.GetRequiredService<IAccountService>(), serviceProvider);
+             (_configuration, _logger, _cryptoService, _accountService, _exchangeRateService, _serviceProvider)
+                = (options.Value, logger, serviceProvider.GetRequiredService<ICryptoService>(), serviceProvider.GetRequiredService<IAccountService>(), serviceProvider.GetRequiredService<IExchangeRateService>(), serviceProvider);
 
         public async Task SyncTransactions(CancellationToken cancellationToken)
         {
@@ -44,15 +48,29 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                 if (existing == null)
                                 {
                                     ctx.Transactions.Add(tx);
-                                    if (tx.Type == Common.Domain.TransactionType.Deposit)
+                                    if (tx.Type == TransactionType.Deposit)
                                     {
                                         await _accountService.Debit(id, tx.Currency, tx.Amount, tx.Id, tx.Type);
+                                        var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency));
+
+                                        var op = new ExchangeOperation
+                                        {
+                                            CreatedBy = id,
+                                            Id = tx.Id,
+                                            Pair = ex.Pair,
+                                            Amount = ex.Rate / tx.Amount,
+                                        };
+
+                                        await _accountService.Credit(id, tx.Currency, tx.Amount, op.Id, TransactionType.Exchange);
+                                        await _accountService.Debit(id, Currency.EURB, op.Amount, op.Id, TransactionType.Exchange);
+
+                                        ctx.ExchangeOperations.Add(op);
                                     }
                                 }
-                                else if (tx.Type == Common.Domain.TransactionType.Withdraw && tx.Failed && !existing.Failed)
+                                else if (tx.Type == TransactionType.Withdraw && tx.Failed && !existing.Failed)
                                 {
                                     existing.Failed = true;
-                                    await _accountService.Credit(id, tx.Currency, tx.Amount, tx.Id, Common.Domain.TransactionType.Compensating);
+                                    await _accountService.Credit(id, tx.Currency, tx.Amount, tx.Id, TransactionType.Compensating);
                                 }
                             }
 
