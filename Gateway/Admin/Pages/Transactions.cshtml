@@ -46,18 +46,18 @@
                 </div>
             </th>
             @*<th>
-                <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
-                       asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].UserId)</a>
-                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Tablet</a></li>
-                        <li><a href="#">Smartphone</a></li>
-                    </ul>
-                </div>
-            </th>*@
+                    <div class="btn-group">
+                        <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                           asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].UserId)</a>
+                        <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Tablet</a></li>
+                            <li><a href="#">Smartphone</a></li>
+                        </ul>
+                    </div>
+                </th>*@
             <th>
                 <div class="btn-group">
                     <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
@@ -181,7 +181,7 @@
                 <td>@item.Amount</td>
                 <td>@item.Balance</td>
                 <td>@item.DateTime</td>
-                <td>@item.Hash</td>
+                <td class="table-hash">@item.Hash</td>
                 <td>@item.Type</td>
                 <td>@item.CreatedBy</td>
                 <td>@item.Created</td>
