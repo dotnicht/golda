@@ -41,7 +41,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 {
                     var addresses = context.Addresses
                         .Include(x => x.Transactions)
-                        .Where(x => x.Currency == currency && x.Type == AddressType.Deposit)
+                        .Where(x => x.Currency == currency && x.Type == type)
                         .ToArray();
 
                     foreach (var address in addresses)
@@ -51,22 +51,23 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                         foreach (var tx in await service.GetTransactions(address.Public))
                         {
-                            if (address.Transactions.All(x => x.Hash != tx.Hash))
+                            var existing = address.Transactions.Where(x => x.Hash == tx.Hash);
+                            if (!existing.Any())
                             {
                                 tx.AddressId = address.Id;
                                 txs.Add(context.Transactions.Add(tx).Entity);
+                                _logger.LogDebug("Adding transaction {hash}. Generated Id {id}.", tx.Hash, tx.Id);
+                            }
+                            else
+                            {
+                                foreach (var item in existing.Where(x => x.Status == TransactionStatus.Published))
+                                {
+                                    item.Status = tx.Status;
+                                }
                             }
                         }
 
                         await context.SaveChangesAsync();
-
-                        if (_configuration.DebitDepositTransactions)
-                        {
-                            foreach (var tx in txs)
-                            {
-                                await _accountService.Debit(address.AccountId, currency, tx.Amount, tx.Id);
-                            }
-                        }
                     }
                 }
                 catch (Exception ex)
