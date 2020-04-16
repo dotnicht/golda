@@ -41,7 +41,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
 
             services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
 
-            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(x => x.SignIn.RequireConfirmedEmail = false)
+            services.AddIdentity<ApplicationUser, ApplicationRole>(x => x.SignIn.RequireConfirmedEmail = false)
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
