@@ -42,7 +42,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var balance = await GetInternalBalance();
             var amount = await GenerateDefaultReward();
             var type = MiningType.Default;
-
+            // TODO: fix weekly percent.
             if (balance > _configuration.BalanceTreshold && Random() > _configuration.Weekly.Probability)
             {
                 type = MiningType.Weekly;
