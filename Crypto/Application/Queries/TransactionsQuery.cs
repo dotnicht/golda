@@ -22,8 +22,8 @@ namespace Binebase.Exchange.CryptoService.Application.Queries
 
             public async Task<TransactionsQueryResult> Handle(TransactionsQuery request, CancellationToken cancellationToken)
             {
-                var tx = _context.Transactions.Include(x => x.Address).Where(x => x.Address.AccountId == request.Id).OrderByDescending(x => x.Created);
-                return await Task.FromResult(new TransactionsQueryResult { Transactions = _mapper.Map<TransactionsQueryResult.Transaction[]>(tx) });
+                var tx = await _context.Transactions.Include(x => x.Address).Where(x => x.Address.AccountId == request.Id).OrderByDescending(x => x.Created).ToArrayAsync();
+                return new TransactionsQueryResult { Transactions = _mapper.Map<TransactionsQueryResult.Transaction[]>(tx) };
             }
         }
     }
