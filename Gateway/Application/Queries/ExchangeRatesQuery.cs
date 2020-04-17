@@ -17,8 +17,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
             public async Task<ExchangeRatesQueryResult> Handle(ExchangeRatesQuery request, CancellationToken cancellationToken)
             {
                 var rates = await _exchangeRateService.GetExchangeRates();
-                var filtered = rates.Where(x => x.Value != null);
-                return new ExchangeRatesQueryResult { Rates = filtered.ToDictionary(x => x.Key.ToString(), x => x.Value.Rate) };
+                return new ExchangeRatesQueryResult { Rates = rates.ToDictionary(x => x.Pair.ToString(), x => x.Rate) };
             }
         }
     }

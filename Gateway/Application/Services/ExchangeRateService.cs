@@ -79,8 +79,8 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return await _cacheClient.GetList<ExchangeRate>(key);
         }
 
-        public Task<Dictionary<Pair, ExchangeRate>> GetExchangeRates()
-            => Task.FromResult(_supportedPairs.ToDictionary(x => x, x => GetExchangeRate(x).Result));
+        public Task<ExchangeRate[]> GetExchangeRates()
+            => Task.FromResult(_supportedPairs.Select(x => GetExchangeRate(x).Result).ToArray());
 
         public async Task Subscribe()
         {
