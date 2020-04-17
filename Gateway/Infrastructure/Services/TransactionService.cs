@@ -58,7 +58,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                             CreatedBy = id,
                                             Id = tx.Id,
                                             Pair = ex.Pair,
-                                            Amount = ex.Rate / tx.Amount,
+                                            Amount = tx.Amount / ex.Rate
                                         };
 
                                         await _accountService.Credit(id, tx.Currency, tx.Amount, op.Id, TransactionType.Exchange);
