@@ -1,0 +1,31 @@
+﻿@page
+@model Binebase.Exchange.Gateway.Admin.Pages.UserBalanceModel
+@{
+    ViewData["Title"] = "UserBalance";
+}
+
+<h1>User Balance</h1>
+<table id="myTable" class="table">
+    <tbody>
+        <tr>
+            <th>User Id</th>
+            <td>@Model.CurrentUser.Id</td>
+        </tr>
+        <tr>
+            <th>User name</th>
+            <td>@Model.CurrentUser.Email</td>
+        </tr>
+
+        @foreach (var balance in Model.Balances)
+        {
+            <tr>
+                <th>@balance.Key</th>
+                <td>@balance.Value</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="row">
+    <a class="btn btn-primary @true" asp-page="EditUser" asp-route-id="@Model.CurrentUser.Id">Back</a>
+</div>
+

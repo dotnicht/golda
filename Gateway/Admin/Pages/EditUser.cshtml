@@ -10,19 +10,26 @@
     <tbody>
         @foreach (var property in Model.CurrentUser.GetType().GetProperties())
         {
-            <tr>
-                <th>@property.Name</th>
-                <td>@property.GetValue(Model.CurrentUser)</td>
-                @if (@property.Name == "IsLocked")
-                {
-                    var title = (Model.CurrentUser.IsLocked) ? "Unlock" : "Lock";
-                    <td>
-                        <form method="post">
-                            <button class="btn btn-link" asp-page-handler="UpdateLock">@title</button>
-                        </form>
-                    </td>
-                }
-            </tr>
+        <tr>
+            <th>@property.Name</th>
+            <td>@property.GetValue(Model.CurrentUser)</td>
+            @if (@property.Name == "AppUser")
+            {
+        <td>
+            <a asp-page="UserBalance" asp-route-id="@Model.CurrentUser.Id">User balance</a>
+        </td>
+            }
+
+            @if (@property.Name == "IsLocked")
+            {
+                var title = (Model.CurrentUser.IsLocked) ? "Unlock" : "Lock";
+                <td>
+                    <form method="post">
+                        <button class="btn btn-link" asp-page-handler="UpdateLock">@title</button>
+                    </form>
+                </td>
+            }
+        </tr>
         }
     </tbody>
 </table>
