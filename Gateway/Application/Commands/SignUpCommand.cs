@@ -41,10 +41,20 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IOptions<MiningCalculation> options)
                 => (_identityService, _emailService, _accountService, _cryptoService, _dateTime, _context, _logger, _configuration)
                     = (identityService, emailService, accountService, cryptoService, dateTime, context, logger, options.Value);
-                    
+
             public async Task<Unit> Handle(SignUpCommand request, CancellationToken cancellationToken)
             {
+                if (request.MiningRequestId != null)
+                {
+                    var user = await _identityService.GetUser(request.MiningRequestId.Value);
+                    if (user != null)
+                    {
+                        throw new NotSupportedException(ErrorCode.MiningRequestNotSupported);
+                    }
+                }
+
                 var id = request.MiningRequestId ?? Guid.NewGuid();
+
                 var result = await _identityService.CreateUser(id, request.Email, request.Password, request.ReferralCode);
                 if (!result.Succeeded)
                 {
@@ -67,7 +77,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 await _accountService.Debit(id, Currency.EURB, 100, Guid.NewGuid(), TransactionType.SignUp);
-                
+
                 return Unit.Value;
             }
         }

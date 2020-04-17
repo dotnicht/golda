@@ -31,7 +31,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             }
 
             _logger.LogDebug("Cache key {key} item set {value} with {expiration} expiration.", key, value, expiration ?? Timeout.InfiniteTimeSpan);
-            await GetDatabase().StringSetAsync(key, value);
+            await GetDatabase().StringSetAsync(key, value, expiration);
         }
 
         public async Task<T> Get<T>(string key) where T : class
