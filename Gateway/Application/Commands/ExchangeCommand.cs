@@ -40,7 +40,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             {
                 var ex = await _exchangeRateService.GetExchangeRate(new Pair(request.Base, request.Quote), false, true);
 
-                if (_configuration.ExchangeMiningRequirement > 0 && _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.ExchangeMiningRequirement)
+                if (_configuration.ExchangeMiningRequirement > 0 
+                    && _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.ExchangeMiningRequirement)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);
                 }

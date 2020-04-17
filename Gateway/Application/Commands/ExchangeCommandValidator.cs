@@ -6,7 +6,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public ExchangeCommandValidator()
         {
-            RuleFor(x => x.Amount).NotEmpty();
+            RuleFor(x => x.Amount).GreaterThan(0);
             RuleFor(x => x.Base).NotEqual(x => x.Quote);
         }
     }
