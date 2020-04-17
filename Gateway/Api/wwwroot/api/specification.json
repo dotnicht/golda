@@ -1166,10 +1166,6 @@
           "password": {
             "type": "string",
             "nullable": true
-          },
-          "confirmation": {
-            "type": "string",
-            "nullable": true
           }
         }
       },
