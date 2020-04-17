@@ -14,7 +14,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         public Guid Id { get; set; }
         public string Code { get; set; }
         public string Password { get; set; }
-        public string Confirmation { get; set; }
 
         public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand>
         {
@@ -45,7 +44,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.ConfirmationRequired);
                 }
 
-                await _identityService.ResetPassword(request.Id, request.Code, request.Password);
+                var result = await _identityService.ResetPassword(request.Id, request.Code, request.Password);
+
+                if (!result.Succeeded)
+                {
+                    throw result.ToSecurityException();
+                }
+
                 return Unit.Value;
             }
         }

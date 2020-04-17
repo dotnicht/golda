@@ -43,11 +43,8 @@ namespace Binebase.Exchange.Common.Api
                     result = JsonConvert.SerializeObject(validationException.Failures);
                     break;
                 case NotSupportedException _:
-                    code = HttpStatusCode.BadRequest;
-                    break;
                 case AccountException _:
-                    code = HttpStatusCode.BadRequest;
-                    break;
+                case ArgumentNullException _:
                 case CryptoException _:
                     code = HttpStatusCode.BadRequest;
                     break;
