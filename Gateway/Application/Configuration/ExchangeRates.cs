@@ -6,6 +6,7 @@ namespace Binebase.Exchange.Gateway.Application.Configuration
     public class ExchangeRates : IConfig
     {
         public string[] SupportedPairs { get; set; }
+        public bool SupportBackward { get; set; }
         public string[] ExchangeExcludePairs { get; set; }
         public decimal BineBaseValue { get; set; }
         public decimal[] BineRange { get; set; }

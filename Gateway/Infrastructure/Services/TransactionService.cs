@@ -51,7 +51,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                     if (tx.Type == TransactionType.Deposit)
                                     {
                                         await _accountService.Debit(id, tx.Currency, tx.Amount, tx.Id, tx.Type);
-                                        var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency));
+                                        var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency), false);
 
                                         var op = new ExchangeOperation
                                         {
@@ -82,7 +82,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error while sync transactions.");
+                    _logger.LogError(ex, "Error while updating transactions from blockchains.");
                 }
             }
         }

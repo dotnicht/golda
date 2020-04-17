@@ -24,6 +24,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private Timer _timer;
 
         private readonly Pair[] _supportedPairs;
+        private readonly Pair[] _backwardPairs;
         private readonly Pair[] _exchangeExcludePairs;
 
         public ExchangeRateService(
@@ -32,8 +33,14 @@ namespace Binebase.Exchange.Gateway.Application.Services
             IDateTime dateTime,
             ICacheClient cacheClient,
             IExchangeRateProvider exchangeRateProvider)
-            => (_configuration, _logger, _dateTime, _cacheClient, _exchangeRateProvider, _supportedPairs, _exchangeExcludePairs)
-                = (options.Value, logger, dateTime, cacheClient, exchangeRateProvider, options.Value.SupportedPairs.Select(x => Pair.Parse(x)).ToArray(), options.Value.ExchangeExcludePairs.Select(x => Pair.Parse(x)).ToArray());
+            => (_configuration, _logger, _dateTime, _cacheClient, _exchangeRateProvider, _supportedPairs, _backwardPairs, _exchangeExcludePairs)
+                = (options.Value,
+                   logger, dateTime,
+                   cacheClient,
+                   exchangeRateProvider,
+                   options.Value.SupportedPairs.Select(x => Pair.Parse(x)).ToArray(),
+                   options.Value.SupportedPairs.Select(x => Pair.Parse(x)).Select(x => new Pair(x.Quote, x.Base)).ToArray(),
+                   options.Value.ExchangeExcludePairs.Select(x => Pair.Parse(x)).ToArray());
 
         public async Task<ExchangeRate> GetExchangeRate(Pair pair, bool forceSupported = true, bool forceExchange = false)
         {
@@ -42,7 +49,11 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 throw new ArgumentNullException(nameof(pair));
             }
 
-            if (forceSupported && !_supportedPairs.Contains(pair) || forceExchange && _exchangeExcludePairs.Contains(pair))
+            if (forceSupported 
+                && !_supportedPairs.Contains(pair) 
+                && (_configuration.SupportBackward && !_backwardPairs.Contains(pair)) 
+                || forceExchange 
+                && _exchangeExcludePairs.Contains(pair))
             {
                 throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
             }
@@ -54,9 +65,12 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 // TODO: check double convert.
                 var first = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString());
                 var second = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(Currency.EURB, pair.Quote).ToString());
-                rate = new ExchangeRate 
-                { 
-                    Pair = pair, DateTime = _dateTime.UtcNow, Rate = first.Rate * second.Rate
+
+                rate = new ExchangeRate
+                {
+                    Pair = pair,
+                    DateTime = _dateTime.UtcNow,
+                    Rate = first.Rate * second.Rate
                 };
             }
 
