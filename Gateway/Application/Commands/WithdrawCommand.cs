@@ -9,6 +9,7 @@ using MediatR;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,6 +47,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {
+                if (!new[] { Currency.BTC, Currency.ETH }.Contains(request.Currency))
+                {
+                    throw new NotSupportedException(ErrorCode.CurrencyNotSupported);
+                }
+
                 if (_configuration.WithdrawMiningRequirement > 0 && _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.WithdrawMiningRequirement)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);
