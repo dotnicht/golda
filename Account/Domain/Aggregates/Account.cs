@@ -57,7 +57,6 @@ namespace Binebase.Exchange.AccountService.Domain.Aggregates
         {
             EnsureExists();
             EnsureUnlocked();
-            EnsureUnlocked();
 
             if (PortfolioInternal.ContainsKey(id))
             {
