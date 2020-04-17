@@ -27,7 +27,7 @@ namespace Binebase.Exchange.AccountService.Api
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             (Configuration, Environment) = (configuration, environment);
-            CommonInfrastructure.ConfigureLogging(Configuration, Environment);
+            CommonInfrastructure.ConfigureLogging(Configuration, Environment, false);
         }
 
         public void ConfigureServices(IServiceCollection services)

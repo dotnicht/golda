@@ -74,7 +74,7 @@ namespace Binebase.Exchange.Common.Infrastructure
             return JsonConvert.DeserializeObject<TResponse>(content);
         }
 
-        public static void ConfigureLogging(IConfiguration configuration, IHostEnvironment environment)
+        public static void ConfigureLogging(IConfiguration configuration, IHostEnvironment environment, bool slack = true)
         {
             var loggerConfiguration = new LoggerConfiguration()
                   .Enrich.FromLogContext()
@@ -93,18 +93,23 @@ namespace Binebase.Exchange.Common.Infrastructure
                         ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "Binebase123"),
                         AutoRegisterTemplate = true,
                         IndexFormat = $"{Assembly.GetEntryAssembly().GetName().Name.ToLower().Replace(".", "-")}"
-                    })
-                    .WriteTo.Slack(new SlackSinkOptions
-                    {
-                        WebHookUrl = "https://hooks.slack.com/services/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",
-                        CustomChannel = "#errors",
-                        BatchSizeLimit = 20,
-                        CustomIcon = ":ghost:",
-                        Period = TimeSpan.FromSeconds(10),
-                        ShowDefaultAttachments = false,
-                        ShowExceptionAttachments = true,
-                        MinimumLogEventLevel = LogEventLevel.Error
                     });
+
+                if (slack)
+                {
+                    loggerConfiguration
+                        .WriteTo.Slack(new SlackSinkOptions
+                        {
+                            WebHookUrl = "https://hooks.slack.com/services/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",
+                            CustomChannel = "#errors",
+                            BatchSizeLimit = 20,
+                            CustomIcon = ":ghost:",
+                            Period = TimeSpan.FromSeconds(10),
+                            ShowDefaultAttachments = false,
+                            ShowExceptionAttachments = true,
+                            MinimumLogEventLevel = LogEventLevel.Error
+                        });
+                }
             }
             else
             {
