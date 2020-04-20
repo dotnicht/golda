@@ -39,12 +39,12 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             return (ulong)response.Block.GetCoinbaseHeight().Value;
         }
 
-        public Task<string> GenerateAddress(uint index)
+        public async Task<string> GenerateAddress(uint index)
         {
             var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
             var key = mnemo.DeriveExtKey(_configuration.Password);
             var address = key.Derive(index).ScriptPubKey.GetDestinationAddress(Network);
-            return Task.FromResult(address.ToString());
+            return await Task.FromResult(address.ToString());
         }
 
         public async Task<decimal> GetBalance(string address)
@@ -56,7 +56,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(string address)
         {
-            // TODO: check confirmations.
             var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
             return balance.Operations.Select(x => new Domain.Entities.Transaction
@@ -122,7 +121,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             return (tx.GetHash().ToString(), (ulong)value.Satoshi);
         }
 
-        public Task<bool> ValidateAddress(string address)
+        public async Task<bool> ValidateAddress(string address)
         {
             var result = false;
             try
@@ -130,11 +129,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 BitcoinAddress.Create(address, Network);
                 result = true;
             }
-            catch
-            {
-            }
+            catch { }
 
-            return Task.FromResult(result);
+            return await Task.FromResult(result);
         }
 
         private class EarnResponse

@@ -117,7 +117,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             return result.ToArray();
         }
 
-        private async Task<PortfolioQueryResult> GetPortfolioInternal(Guid id, bool force = true)
+        private async Task<PortfolioQueryResult> GetPortfolioInternal(Guid id, bool force = false)
         {
             var portfolio = await _cacheClient.Get<PortfolioQueryResult>(id.ToString());
             if (portfolio == null || force)
