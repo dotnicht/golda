@@ -6,6 +6,5 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
     {
         Guid UserId { get; }
         bool IsAnonymous { get; }
-        // TODO: app pre signup.
     }
 }
