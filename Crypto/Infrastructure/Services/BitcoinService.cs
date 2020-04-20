@@ -31,6 +31,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         {
             var client = new QBitNinjaClient(Network);
             var response = await client.GetBlock(new BlockFeature { Special = SpecialFeature.Last });
+            if (response == null)
+            {
+                return 0;
+            }
+
             return (ulong)response.Block.GetCoinbaseHeight().Value;
         }
 

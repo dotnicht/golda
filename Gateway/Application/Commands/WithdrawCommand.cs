@@ -6,10 +6,10 @@ using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,13 +24,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
         public class WithdrawCommandHandler : IRequestHandler<WithdrawCommand, WithdrawCommandResult>
         {
-            private IDateTime _dateTime;
+            private readonly IDateTime _dateTime;
             private readonly IApplicationDbContext _context;
             private readonly ICryptoService _cryptoService;
             private readonly IAccountService _accountService;
             private readonly IIdentityService _identityService;
             private readonly ICurrentUserService _currentUserService;
             private readonly IExchangeRateService _exchangeRateService;
+            private readonly ILogger _logger;
             private readonly CryptoOperations _configuration;
 
             public WithdrawCommandHandler(
@@ -41,9 +42,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IIdentityService identityService,
                 ICurrentUserService currentUserService,
                 IExchangeRateService exchangeRateService,
+                ILogger<WithdrawCommandHandler> logger,
                 IOptions<CryptoOperations> options)
-                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _configuration)
-                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, options.Value);
+                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _logger, _configuration)
+                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, logger, options.Value);
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {
@@ -86,7 +88,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var id = Guid.NewGuid();
                 await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Withdraw);
-                return new WithdrawCommandResult { Hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id) };
+                try
+                {
+                    return new WithdrawCommandResult { Hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id) };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error publishing {amount} {currency} to {address}.", request.Amount, request.Currency, request.Address);
+                    await _accountService.Debit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Compensating);
+                    throw;
+                }
             }
         }
     }
