@@ -45,8 +45,8 @@ namespace Binebase.Exchange.Common.Api
                 case NotSupportedException _:
                 case AccountException _:
                 case AssetException _:
-                case ArgumentNullException _:
                 case CryptoException _:
+                case ArgumentNullException _:
                     code = HttpStatusCode.BadRequest;
                     break;
                 case NotFoundException _:
