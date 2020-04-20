@@ -43,10 +43,8 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
                     throw new ValidationException();
                 }
 
-                var index = await service.CurrentIndex();
-
                 address = _context.Addresses.SingleOrDefault(x => x.AccountId == request.Id && x.Currency == request.Currency && x.Type == AddressType.Withdraw && x.Public == request.Public)
-                    ?? _context.Addresses.Add(new Address { AccountId = request.Id, Currency = request.Currency, Type = AddressType.Withdraw, Public = request.Public, GeneratedBlock = index }).Entity;
+                    ?? _context.Addresses.Add(new Address { AccountId = request.Id, Currency = request.Currency, Type = AddressType.Withdraw, Public = request.Public }).Entity;
 
                 await _context.SaveChangesAsync();
 

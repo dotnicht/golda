@@ -34,8 +34,7 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
                     Currency = request.Currency,
                     Public = await service.GenerateAddress(index),
                     Type = AddressType.Deposit,
-                    Index = index,
-                    GeneratedBlock = await service.CurrentIndex()
+                    Index = index
                 };
 
                 _context.Addresses.Add(address);

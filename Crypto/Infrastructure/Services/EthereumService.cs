@@ -27,9 +27,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public Currency Currency => Currency.ETH;
 
-        public async Task<ulong> CurrentIndex()
-            => (await new Web3(_configuration.EthereumNode.ToString()).Eth.Blocks.GetBlockNumber.SendRequestAsync()).ToUlong();
-
         public Task<string> GenerateAddress(uint index)
             => Task.FromResult(new Wallet(_configuration.Mnemonic, _configuration.Password).GetAccount((int)index).Address);
 

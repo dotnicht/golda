@@ -56,7 +56,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(string address)
         {
-            var client = new QBitNinjaClient(Network);
+            var client = new QBitNinjaClient(Network); // TODO: check confirmations.
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
             return balance.Operations.Select(x => new Domain.Entities.Transaction
             {

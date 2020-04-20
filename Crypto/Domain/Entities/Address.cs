@@ -13,8 +13,6 @@ namespace Binebase.Exchange.CryptoService.Domain.Entities
         public string Public { get; set; }
         public ulong? Balance { get; set; }
         public uint? Index { get; set; }
-        public ulong GeneratedBlock { get; set; }
-        public ulong? LastBlock { get; set; }
         public virtual ICollection<Transaction> Transactions { get; } = new HashSet<Transaction>();
     }
 }

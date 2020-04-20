@@ -44,6 +44,7 @@ namespace Binebase.Exchange.Gateway.Admin
 
         public async Task OnGet(Tab aTab, string sortOrder, string currentFilterFieldName, string currentFilter, string searchString, int? pageIndex)
         {
+            await Task.CompletedTask;
             ActiveTab = aTab;
 
             var inTransactions = _dbContext.Transactions.ToList();

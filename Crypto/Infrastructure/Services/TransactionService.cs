@@ -61,6 +61,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                                 foreach (var item in existing.Where(x => x.Status == TransactionStatus.Published))
                                 {
                                     item.Status = tx.Status;
+                                    item.Amount = tx.Amount;
+                                    item.RawAmount = tx.RawAmount;
                                 }
                             }
                         }
