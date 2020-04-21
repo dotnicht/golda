@@ -46,8 +46,11 @@ namespace Binebase.Exchange.Gateway.Application.Services
             if (balance > _configuration.BalanceTreshold && Random() > _configuration.Weekly.Probability)
             {
                 type = MiningType.Weekly;
+
                 var user = await _identityService.GetUser(_currentUserService.UserId);
-                var value = balance * _configuration.Weekly.Coefficients[(int)Math.Floor((_dateTime.UtcNow - user.Registered).TotalDays / 7)] / 100;
+                var index = (int)Math.Floor((_dateTime.UtcNow - user.Registered).TotalDays / 7);
+                var coef = index < _configuration.Weekly.Coefficients.Length ? _configuration.Weekly.Coefficients[index] : _configuration.Weekly.Coefficients.Last();
+                var value = balance * coef / 100;
                 var existing = _context.MiningRequests
                     .Where(x => _currentUserService.UserId == x.CreatedBy && x.Created >= _dateTime.UtcNow - TimeSpan.FromDays(7) && x.Type == MiningType.Weekly)
                     .Sum(x => x.Amount);
