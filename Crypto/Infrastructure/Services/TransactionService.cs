@@ -1,6 +1,5 @@
 ﻿using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
-using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,11 +58,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                             {
                                 foreach (var item in existing.Where(x => x.Status == TransactionStatus.Published))
                                 {
-                                    item.Status = tx.Status;
-                                    item.Amount = tx.Amount;
-                                    item.RawAmount = tx.RawAmount;
-                                    item.Confirmed = tx.Confirmed;
-                                    item.Status = tx.Status;
+                                    Update(tx, item);
                                 }
                             }
                         }
@@ -73,7 +68,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                     foreach (var tx in addresses.Where(x => x.Type == AddressType.Withdraw).SelectMany(x => x.Transactions))
                     {
-
+                        var updated = await service.GetTransaction(tx.Hash);
+                        Update(updated, tx);
                         await context.SaveChangesAsync();
                     }
                 }
@@ -83,6 +79,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 }
 
                 await Task.Delay(_configuration.TransactionPoolingTimeout);
+            }
+
+            static void Update(Domain.Entities.Transaction source, Domain.Entities.Transaction target)
+            {
+                target.Status = source.Status;
+                target.Amount = source.Amount;
+                target.RawAmount = source.RawAmount;
+                target.Confirmed = source.Confirmed;
             }
         }
     }
