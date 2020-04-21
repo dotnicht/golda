@@ -12,5 +12,6 @@ namespace Binebase.Exchange.CryptoService.Application.Interfaces
         Task<decimal> GetBalance(string address);
         Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address);
         Task<Transaction[]> GetTransactions(string address);
+        Task<Transaction> GetTransaction(string hash);
     }
 }

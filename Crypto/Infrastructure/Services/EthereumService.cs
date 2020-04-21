@@ -22,7 +22,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         private readonly Configuration _configuration;
         private readonly HttpClient _httpClient;
 
-        public EthereumService(IOptions<Configuration> options, HttpClient httpClient) 
+        public EthereumService(IOptions<Configuration> options, HttpClient httpClient)
             => (_configuration, _httpClient) = (options.Value, httpClient);
 
         public Currency Currency => Currency.ETH;
@@ -48,7 +48,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 var response = await _httpClient.GetAsync(uri);
                 var content = await response.Content.ReadAsStringAsync();
 
-                // TODO: handle failed tx.
                 var tx = JsonConvert.DeserializeObject<EtherscanTransactionsResponse>(content).Result
                     .Select(x => new Transaction
                     {
@@ -65,6 +64,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             }
 
             return result.ToArray();
+        }
+
+        public async Task<Transaction> GetTransaction(string hash)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address)

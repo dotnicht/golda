@@ -28,7 +28,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             IEnumerable<IBlockchainService> blockchainServices)
             => (_configuration, _serviceProvider, _logger, _blockchainServices) = (options.Value, serviceProvider, logger, blockchainServices);
 
-        public async Task Subscribe(Currency currency, AddressType type, CancellationToken cancellationToken)
+        public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
         {
             var service = _blockchainServices.Single(x => x.Currency == currency);
             var context = _serviceProvider.GetRequiredService<IApplicationDbContext>();
@@ -39,13 +39,12 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 {
                     var addresses = context.Addresses
                         .Include(x => x.Transactions)
-                        .Where(x => x.Currency == currency && x.Type == type)
+                        .Where(x => x.Currency == currency)
                         .ToArray();
 
-                    foreach (var address in addresses)
+                    foreach (var address in addresses.Where(x => x.Type == AddressType.Deposit))
                     {
                         _logger.LogDebug("Processing {currency} address {address}. Account Id {accountId}.", currency, address.Public, address.AccountId);
-                        var txs = new List<Transaction>();
 
                         foreach (var tx in await service.GetTransactions(address.Public))
                         {
@@ -53,7 +52,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                             if (!existing.Any())
                             {
                                 tx.AddressId = address.Id;
-                                txs.Add(context.Transactions.Add(tx).Entity);
+                                context.Transactions.Add(tx);
                                 _logger.LogDebug("Adding transaction {hash}. Generated Id {id}.", tx.Hash, tx.Id);
                             }
                             else
@@ -63,9 +62,17 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                                     item.Status = tx.Status;
                                     item.Amount = tx.Amount;
                                     item.RawAmount = tx.RawAmount;
+                                    item.Confirmed = tx.Confirmed;
+                                    item.Status = tx.Status;
                                 }
                             }
                         }
+
+                        await context.SaveChangesAsync();
+                    }
+
+                    foreach (var tx in addresses.Where(x => x.Type == AddressType.Withdraw).SelectMany(x => x.Transactions))
+                    {
 
                         await context.SaveChangesAsync();
                     }

@@ -6,7 +6,6 @@ using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.Extensions.Options;
 using NBitcoin;
 using QBitNinja.Client;
-using QBitNinja.Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,18 +26,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         public BitcoinService(IOptions<Configuration> options, HttpClient httpClient)
             => (_configuration, _httpClient) = (options.Value, httpClient);
 
-        public async Task<ulong> CurrentIndex()
-        {
-            var client = new QBitNinjaClient(Network);
-            var response = await client.GetBlock(new BlockFeature { Special = SpecialFeature.Last });
-            if (response == null)
-            {
-                return 0;
-            }
-
-            return (ulong)response.Block.GetCoinbaseHeight().Value;
-        }
-
         public async Task<string> GenerateAddress(uint index)
         {
             var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
@@ -56,9 +43,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(string address)
         {
-            var client = new QBitNinjaClient(Network); // TODO: check confirmations.
+            var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
-            return balance.Operations.Select(x => new Domain.Entities.Transaction
+            return balance.Operations.Where(x => x.Confirmations > _configuration.ConfirmationsCount).Select(x => new Domain.Entities.Transaction
             {
                 Direction = TransactionDirection.Inbound,
                 Confirmed = x.FirstSeen.DateTime,
@@ -68,6 +55,23 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 RawAmount = (ulong)x.Amount.Satoshi,
                 Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
             }).ToArray();
+        }
+
+        public async Task<Domain.Entities.Transaction> GetTransaction(string hash)
+        {
+            var client = new QBitNinjaClient(Network);
+            var response = await client.GetTransaction(new uint256(hash));
+            var amount = response.SpentCoins.Select(x => x.Amount).Aggregate((x, y) => x.Add(y)) as Money;
+            return new Domain.Entities.Transaction 
+            { 
+                Direction = TransactionDirection.Outbound,
+                Confirmed = response.FirstSeen.DateTime,
+                Status = TransactionStatus.Confirmed,
+                Hash = response.TransactionId.ToString(),
+                Block = (ulong)response.Block.Height,
+                RawAmount = (ulong)amount.Satoshi,
+                Amount = amount.ToDecimal(MoneyUnit.BTC)
+            };
         }
 
         public async Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address)
