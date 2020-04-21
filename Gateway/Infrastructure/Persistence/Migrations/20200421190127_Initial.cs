@@ -63,10 +63,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<Guid>(nullable: false),
-                    LastModifiedBy = table.Column<Guid>(nullable: false),
+                    LastModifiedBy = table.Column<Guid>(nullable: true),
                     Base = table.Column<string>(nullable: true),
                     Quote = table.Column<string>(nullable: true),
-                    Amount = table.Column<decimal>(nullable: false)
+                    Amount = table.Column<decimal>(type: "decimal(18,8)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -81,10 +81,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<Guid>(nullable: false),
-                    LastModifiedBy = table.Column<Guid>(nullable: false),
+                    LastModifiedBy = table.Column<Guid>(nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
                     Type = table.Column<string>(nullable: false),
-                    IsAnonymous = table.Column<bool>(nullable: false)
+                    IsAnonymous = table.Column<bool>(nullable: false),
+                    Index = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1")
                 },
                 constraints: table =>
                 {
@@ -99,13 +101,14 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<Guid>(nullable: false),
-                    LastModifiedBy = table.Column<Guid>(nullable: false),
-                    Currency = table.Column<int>(nullable: false),
+                    LastModifiedBy = table.Column<Guid>(nullable: true),
+                    Currency = table.Column<string>(nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
-                    Balance = table.Column<decimal>(nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
                     DateTime = table.Column<DateTime>(nullable: false),
-                    Source = table.Column<string>(nullable: false),
-                    Type = table.Column<int>(nullable: true)
+                    Type = table.Column<string>(nullable: false),
+                    Hash = table.Column<string>(nullable: true),
+                    Failed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -226,8 +229,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<Guid>(nullable: false),
-                    LastModifiedBy = table.Column<Guid>(nullable: false),
-                    Currency = table.Column<int>(nullable: false),
+                    LastModifiedBy = table.Column<Guid>(nullable: true),
+                    Currency = table.Column<string>(nullable: false),
                     TokenAmount = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
                     CurrencyAmount = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
                     IsExchanged = table.Column<bool>(nullable: false),
@@ -291,8 +294,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Promotions_MiningRequestId",
                 table: "Promotions",
-                column: "MiningRequestId",
-                unique: true);
+                column: "MiningRequestId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
