@@ -10,6 +10,7 @@ using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,8 +39,8 @@ namespace Binebase.Exchange.Gateway.Admin
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddRazorPages();
             services.AddControllersWithViews();

@@ -5,6 +5,7 @@ using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,16 +51,23 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
 
             foreach (var userId in userIds)
             {
-                var userPortfolio = await _accountService.GetPorfolio(userId.Key);
-                foreach (var item in userPortfolio)
+                try
                 {
-                    UserBalancesIQ.Add(new UserBalance
+                    var userPortfolio = await _accountService.GetPorfolio(userId.Key);
+                    foreach (var item in userPortfolio)
                     {
-                        UserId = userId.Key,
-                        Email = userId.Value,
-                        Currency = item.Key,
-                        Balance = item.Value
-                    });
+                        UserBalancesIQ.Add(new UserBalance
+                        {
+                            UserId = userId.Key,
+                            Email = userId.Value,
+                            Currency = item.Key,
+                            Balance = item.Value
+                        });
+                    }
+                }
+                catch (Exception ex) 
+                {
+                    _logger.LogError(ex, "Error loading user balance for user with id = {userId}", userId.Key);
                 }
             }
             #endregion

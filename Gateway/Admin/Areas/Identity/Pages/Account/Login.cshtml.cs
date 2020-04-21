@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -86,6 +83,15 @@ namespace Binebase.Exchange.Gateway.Admin.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+
+                //var user = await _userManager.FindByNameAsync(Input.Email);
+                //var roles = await _userManager.GetRolesAsync(user);
+                //if (user == null || (!roles.Contains("admin") && !roles.Contains("rootadmin")))
+                //{
+                //    ModelState.AddModelError(string.Empty, "Invalid login attempt.User not exists or not grand with administrator rules");
+                //    return Page();
+                //}
+
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
