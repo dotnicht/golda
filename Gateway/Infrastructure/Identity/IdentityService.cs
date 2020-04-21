@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -41,9 +40,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         public async Task<User> GetUser(Guid userId)
             => _mapper.Map<User>(await _userManager.FindByIdAsync(userId.ToString()));
 
-        public List<Guid> GetUsersIDs() =>
-             _userManager.Users.Select(u => u.Id).ToList();
-
         public async Task<Result> CreateUser(Guid id, string userName, string password, string code)
         {
             if (id == default)
@@ -71,13 +67,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             => await Task.FromResult(string.Format(_configuration.ConfirmationUrlFormat, userId, HttpUtility.UrlEncode(await GenerateConfirmationToken(userId))));
 
         public async Task<string> GenerateResetPasswordUrl(Guid userId)
-            => await Task.FromResult(string.Format(_configuration.ResetPasswordUrlFormat, userId, HttpUtility.UrlEncode(await GeneratePasswordResetToken(userId))));
+            => string.Format(_configuration.ResetPasswordUrlFormat, userId, HttpUtility.UrlEncode(await _userManager.GeneratePasswordResetTokenAsync(_userManager.Users.Single(u => u.Id == userId))));
 
         public Task<string> GenerateConfirmationToken(Guid userId)
             => _userManager.GenerateEmailConfirmationTokenAsync(_userManager.Users.Single(u => u.Id == userId));
-
-        public Task<string> GeneratePasswordResetToken(Guid userId)
-            => _userManager.GeneratePasswordResetTokenAsync(_userManager.Users.Single(u => u.Id == userId));
 
         public async Task<Result> ResetPassword(Guid userId, string token, string newPassword)
         {
