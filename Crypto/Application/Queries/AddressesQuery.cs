@@ -22,7 +22,7 @@ namespace Binebase.Exchange.CryptoService.Application.Queries
 
             public async Task<AddressesQueryResult> Handle(AddressesQuery request, CancellationToken cancellationToken)
             {
-                var addresses = _context.Addresses.Where(x => x.AccountId == request.Id);
+                var addresses = _context.Addresses.Where(x => x.AccountId == request.Id && x.Type == Domain.Enums.AddressType.Deposit);
                 return await Task.FromResult(new AddressesQueryResult { Addresses = _mapper.Map<AddressesQueryResult.Address[]>(addresses) });
             }
         }
