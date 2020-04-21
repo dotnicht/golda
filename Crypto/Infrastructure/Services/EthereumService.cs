@@ -4,6 +4,7 @@ using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.Extensions.Options;
+using Nethereum.BlockchainProcessing.BlockStorage.Entities.Mapping;
 using Nethereum.HdWallet;
 using Nethereum.Hex.HexTypes;
 using Nethereum.Util;
@@ -68,7 +69,20 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<Transaction> GetTransaction(string hash)
         {
-            throw new NotImplementedException();
+            var web3 = new Web3(_configuration.EthereumNode.ToString());
+            var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
+            var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
+            var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
+            return new Transaction 
+            { 
+                Direction = TransactionDirection.Outbound,
+                Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
+                Status = receipt.Status.Value.IsZero ? TransactionStatus.Confirmed : TransactionStatus.Failed,
+                Hash = tx.TransactionHash,
+                Block = tx.BlockNumber.ToUlong(),
+                RawAmount = tx.Value.ToUlong(),
+                Amount = Web3.Convert.FromWei(tx.Value)
+            };
         }
 
         public async Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address)
