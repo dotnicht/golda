@@ -1,4 +1,5 @@
-﻿using Binebase.Exchange.Common.Domain;
+﻿using Binebase.Exchange.Common.Application;
+using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -41,36 +42,42 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                         .Where(x => x.Currency == currency)
                         .ToArray();
 
-                    foreach (var address in addresses.Where(x => x.Type == AddressType.Deposit))
+                    using (new ElapsedTimer(_logger, "AddNewTx"))
                     {
-                        _logger.LogDebug("Processing {currency} address {address}. Account Id {accountId}.", currency, address.Public, address.AccountId);
-
-                        foreach (var tx in await service.GetTransactions(address.Public))
+                        foreach (var address in addresses.Where(x => x.Type == AddressType.Deposit))
                         {
-                            var existing = address.Transactions.Where(x => x.Hash == tx.Hash);
-                            if (!existing.Any())
+                            _logger.LogDebug("Processing {currency} address {address}. Account Id {accountId}.", currency, address.Public, address.AccountId);
+
+                            foreach (var tx in await service.GetTransactions(address.Public))
                             {
-                                tx.AddressId = address.Id;
-                                context.Transactions.Add(tx);
-                                _logger.LogDebug("Adding transaction {hash}. Generated Id {id}.", tx.Hash, tx.Id);
-                            }
-                            else
-                            {
-                                foreach (var item in existing.Where(x => x.Status == TransactionStatus.Published))
+                                var existing = address.Transactions.Where(x => x.Hash == tx.Hash);
+                                if (!existing.Any())
                                 {
-                                    Update(tx, item);
+                                    tx.AddressId = address.Id;
+                                    context.Transactions.Add(tx);
+                                    _logger.LogDebug("Adding transaction {hash}. Generated Id {id}.", tx.Hash, tx.Id);
+                                }
+                                else
+                                {
+                                    foreach (var item in existing.Where(x => x.Status == TransactionStatus.Published))
+                                    {
+                                        Update(tx, item);
+                                    }
                                 }
                             }
-                        }
 
-                        await context.SaveChangesAsync();
+                            await context.SaveChangesAsync();
+                        }
                     }
 
-                    foreach (var tx in addresses.Where(x => x.Type == AddressType.Withdraw).SelectMany(x => x.Transactions))
+                    using (new ElapsedTimer(_logger, "UpdateExistingTx"))
                     {
-                        var updated = await service.GetTransaction(tx.Hash);
-                        Update(updated, tx);
-                        await context.SaveChangesAsync();
+                        foreach (var tx in addresses.Where(x => x.Type == AddressType.Withdraw).SelectMany(x => x.Transactions))
+                        {
+                            var updated = await service.GetTransaction(tx.Hash);
+                            Update(updated, tx);
+                            await context.SaveChangesAsync();
+                        }
                     }
                 }
                 catch (Exception ex)
