@@ -1,8 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Mappings;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Binebase.Exchange.Gateway.Application.Queries
 {
