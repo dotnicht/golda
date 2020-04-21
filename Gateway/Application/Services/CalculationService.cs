@@ -42,12 +42,20 @@ namespace Binebase.Exchange.Gateway.Application.Services
             var balance = await GetInternalBalance();
             var amount = await GenerateDefaultReward();
             var type = MiningType.Default;
-            // TODO: fix weekly percent.
+
             if (balance > _configuration.BalanceTreshold && Random() > _configuration.Weekly.Probability)
             {
                 type = MiningType.Weekly;
                 var user = await _identityService.GetUser(_currentUserService.UserId);
-                amount = balance * _configuration.Weekly.Coefficients[(int)Math.Floor((_dateTime.UtcNow - user.Registered).TotalDays / 7)] / 100;
+                var value = balance * _configuration.Weekly.Coefficients[(int)Math.Floor((_dateTime.UtcNow - user.Registered).TotalDays / 7)] / 100;
+                var existing = _context.MiningRequests
+                    .Where(x => _currentUserService.UserId == x.CreatedBy && x.Created >= _dateTime.UtcNow - TimeSpan.FromDays(7) && x.Type == MiningType.Weekly)
+                    .Sum(x => x.Amount);
+
+                if (existing <= value)
+                {
+                    amount = RandomInRange(0M, value - existing);
+                }
             }
 
             return (amount, type);
