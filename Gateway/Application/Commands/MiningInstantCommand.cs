@@ -44,6 +44,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<MiningInstantCommandResult> Handle(MiningInstantCommand request, CancellationToken cancellationToken)
             {
+                if (request.Boost != null && !_configuration.Instant.BoostMapping.ContainsKey(request.Boost.ToString()))
+                {
+                    throw new NotSupportedException("Unsupported boost value.");
+                }
+
                 var mining = _context.MiningRequests
                     .OrderByDescending(x => x.Created)
                     .FirstOrDefault(
@@ -77,7 +82,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     if (currentUser.ReferralId != null)
                     {
-                        var ammount = _configuration.Instant.Fee / 100 * 5; // TODO: move to config (referral service).
+                        var ammount = _configuration.Instant.Fee / 100 * 5;
                         await _accountService.Debit(currentUser.ReferralId.Value, Currency.EURB, ammount, mining.Id, TransactionType.Refferal);
                     }
 
