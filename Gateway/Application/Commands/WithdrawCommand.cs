@@ -32,6 +32,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly ICurrentUserService _currentUserService;
             private readonly IExchangeRateService _exchangeRateService;
             private readonly ILogger _logger;
+            private readonly IEmailService _emailService;
             private readonly CryptoOperations _configuration;
 
             public WithdrawCommandHandler(
@@ -42,10 +43,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IIdentityService identityService,
                 ICurrentUserService currentUserService,
                 IExchangeRateService exchangeRateService,
-                ILogger<WithdrawCommandHandler> logger,
+                IEmailService emailService,
                 IOptions<CryptoOperations> options)
-                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _logger, _configuration)
-                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, logger, options.Value);
+                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _emailService, _configuration)
+                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, emailService, options.Value);
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {
@@ -86,18 +87,25 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     }
                 }
 
+                var currentUser = await _identityService.GetUser(_currentUserService.UserId);
+
                 var id = Guid.NewGuid();
                 await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Withdraw);
 
+                string trxHash = string.Empty;
                 try
                 {
-                    return new WithdrawCommandResult { Hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id) };
+                    trxHash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id);
+                    await _emailService.SendEmail(new[] { currentUser.Email }, "Withdraw notification", $"{request.Amount}{request.Currency}", EmailType.WithdrawNotification);
+                    return new WithdrawCommandResult { Hash = trxHash };
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning(ex, "Error publishing {amount} {currency} to {address}.", request.Amount, request.Currency, request.Address);
                     await _accountService.Debit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Compensating);
-                    throw;
+                    await _emailService.SendEmail(new[] { currentUser.Email }, "Withdraw error notification", "Error while withdraw with transaction hash = " + trxHash.ToString(), EmailType.ErrorNotification);
+
+                    throw ex;
                 }
             }
         }

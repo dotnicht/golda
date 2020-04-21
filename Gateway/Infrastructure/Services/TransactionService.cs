@@ -39,10 +39,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                         using var scope = _serviceProvider.CreateScope();
                         using var users = scope.ServiceProvider.GetRequiredService<IUserContext>();
                         using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+                        var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
 
-                        foreach (var id in users.Users.Select(x => x.Id))
+                        foreach (var user in users.Users)
                         {
-                            foreach (var tx in await _cryptoService.GetTransactions(id))
+                            foreach (var tx in await _cryptoService.GetTransactions(user.Id))
                             {
                                 var existing = ctx.Transactions.SingleOrDefault(x => x.Id == tx.Id);
                                 if (existing == null)
@@ -50,27 +51,29 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                     ctx.Transactions.Add(tx);
                                     if (tx.Type == TransactionType.Deposit)
                                     {
-                                        await _accountService.Debit(id, tx.Currency, tx.Amount, tx.Id, tx.Type);
+                                        await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, tx.Type);
                                         var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency), false);
 
                                         var op = new ExchangeOperation
                                         {
-                                            CreatedBy = id,
+                                            CreatedBy = user.Id,
                                             Id = tx.Id,
                                             Pair = ex.Pair,
                                             Amount = tx.Amount / ex.Rate
                                         };
 
-                                        await _accountService.Credit(id, tx.Currency, tx.Amount, op.Id, TransactionType.Exchange);
-                                        await _accountService.Debit(id, Currency.EURB, op.Amount, op.Id, TransactionType.Exchange);
+                                        await _accountService.Credit(user.Id, tx.Currency, tx.Amount, op.Id, TransactionType.Exchange);
+                                        await _accountService.Debit(user.Id, Currency.EURB, op.Amount, op.Id, TransactionType.Exchange);
 
                                         ctx.ExchangeOperations.Add(op);
+
+                                        await emailService.SendEmail(new[] { user.Email }, "Deposit notification", $"{tx.Amount}{tx.Currency};{op.Amount}{Currency.EURB}", EmailType.DepositNotification);
                                     }
                                 }
                                 else if (tx.Type == TransactionType.Withdraw && tx.Failed && !existing.Failed)
                                 {
                                     existing.Failed = true;
-                                    await _accountService.Credit(id, tx.Currency, tx.Amount, tx.Id, TransactionType.Compensating);
+                                    await _accountService.Credit(user.Id, tx.Currency, tx.Amount, tx.Id, TransactionType.Compensating);
                                 }
                             }
 

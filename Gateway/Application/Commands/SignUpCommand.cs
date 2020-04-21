@@ -62,7 +62,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var ticket = await _identityService.GenerateConfirmationToken(id);
-                await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id));
+                await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id), EmailType.ConfirmRegistration);
 
                 await _accountService.CretateDefaultAccount(id);
                 await _cryptoService.GenerateDefaultAddresses(id);

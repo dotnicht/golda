@@ -42,7 +42,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.ConfirmationRequired);
                 }
 
-                await _emailService.SendEmail(new[] { request.Email }, "Reset Password Confirmation", await _identityService.GenerateResetPasswordUrl(user.Id));
+                await _emailService.SendEmail(new[] { request.Email }, "Reset Password Confirmation", await _identityService.GenerateResetPasswordUrl(user.Id), EmailType.ResetPassword);
 
                 return Unit.Value;
             }

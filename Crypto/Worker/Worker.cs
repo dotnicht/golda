@@ -17,7 +17,7 @@ namespace Binebase.Exchange.Crypto.Worker
         private readonly IDateTime _dateTime;
         private readonly IServiceProvider _services;
 
-        public Worker(ILogger<Worker> logger, IDateTime dateTime, IServiceProvider services) 
+        public Worker(ILogger<Worker> logger, IDateTime dateTime, IServiceProvider services)
             => (_logger, _dateTime, _services) = (logger, dateTime, services);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

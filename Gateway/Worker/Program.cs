@@ -46,6 +46,7 @@ namespace Worker
 
                     services.AddTransient<IBinanceClient, BinanceClient>();
                     services.AddTransient<ITransactionService, TransactionService>();
+                    services.AddTransient<IEmailService, EmailService>();
 
                     services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
                     services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy();
