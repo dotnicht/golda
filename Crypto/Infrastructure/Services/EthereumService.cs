@@ -64,7 +64,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 result.AddRange(tx);
             }
 
-            return result.ToArray();
+            return result.Where(x => x.Amount > 0).ToArray();
         }
 
         public async Task<Transaction> GetTransaction(string hash)

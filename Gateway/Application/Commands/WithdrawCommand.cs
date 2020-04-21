@@ -95,7 +95,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error publishing {amount} {currency} to {address}.", request.Amount, request.Currency, request.Address);
+                    _logger.LogWarning(ex, "Error publishing {amount} {currency} to {address}.", request.Amount, request.Currency, request.Address);
                     await _accountService.Debit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Compensating);
                     throw;
                 }

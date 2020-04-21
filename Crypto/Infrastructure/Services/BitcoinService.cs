@@ -45,17 +45,19 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         {
             var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
-            return balance.Operations.Where(x => x.Confirmations > _configuration.ConfirmationsCount).Select(x => new Domain.Entities.Transaction
-            {
-                Direction = TransactionDirection.Inbound,
-                Confirmed = x.FirstSeen.DateTime,
-                Status = TransactionStatus.Confirmed,
-                Hash = x.TransactionId.ToString(),
-                Block = (ulong)x.Height,
-                RawAmount = (ulong)x.Amount.Satoshi,
-                Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
-            }).ToArray();
-        }
+            return balance.Operations
+                .Where(x => x.Confirmations > _configuration.ConfirmationsCount)
+                .Select(x => new Domain.Entities.Transaction
+                {
+                    Direction = TransactionDirection.Inbound,
+                    Confirmed = x.FirstSeen.DateTime,
+                    Status = TransactionStatus.Confirmed,
+                    Hash = x.TransactionId.ToString(),
+                    Block = (ulong)x.Height,
+                    RawAmount = (ulong)x.Amount.Satoshi,
+                    Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
+                }).Where(x => x.Amount > 0).ToArray();
+            }
 
         public async Task<Domain.Entities.Transaction> GetTransaction(string hash)
         {
