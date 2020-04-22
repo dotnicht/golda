@@ -59,6 +59,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             }
 
             var rate = await _cacheClient.GetLastFromList<ExchangeRate>(pair.ToString());
+
             if (rate == null)
             {
                 var first = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString());
@@ -104,7 +105,8 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         private void SaveExchangeRate(ExchangeRate rate)
         {
-            _cacheClient.AddToList(new Pair(rate.Pair.Base, Currency.EURB).ToString(), rate);
+            rate.Pair = new Pair(rate.Pair.Base, Currency.EURB);
+            _cacheClient.AddToList(rate.Pair.ToString(), rate);
             var symbol = new Pair(Currency.EURB, rate.Pair.Base);
             _cacheClient.AddToList(symbol.ToString(), new ExchangeRate { Pair = symbol, DateTime = rate.DateTime, Rate = (1 + _configuration.ExchangeFee) / rate.Rate });
         }
@@ -143,7 +145,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             {
                 Pair = new Pair(Currency.EURB, Currency.BINE),
                 DateTime = _dateTime.UtcNow,
-                Rate = (1 - _configuration.ExchangeFee) / rate.Rate
+                Rate = 1 / rate.Rate //(1 - _configuration.ExchangeFee) / rate.Rate
             };
 
             try
