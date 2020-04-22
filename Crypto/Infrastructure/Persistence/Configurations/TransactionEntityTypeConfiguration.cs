@@ -14,6 +14,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Persistence.Configurati
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Amount).HasColumnType(CommonInfrastructure.DecimalFormat);
             builder.Property(x => x.Direction).HasConversion(new EnumToStringConverter<TransactionDirection>());
+            builder.Property(x => x.Status).HasConversion(new EnumToStringConverter<TransactionStatus>());
             builder.Property(x => x.Hash).IsRequired();
             builder.HasOne(x => x.Address).WithMany(x => x.Transactions);
         }
