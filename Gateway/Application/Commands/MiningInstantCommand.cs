@@ -77,8 +77,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var currentUser = await _identityService.GetUser(_currentUserService.UserId);
                 var promotions = new List<Promotion>();
+                var times = (request.Boost != null ? mapping.FirstOrDefault(x => x.Value <= request.Boost)?.Value ?? 1 : 1);
 
-                for (var i = 0; i < (request.Boost != null ? mapping.FirstOrDefault(x => x.Value <= request.Boost)?.Value ?? 1 : 1); i++)
+
+
+                for (var i = 0; i < times; i++)
                 {
                     if (currentUser.ReferralId != null)
                     {
