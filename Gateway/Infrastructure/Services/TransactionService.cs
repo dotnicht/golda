@@ -64,6 +64,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
                                         await _accountService.Credit(user.Id, tx.Currency, tx.Amount, op.Id, TransactionType.Exchange);
                                         await _accountService.Debit(user.Id, Currency.EURB, op.Amount, op.Id, TransactionType.Exchange);
+                                        await _accountService.Debit(user.Id, Currency.EURB, op.Amount, tx.Id, TransactionType.Deposit);
 
                                         ctx.ExchangeOperations.Add(op);
 
@@ -73,7 +74,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                 else if (tx.Type == TransactionType.Withdraw && tx.Failed && !existing.Failed)
                                 {
                                     existing.Failed = true;
-                                    await _accountService.Credit(user.Id, tx.Currency, tx.Amount, tx.Id, TransactionType.Compensating);
+                                    await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, TransactionType.Compensating);
                                 }
                             }
 
