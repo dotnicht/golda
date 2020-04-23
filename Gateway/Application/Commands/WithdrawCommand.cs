@@ -43,10 +43,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IIdentityService identityService,
                 ICurrentUserService currentUserService,
                 IExchangeRateService exchangeRateService,
+                ILogger logger,
                 IEmailService emailService,
                 IOptions<CryptoOperations> options)
-                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _emailService, _configuration)
-                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, emailService, options.Value);
+                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _emailService, _logger, _configuration)
+                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, emailService, logger, options.Value);
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {

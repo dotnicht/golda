@@ -84,7 +84,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             var db = GetDatabase();
             var length = db.ListLength(key);
             var range = await db.ListRangeAsync(key, length - 1, length);
-            return range.SingleOrDefault();
+            return range.LastOrDefault(); // TODO: replace with single.
         }
 
         public async Task<T[]> GetList<T>(string key) where T : class
