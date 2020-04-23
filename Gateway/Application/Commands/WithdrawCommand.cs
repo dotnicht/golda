@@ -43,7 +43,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IIdentityService identityService,
                 ICurrentUserService currentUserService,
                 IExchangeRateService exchangeRateService,
-                ILogger logger,
+                ILogger<WithdrawCommandHandler> logger,
                 IEmailService emailService,
                 IOptions<CryptoOperations> options)
                 => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _emailService, _logger, _configuration)
