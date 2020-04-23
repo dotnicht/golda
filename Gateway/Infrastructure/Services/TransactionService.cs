@@ -64,7 +64,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
                                         await _accountService.Credit(user.Id, tx.Currency, tx.Amount, op.Id, TransactionType.Exchange);
                                         await _accountService.Debit(user.Id, Currency.EURB, op.Amount, op.Id, TransactionType.Exchange);
-                                        await _accountService.Debit(user.Id, Currency.EURB, op.Amount, tx.Id, TransactionType.Deposit);
 
                                         ctx.ExchangeOperations.Add(op);
 
