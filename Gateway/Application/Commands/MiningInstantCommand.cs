@@ -47,8 +47,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var index = _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant);
 
                 if (request.Boost != null &&
-                    (!_configuration.Instant.BoostMapping.ContainsKey(request.Boost.ToString())
-                    || index < _configuration.Instant.BoostMapping[request.Boost.ToString()]
+                    (!_configuration.Instant.BoostMapping.Any(x => x.Value == request.Boost.Value)
+                    || index < request.Boost.Value
                     || request.Boost.Value * _configuration.Instant.Fee > await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB)))
                 {
                     throw new NotSupportedException(ErrorCode.UnsupportedBoost);

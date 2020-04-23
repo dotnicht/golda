@@ -56,7 +56,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.CurrencyNotSupported);
                 }
 
-                if (_configuration.WithdrawMiningRequirement > 0 && _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.WithdrawMiningRequirement)
+                if (_configuration.WithdrawMiningRequirement > 0 
+                    && _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.WithdrawMiningRequirement)
                 {
                     throw new NotSupportedException(ErrorCode.InsufficientMinings);
                 }
