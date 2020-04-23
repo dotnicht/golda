@@ -35,6 +35,10 @@
         /// </summary>
         public const string InsufficientMinings = "insufficient_minings";
         /// <summary>
+        /// The boost value is not supported.
+        /// </summary>
+        public const string UnsupportedBoost = "unsupported_boost";
+        /// <summary>
         /// The error of some operation locked because multi factor requirement.
         /// </summary>
         public const string MultiFactorRequired = "multi_factor_required";

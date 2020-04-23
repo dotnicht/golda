@@ -20,6 +20,7 @@ namespace Binebase.Exchange.AccountService.Contracts.Commands
                 RuleFor(x => x.Id).NotEmpty();
                 RuleFor(x => x.AssetId).NotEmpty();
                 RuleFor(x => x.TransactionId).NotEmpty();
+                RuleFor(x => x.Amount).GreaterThan(0);
             }
         }
     }

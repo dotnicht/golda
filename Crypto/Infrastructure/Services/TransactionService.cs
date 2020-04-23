@@ -72,7 +72,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                     using (new ElapsedTimer(_logger, "UpdateExistingTx"))
                     {
-                        foreach (var tx in addresses.Where(x => x.Type == AddressType.Withdraw).SelectMany(x => x.Transactions))
+                        foreach (var tx in addresses.Where(x => x.Type == AddressType.Withdraw).SelectMany(x => x.Transactions).Where(x => x.Status == TransactionStatus.Published))
                         {
                             var updated = await service.GetTransaction(tx.Hash);
                             Update(updated, tx);
@@ -91,8 +91,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             static void Update(Domain.Entities.Transaction source, Domain.Entities.Transaction target)
             {
                 target.Status = source.Status;
-                target.Amount = source.Amount;
-                target.RawAmount = source.RawAmount;
+                //target.Amount = source.Amount;
+                //target.RawAmount = source.RawAmount;
                 target.Confirmed = source.Confirmed;
             }
         }
