@@ -37,6 +37,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<decimal> GetBalance(string address)
         {
+            if (address is null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
             var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
             return new Money(balance.Operations.Sum(x => x.Amount)).ToDecimal(MoneyUnit.BTC);
@@ -44,6 +49,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(string address)
         {
+            if (address is null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
             var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
             return balance.Operations
@@ -62,6 +72,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<Domain.Entities.Transaction> GetTransaction(string hash)
         {
+            if (hash is null)
+            {
+                throw new ArgumentNullException(nameof(hash));
+            }
+
             var client = new QBitNinjaClient(Network);
             var response = await client.GetTransaction(new uint256(hash));
 

@@ -32,10 +32,15 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             => Task.FromResult(new Wallet(_configuration.Mnemonic, _configuration.Password).GetAccount((int)index).Address);
 
         public async Task<decimal> GetBalance(string address)
-            => Web3.Convert.FromWei(await new Web3(_configuration.EthereumNode.ToString()).Eth.GetBalance.SendRequestAsync(address));
+            => Web3.Convert.FromWei(await new Web3(_configuration.EthereumNode.ToString()).Eth.GetBalance.SendRequestAsync(address ?? throw new ArgumentNullException(nameof(address))));
 
         public async Task<Transaction[]> GetTransactions(string address)
         {
+            if (address is null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
             var result = new List<Transaction>();
 
             foreach (var operation in new[] { "txlist", "txlistinternal" })
@@ -69,6 +74,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<Transaction> GetTransaction(string hash)
         {
+            if (hash is null)
+            {
+                throw new ArgumentNullException(nameof(hash));
+            }
+
             var web3 = new Web3(_configuration.EthereumNode.ToString());
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
             var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
@@ -87,6 +97,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<(string Hash, ulong Amount)> PublishTransaction(decimal amount, string address)
         {
+            if (address is null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
             var account = new Wallet(_configuration.Mnemonic, _configuration.Password).GetAccount(_configuration.WithdrawAccountIndex);
             var web3 = new Web3(account, _configuration.EthereumNode.ToString());
             web3.TransactionManager.DefaultGasPrice = await web3.Eth.GasPrice.SendRequestAsync();
