@@ -5,6 +5,7 @@ using Binebase.Exchange.CryptoService.Application.Interfaces;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.Extensions.Options;
 using NBitcoin;
+using Nethereum.Model;
 using QBitNinja.Client;
 using System;
 using System.Collections.Generic;
@@ -63,6 +64,15 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         {
             var client = new QBitNinjaClient(Network);
             var response = await client.GetTransaction(new uint256(hash));
+
+            if (response == null)
+            {
+                return new Domain.Entities.Transaction
+                {
+                    Status = TransactionStatus.Failed
+                };
+            }
+
             var amount = response.SpentCoins.Select(x => x.Amount).Aggregate((x, y) => x.Add(y)) as Money;
             return new Domain.Entities.Transaction 
             { 
