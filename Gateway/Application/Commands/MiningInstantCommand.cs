@@ -73,7 +73,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     Type = MiningType.Instant
                 };
 
-                var mapping = _configuration.Instant.BoostMapping.Select(x => new { Key = int.Parse(x.Key), x.Value }).OrderBy(x => x.Key);
+                var mapping = _configuration.Instant.BoostMapping.Select(x => new { Key = int.Parse(x.Key), x.Value }).OrderByDescending(x => x.Key);
                 var currentUser = await _identityService.GetUser(_currentUserService.UserId);
                 var promotions = new List<Promotion>();
                 var times = request.Boost > 0 ? mapping.FirstOrDefault(x => x.Value <= request.Boost)?.Value ?? 1 : 1;
