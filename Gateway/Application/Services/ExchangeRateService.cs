@@ -92,8 +92,16 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return await _cacheClient.GetList<ExchangeRate>(key);
         }
 
-        public Task<ExchangeRate[]> GetExchangeRates()
-            => Task.FromResult(_supportedPairs.Select(x => GetExchangeRate(x).Result).ToArray());
+        public async Task<ExchangeRate[]> GetExchangeRates()
+        {
+            var result = _supportedPairs.Select(x => GetExchangeRate(x).Result);
+            if (_configuration.SupportBackward)
+            {
+                result = result.Union(_backwardPairs.Select(x => GetExchangeRate(x).Result));
+            }
+
+            return await Task.FromResult(result.ToArray());
+        }
 
         public async Task Subscribe()
         {

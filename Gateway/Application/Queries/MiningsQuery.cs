@@ -24,6 +24,7 @@ namespace Binebase.Exchange.Gateway.Application.Queries
                 var minings =  await _context.MiningRequests.OrderBy(x => x.Created).Where(x => x.CreatedBy == _currentUserService.UserId).ToArrayAsync();
                 var result = _mapper.Map<MiningsQueryResult.Mining[]>(minings);
                 var balance = 0M;
+
                 foreach (var mining in result)
                 {
                     balance += mining.Amount;

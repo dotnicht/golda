@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,10 +47,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             {
                 var index = _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant);
 
-                if (request.Boost != null &&
-                    (!_configuration.Instant.BoostMapping.Any(x => x.Value == request.Boost.Value)
-                    || index < request.Boost.Value
-                    || request.Boost.Value * _configuration.Instant.Fee > await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB)))
+                if (request.Boost > 0
+                    && (!_configuration.Instant.BoostMapping.Any(x => x.Value == request.Boost)
+                    || index < request.Boost
+                    || request.Boost * _configuration.Instant.Fee > await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB)))
                 {
                     throw new NotSupportedException(ErrorCode.UnsupportedBoost);
                 }
@@ -75,7 +76,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var mapping = _configuration.Instant.BoostMapping.Select(x => new { Key = int.Parse(x.Key), x.Value }).OrderBy(x => x.Key);
                 var currentUser = await _identityService.GetUser(_currentUserService.UserId);
                 var promotions = new List<Promotion>();
-                var times = (request.Boost != null ? mapping.FirstOrDefault(x => x.Value <= request.Boost)?.Value ?? 1 : 1);
+                var times = request.Boost > 0 ? mapping.FirstOrDefault(x => x.Value <= request.Boost)?.Value ?? 1 : 1;
 
                 for (var i = 0; i < times; i++)
                 {
