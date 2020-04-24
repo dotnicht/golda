@@ -107,7 +107,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
         {
             await _exchangeRateProvider.Subscribe(new Pair(Currency.BTC, Currency.EUR), SaveExchangeRate);
             await _exchangeRateProvider.Subscribe(new Pair(Currency.ETH, Currency.EUR), SaveExchangeRate);
-
             _timer = new Timer(Refresh, null, TimeSpan.Zero, _configuration.BineRefreshRate);
         }
 
@@ -153,7 +152,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             {
                 Pair = new Pair(Currency.EURB, Currency.BINE),
                 DateTime = _dateTime.UtcNow,
-                Rate = 1 / rate.Rate //(1 - _configuration.ExchangeFee) / rate.Rate
+                Rate = 1 / rate.Rate
             };
 
             try
