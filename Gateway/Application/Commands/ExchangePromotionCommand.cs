@@ -1,8 +1,6 @@
-﻿using Binebase.Exchange.Common.Application.Exceptions;
-using Binebase.Exchange.Common.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
-using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using MediatR;
 using System;
@@ -14,7 +12,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 {
     public class ExchangePromotionCommand : IRequest
     {
-        public Guid Id { get; set; }
+        public Guid[] Promotions { get; set; }
 
         public class ExchangePromotionCommandHandler : IRequestHandler<ExchangePromotionCommand>
         {
@@ -36,20 +34,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<Unit> Handle(ExchangePromotionCommand request, CancellationToken cancellationToken)
             {
                 // TODO: timeout value to config. 
-                var promotion = _context.Promotions.SingleOrDefault(x => x.Id == request.Id && x.Created > _dateTime.UtcNow - TimeSpan.FromDays(1) && !x.IsExchanged);
-
-                if (promotion == null)
+                foreach (var promotion in _context.Promotions.Where(x => request.Promotions.Contains(x.Id) && x.Created > _dateTime.UtcNow - TimeSpan.FromDays(1) && !x.IsExchanged))
                 {
-                    throw new NotFoundException(nameof(Promotion), request.Id);
+                    var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency), false);
+                    await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, promotion.Id, TransactionType.Exchange);
+                    await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, promotion.Id, TransactionType.Exchange);
+
+                    promotion.IsExchanged = true;
+                    await _context.SaveChangesAsync();
                 }
 
-                var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency), false);
-                await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, promotion.Id, TransactionType.Exchange);
-                await _accountService.Debit(_currentUserService.UserId, promotion.Currency, promotion.TokenAmount * ex.Rate, promotion.Id, TransactionType.Exchange);
-
-                promotion.IsExchanged = true;
-                await _context.SaveChangesAsync();
-                    
                 return Unit.Value;
             }
         }

@@ -17,7 +17,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public Currency Base { get; set; }
         public Currency Quote { get; set; }
-        public decimal Amount { get; set; }
+        public decimal? BaseAmount { get; set; }
+        public decimal? QuoteAmount { get; set; }
 
         public class ExchangeCommandHandler : IRequestHandler<ExchangeCommand>
         {
@@ -38,28 +39,33 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<Unit> Handle(ExchangeCommand request, CancellationToken cancellationToken)
             {
-                var ex = await _exchangeRateService.GetExchangeRate(new Pair(request.Base, request.Quote), false, true);
-
-                if (_configuration.ExchangeMiningRequirement > 0 
-                    && _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.ExchangeMiningRequirement)
+                if (request.BaseAmount > 0 || request.QuoteAmount > 0)
                 {
-                    throw new NotSupportedException(ErrorCode.InsufficientMinings);
+                    var ex = await _exchangeRateService.GetExchangeRate(new Pair(request.Base, request.Quote), false, true);
+
+                    if (_configuration.ExchangeMiningRequirement > 0
+                        && _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.ExchangeMiningRequirement)
+                    {
+                        throw new NotSupportedException(ErrorCode.InsufficientMinings);
+                    }
+
+                    var op = new ExchangeOperation
+                    {
+                        Id = Guid.NewGuid(),
+                        Pair = new Pair(request.Base, request.Quote),
+                        Amount = request.Amount,
+                    };
+
+                    await _accountService.Credit(_currentUserService.UserId, request.Quote, request.Amount * ex.Rate, op.Id, TransactionType.Exchange);
+                    await _accountService.Debit(_currentUserService.UserId, request.Base, request.Amount, op.Id, TransactionType.Exchange);
+
+                    _context.ExchangeOperations.Add(op);
+                    await _context.SaveChangesAsync();
+
+                    return Unit.Value;
                 }
 
-                var op = new ExchangeOperation
-                {
-                    Id = Guid.NewGuid(),
-                    Pair = new Pair(request.Base, request.Quote),
-                    Amount = request.Amount,
-                };
-
-                await _accountService.Credit(_currentUserService.UserId, request.Quote, request.Amount * ex.Rate, op.Id, TransactionType.Exchange);
-                await _accountService.Debit(_currentUserService.UserId, request.Base, request.Amount, op.Id, TransactionType.Exchange);
-
-                _context.ExchangeOperations.Add(op);
-                await _context.SaveChangesAsync();
-
-                return Unit.Value;
+                throw new NotSupportedException(ErrorCode.ExchangeOperationInvalid);
             }
         }
     }

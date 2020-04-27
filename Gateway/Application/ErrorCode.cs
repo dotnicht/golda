@@ -31,6 +31,10 @@
         /// </summary>
         public const string ExchangeRateNotSupported = "exchange_rate_not_supported";
         /// <summary>
+        /// The exchange operation is not valid, e.g. both base and quote amounts exist.
+        /// </summary>
+        public const string ExchangeOperationInvalid = "exchange_operation_invalid";
+        /// <summary>
         /// The error of some operation locked because of insufficient minings amount.
         /// </summary>
         public const string InsufficientMinings = "insufficient_minings";

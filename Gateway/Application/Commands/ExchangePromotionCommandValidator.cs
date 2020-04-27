@@ -6,7 +6,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public ExchangePromotionCommandValidator()
         {
-            RuleFor(x => x.Id).NotEmpty();
+            RuleFor(x => x.Promotions).NotNull();
+            RuleFor(x => x.Promotions).NotEmpty();
         }
     }
 }
