@@ -1299,9 +1299,15 @@
           "quote": {
             "$ref": "#/components/schemas/Currency"
           },
-          "amount": {
+          "baseAmount": {
             "type": "number",
-            "format": "decimal"
+            "format": "decimal",
+            "nullable": true
+          },
+          "quoteAmount": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
           }
         }
       },

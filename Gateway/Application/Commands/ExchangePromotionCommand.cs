@@ -34,7 +34,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public async Task<Unit> Handle(ExchangePromotionCommand request, CancellationToken cancellationToken)
             {
                 // TODO: timeout value to config. 
-                foreach (var promotion in _context.Promotions.Where(x => request.Promotions.Contains(x.Id) && x.Created > _dateTime.UtcNow - TimeSpan.FromDays(1) && !x.IsExchanged))
+                foreach (var promotion in _context.Promotions.Where(x => request.Promotions.Contains(x.Id) && x.Created > _dateTime.UtcNow - TimeSpan.FromDays(1) && !x.IsExchanged).ToArray())
                 {
                     var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.BINE, promotion.Currency), false);
                     await _accountService.Credit(_currentUserService.UserId, Currency.BINE, promotion.TokenAmount, promotion.Id, TransactionType.Exchange);
