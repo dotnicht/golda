@@ -39,7 +39,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task<(decimal Amount, MiningType Type)> GenerateWeeklyReward()
         {
-            var balance = await GetInternalBalance();
+            var balance = await GetInternalBalance() * (await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, Currency.BINE))).Rate;
             var amount = await GenerateDefaultReward();
             var type = MiningType.Default;
 

@@ -1,16 +1,15 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Configuration;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Binebase.Exchange.Gateway.Application.Configuration;
 
 namespace Binebase.Exchange.Gateway.Application.Services
 {
@@ -62,8 +61,10 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             if (rate == null)
             {
-                var first = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString());
-                var second = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(Currency.EURB, pair.Quote).ToString());
+                var first = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString())
+                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
+                var second = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(Currency.EURB, pair.Quote).ToString()) 
+                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
 
                 rate = new ExchangeRate
                 {
