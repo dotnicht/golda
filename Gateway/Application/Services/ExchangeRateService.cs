@@ -116,7 +116,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             rate.Pair = new Pair(rate.Pair.Base, Currency.EURB);
             _cacheClient.AddToList(rate.Pair.ToString(), rate);
             var symbol = new Pair(Currency.EURB, rate.Pair.Base);
-            _cacheClient.AddToList(symbol.ToString(), new ExchangeRate { Pair = symbol, DateTime = rate.DateTime, Rate = (1 + _configuration.ExchangeFee) / rate.Rate });
+            _cacheClient.AddToList(symbol.ToString(), new ExchangeRate { Pair = symbol, DateTime = rate.DateTime, Rate = (1 - _configuration.ExchangeFee) / rate.Rate });
         }
 
         private void Refresh(object state)
