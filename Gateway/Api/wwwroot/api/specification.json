@@ -248,6 +248,38 @@
         }
       }
     },
+    "/api/Auth/SignInPhoneVerify": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_SignInPhoneVerify",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInPhoneVerifyCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Auth/Confirm": {
       "post": {
         "tags": [
@@ -444,6 +476,76 @@
         "responses": {
           "204": {
             "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Auth/PhoneVerifyRequest": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_PhoneVerifyRequest",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhoneVerifyRequestCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Auth/PhoneVerifyStatus": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_PhoneVerifyStatus",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/PhoneVerifyStatusQuery"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultiFactorStatusQueryResult"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1117,6 +1219,24 @@
           }
         }
       },
+      "SignInPhoneVerifyCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "ConfirmCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -1213,6 +1333,28 @@
             "nullable": true
           }
         }
+      },
+      "PhoneVerifyRequestCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PhoneVerifyStatusQuery": {
+        "type": "object",
+        "additionalProperties": false
       },
       "AddressQueryResult": {
         "type": "object",

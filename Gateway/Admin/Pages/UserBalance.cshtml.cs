@@ -15,7 +15,7 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAccountService _accountService;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public ApplicationUser CurrentUser { get; set; }
         public Dictionary<Currency, decimal> Balances { get; set; }

@@ -22,5 +22,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<Result> SetTwoFactorAuthentication(Guid userId, bool isEnabled);
         Task<bool> VerifyTwoFactorToken(Guid userId, string token);
         Task<bool> CheckUserPassword(Guid userId, string password);
+        Task<Result> SetPhoneNumberVerify(Guid userId, bool isEnabled);
+        Task<Result> PreSignInCheck(User user);
     }
 }

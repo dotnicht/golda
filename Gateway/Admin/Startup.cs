@@ -39,7 +39,11 @@ namespace Binebase.Exchange.Gateway.Admin
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.SignIn.RequireConfirmedEmail = true;
+            })
                     .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddRazorPages();

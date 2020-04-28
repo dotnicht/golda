@@ -13,10 +13,9 @@ namespace Binebase.Exchange.Gateway.Admin
     public class TransactionsModel : PageModel
     {
         private readonly ILogger<TransactionsModel> _logger;
-        private IApplicationDbContext _dbContext;
-        private List<Binebase.Exchange.Gateway.Domain.Entities.Transaction> _allTransactions;
-        private IList<Guid> UserIDs { get; set; }
-        private List<TransactionExt> _transactions;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly List<Domain.Entities.Transaction> _allTransactions;
+        private readonly List<TransactionExt> _transactions;
         public Tab ActiveTab { get; set; }
         public string NameSort { get; set; }
         public string DateSort { get; set; }
@@ -37,13 +36,15 @@ namespace Binebase.Exchange.Gateway.Admin
         {
             _dbContext = dbContext;
             _logger = logger;
-            _allTransactions = new List<Binebase.Exchange.Gateway.Domain.Entities.Transaction>();
+            _allTransactions = new List<Domain.Entities.Transaction>();
             _transactions = new List<TransactionExt>();
             PageSize = 10;
         }
 
         public async Task OnGet(Tab aTab, string sortOrder, string currentFilterFieldName, string currentFilter, string searchString, int? pageIndex)
         {
+            _logger.LogDebug("Loading transactions");
+
             await Task.CompletedTask;
             ActiveTab = aTab;
 
@@ -126,18 +127,12 @@ namespace Binebase.Exchange.Gateway.Admin
 
         public async Task OnPostSwitchToTabsAsync(string tabName)
         {
-            switch (tabName)
+            ActiveTab = tabName switch
             {
-                case "Deposits":
-                    ActiveTab = Tab.Deposits;
-                    break;
-                case "Withdraw":
-                    ActiveTab = Tab.Withdraw;
-                    break;
-                default:
-                    ActiveTab = Tab.Deposits;
-                    break;
-            }
+                "Deposits" => Tab.Deposits,
+                "Withdraw" => Tab.Withdraw,
+                _ => Tab.Deposits,
+            };
             await OnGet(ActiveTab, "", "", "", "", null);
         }
     }
