@@ -49,17 +49,19 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                         throw new NotSupportedException(ErrorCode.InsufficientMinings);
                     }
 
-                    var value = request.BaseAmount ?? request.QuoteAmount.Value / ex.Rate;
+                    request.BaseAmount ??= request.QuoteAmount.Value / ex.Rate;
+                    request.QuoteAmount ??= request.BaseAmount.Value * ex.Rate;
 
                     var op = new ExchangeOperation
                     {
                         Id = Guid.NewGuid(),
                         Pair = new Pair(request.Base, request.Quote),
-                        Amount = value
+                        BaseAmount = request.BaseAmount.Value,
+                        QuoteAmount = request.QuoteAmount.Value
                     };
 
-                    await _accountService.Credit(_currentUserService.UserId, request.Quote, value * ex.Rate, op.Id, TransactionType.Exchange);
-                    await _accountService.Debit(_currentUserService.UserId, request.Base, value, op.Id, TransactionType.Exchange);
+                    await _accountService.Credit(_currentUserService.UserId, request.Quote, request.QuoteAmount.Value, op.Id, TransactionType.Exchange);
+                    await _accountService.Debit(_currentUserService.UserId, request.Base, request.BaseAmount.Value, op.Id, TransactionType.Exchange);
 
                     _context.ExchangeOperations.Add(op);
                     await _context.SaveChangesAsync();

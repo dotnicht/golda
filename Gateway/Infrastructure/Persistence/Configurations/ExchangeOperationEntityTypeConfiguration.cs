@@ -18,7 +18,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
                 var convert = new EnumToStringConverter<Currency>();
                 x.Property(y => y.Base).HasColumnName(nameof(Pair.Base)).IsRequired(true).HasConversion(convert);
                 x.Property(y => y.Quote).HasColumnName(nameof(Pair.Quote)).IsRequired(true).HasConversion(convert);
-                builder.Property(x => x.Amount).HasColumnType(CommonInfrastructure.DecimalFormat);
+                builder.Property(x => x.BaseAmount).HasColumnType(CommonInfrastructure.DecimalFormat);
+                builder.Property(x => x.QuoteAmount).HasColumnType(CommonInfrastructure.DecimalFormat);
             });
         }
     }

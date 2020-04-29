@@ -60,15 +60,15 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                             CreatedBy = user.Id,
                                             Id = tx.Id,
                                             Pair = ex.Pair,
-                                            Amount = tx.Amount / ex.Rate
+                                            BaseAmount = tx.Amount / ex.Rate
                                         };
 
                                         await _accountService.Credit(user.Id, tx.Currency, tx.Amount, op.Id, TransactionType.Exchange);
-                                        await _accountService.Debit(user.Id, Currency.EURB, op.Amount, op.Id, TransactionType.Exchange);
+                                        await _accountService.Debit(user.Id, Currency.EURB, op.BaseAmount, op.Id, TransactionType.Exchange);
 
                                         ctx.ExchangeOperations.Add(op);
 
-                                        await emailService.SendEmail(new[] { user.Email }, "Deposit Notification", $"{tx.Amount}{tx.Currency};{op.Amount}{Currency.EURB}", EmailType.DepositNotification);
+                                        await emailService.SendEmail(new[] { user.Email }, "Deposit Notification", $"{tx.Amount}{tx.Currency};{op.BaseAmount}{Currency.EURB}", EmailType.DepositNotification);
                                     }
                                 }
                                 else if (tx.Type == TransactionType.Withdraw && tx.Failed && !existing.Failed)
