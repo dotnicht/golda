@@ -32,7 +32,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var result = _mapper.Map<SignInCommandResult>(user);
 
                 // TODO: check password.
-
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
                     if (!await _identityService.CheckUserPassword(user.Id, request.Password))
