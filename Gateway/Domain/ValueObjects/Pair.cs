@@ -11,6 +11,8 @@ namespace Binebase.Exchange.Gateway.Domain.ValueObjects
 
         public Pair(Currency @base, Currency quote) => (Base, Quote) = (@base, quote);
 
+        public bool Contains(Currency currency) => Base == currency || Quote == currency;
+
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return Base;

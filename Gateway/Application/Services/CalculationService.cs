@@ -35,7 +35,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 = (context, accountService, exchangeRateService, identityService, currentUserService, dateTime, options.Value);
 
         public Task<decimal> GenerateDefaultReward()
-            => Task.FromResult(RandomInRange(_configuration.DefaultRange[0], _configuration.DefaultRange[1]));
+            => Task.FromResult(Random(_configuration.DefaultRange[0], _configuration.DefaultRange[1]));
 
         public async Task<(decimal Amount, MiningType Type)> GenerateWeeklyReward()
         {
@@ -57,7 +57,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
                 if (existing <= value)
                 {
-                    amount = RandomInRange(0M, value - existing);
+                    amount = Random(0M, value - existing);
                 }
             }
 
@@ -88,7 +88,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 && Random() > _configuration.Bonus.Probability)
             {
                 type = MiningType.Bonus;
-                amount = RandomInRange(_configuration.Bonus.Range[0], _configuration.Bonus.Range[1]) * await GetInternalBalance();
+                amount = Random(_configuration.Bonus.Range[0], _configuration.Bonus.Range[1]) * await GetInternalBalance();
             }
 
             return (amount, type);
@@ -110,9 +110,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
                         bine *= range.Key switch
                         {
                             MiningCalculation.InstantItem.Category.x2 => 2,
-                            MiningCalculation.InstantItem.Category.x2x5 => RandomInRange(2, 5),
-                            MiningCalculation.InstantItem.Category.x5x10 => RandomInRange(5, 10),
-                            MiningCalculation.InstantItem.Category.x10x100 => RandomInRange(10, 100),
+                            MiningCalculation.InstantItem.Category.x2x5 => Random(2, 5),
+                            MiningCalculation.InstantItem.Category.x5x10 => Random(5, 10),
+                            MiningCalculation.InstantItem.Category.x10x100 => Random(10, 100),
                             _ => throw new InvalidOperationException(),
                         };
 
@@ -127,13 +127,14 @@ namespace Binebase.Exchange.Gateway.Application.Services
         public async Task<Promotion> GeneratePromotion(int index, decimal last)
         {
             // TODO: remove magic numbers.
-            var promotion = null as Promotion;
             var probability = _configuration.Promotion.Probability - (index % 5) * 0.01M;
 
             if (probability < 0.1M)
             {
                 probability = 0.1M;
             }
+
+            var promotion = null as Promotion;
 
             if (Random() < probability)
             {
@@ -158,9 +159,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
                     {
                         promotion.TokenAmount = category.Key switch
                         {
-                            MiningCalculation.PromotionItem.Category.LastRange => last * RandomInRange(0.4M, 0.75M),
+                            MiningCalculation.PromotionItem.Category.LastRange => last * Random(0.4M, 0.75M),
                             MiningCalculation.PromotionItem.Category.LastAll => last,
-                            MiningCalculation.PromotionItem.Category.AllRange => balance * RandomInRange(0.1M, 05M),
+                            MiningCalculation.PromotionItem.Category.AllRange => balance * Random(0.1M, 05M),
                             _ => throw new InvalidOperationException(),
                         };
 
@@ -182,7 +183,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             return balance;
         }
 
-        private decimal RandomInRange(decimal start, decimal end)
+        private decimal Random(decimal start, decimal end)
             => Random() * (end - start) + start;
 
         private decimal Random() => (decimal)new Random().NextDouble();
