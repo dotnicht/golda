@@ -7,7 +7,6 @@ using Binebase.Exchange.Gateway.Domain.Enums;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
