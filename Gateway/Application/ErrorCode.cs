@@ -58,5 +58,9 @@
         /// The withdraw limit has been reached.
         /// </summary>
         public const string WithdrawLimit = "withdraw_limit";
+        /// <summary>
+        /// The request didn't reach withdraw minimum requirement.
+        /// </summary>
+        public const string WithdrawMinimum = "withdraw_minimum";
     }
 }

@@ -56,6 +56,12 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.CurrencyNotSupported);
                 }
 
+                var rate = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, request.Currency));
+                if (request.Amount / rate.Rate < _configuration.WithdrawMinimum)
+                {
+                    throw new NotSupportedException(ErrorCode.WithdrawMinimum);
+                }
+
                 if (_configuration.WithdrawMiningRequirement > 0 
                     && _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant) < _configuration.WithdrawMiningRequirement)
                 {
