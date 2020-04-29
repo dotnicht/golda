@@ -1,6 +1,5 @@
 ﻿using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Application.Interfaces;
-using Binebase.Exchange.Gateway.Application.Enums;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
@@ -43,7 +42,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.ConfirmationRequired);
                 }
 
-                await _emailService.SendEmail(new[] { request.Email }, "Reset Password Confirmation", await _identityService.GenerateResetPasswordUrl(user.Id), EmailType.ResetPassword);
+                await _emailService.SendResetPasswordEmail(new[] { request.Email }, "Reset Password Confirmation", await _identityService.GenerateResetPasswordUrl(user.Id));
 
                 return Unit.Value;
             }

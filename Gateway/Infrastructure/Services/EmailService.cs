@@ -1,5 +1,4 @@
-﻿using Binebase.Exchange.Gateway.Application.Enums;
-using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,10 +16,35 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly ILogger _logger;
         private readonly Email _configuration;
 
-        public EmailService(ILogger<EmailService> logger, IOptions<Email> options) 
+        public EmailService(ILogger<EmailService> logger, IOptions<Email> options)
             => (_logger, _configuration) = (logger, options.Value);
 
-        public async Task SendEmail(string[] emails, string subject, string message, EmailType emailType)
+        public Task SendConfirmRegistrationEmail(string[] emails, string subject, string message)
+        {
+            return SendEmail(emails, subject, message, _configuration.ConfirmRegistrationTemplateKey, new TemplateData());
+        }
+
+        public Task SendDepositNotificationEmail(string[] emails, string subject, string amount1, string amount2)
+        {
+            return SendEmail(emails, subject, string.Empty, _configuration.DepositConfirmTemplateKey, new TemplateData { Amount1 = amount1, Amount2 = amount2 });
+        }
+
+        public Task SendErrorNotificationEmail(string[] emails, string subject, string message)
+        {
+            return SendEmail(emails, subject, message, _configuration.ErrorNotificationTemplateKey, new TemplateData());
+        }
+
+        public Task SendResetPasswordEmail(string[] emails, string subject, string message)
+        {
+            return SendEmail(emails, subject, message, _configuration.ResetPasswordTemplateKey, new TemplateData());
+        }
+
+        public Task SendWithdrawNotificationEmail(string[] emails, string subject, string amount)
+        {
+            return SendEmail(emails, subject, string.Empty, _configuration.WithdrawRequestTemplateKey, new TemplateData { Amount1 = amount });
+        }
+
+        private async Task SendEmail(string[] emails, string subject, string message, string templateId, TemplateData templateData)
         {
             if (emails is null)
             {
@@ -37,34 +61,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var templateId = emailType switch
-            {
-                EmailType.ConfirmRegistration => _configuration.ConfirmRegistrationTemplateKey,
-                EmailType.DepositNotification => _configuration.DepositConfirmTemplateKey,
-                EmailType.ResetPassword => _configuration.ResetPasswordTemplateKey,
-                EmailType.WithdrawNotification => _configuration.WithdrawRequestTemplateKey,
-                EmailType.ErrorNotification => _configuration.ErrorNotificationTemplateKey,
-                _ => string.Empty,
-            };
-
-            var dynamicTemplateData = new ExampleTemplateData
-            {
-                Subject = subject,
-                Name = emails[0],
-                Message = message
-            };
-
-            if (emailType == EmailType.DepositNotification)
-            {
-                var sp = message.Split(";");
-                dynamicTemplateData.Amount1 = sp.First();
-                dynamicTemplateData.Amount2 = sp.Last();
-            }
-
-            if (emailType == EmailType.WithdrawNotification)
-            {
-                dynamicTemplateData.Amount1 = message;
-            }
+            templateData.Subject = subject;
+            templateData.Name = emails[0];
+            templateData.Message = message;
 
             var msg = new SendGridMessage
             {
@@ -72,8 +71,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 TemplateId = templateId
             };
 
-            msg.SetTemplateData(dynamicTemplateData);
-
+            msg.SetTemplateData(templateData);
             msg.AddTos(emails.Select(x => new EmailAddress(x)).ToList());
 
             var client = new SendGridClient(_configuration.ApiKey);
@@ -82,7 +80,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             _logger.LogDebug("SendGrid response {status}.", result.StatusCode);
         }
 
-        private class ExampleTemplateData
+        private class TemplateData
         {
             [JsonProperty("subject")]
             public string Subject { get; set; }

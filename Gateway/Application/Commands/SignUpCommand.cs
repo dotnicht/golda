@@ -1,7 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Configuration;
-using Binebase.Exchange.Gateway.Application.Enums;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -63,7 +62,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var ticket = await _identityService.GenerateConfirmationToken(id);
-                await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id), EmailType.ConfirmRegistration);
+                await _emailService.SendConfirmRegistrationEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id));
 
                 await _accountService.CretateDefaultAccount(id);
                 await _cryptoService.GenerateDefaultAddresses(id);
