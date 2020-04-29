@@ -28,17 +28,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     throw new NotFoundException(nameof(User), request.Email);
                 }
+               
+                if (!await _identityService.CheckUserPassword(user.Id, request.Password))
+                {
+                    throw new SecurityException(ErrorCode.PasswordMismatch);
+                }
 
                 var result = _mapper.Map<SignInCommandResult>(user);
 
-                // TODO: check password.
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
-                {
-                    if (!await _identityService.CheckUserPassword(user.Id, request.Password))
-                    {
-                        throw new SecurityException(ErrorCode.PasswordMismatch);
-                    }
-
+                {                  
                     var auth = await _identityService.Authenticate(user);
 
                     if (!auth.Succeeded)
