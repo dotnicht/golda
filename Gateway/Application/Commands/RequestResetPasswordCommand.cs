@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Enums;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;

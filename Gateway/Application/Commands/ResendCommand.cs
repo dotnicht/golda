@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Gateway.Application.Enums;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
@@ -26,7 +27,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IAccountService accountService,
                 IDateTime dateTime)
                 => (_identityService, _emailService, _accountService, _dateTime)
-                    = (identityService, emailService, accountService,  dateTime);
+                    = (identityService, emailService, accountService, dateTime);
 
             public async Task<Unit> Handle(ResendCommand request, CancellationToken cancellationToken)
             {
@@ -42,7 +43,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.ConfirmationRequired);
                 }
 
-                await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(user.Id),EmailType.ConfirmRegistration);
+                await _emailService.SendEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(user.Id), EmailType.ConfirmRegistration);
                 return Unit.Value;
             }
         }

@@ -2,6 +2,7 @@
 using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Configuration;
+using Binebase.Exchange.Gateway.Application.Enums;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Enums;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
@@ -100,18 +101,20 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var id = Guid.NewGuid();
                 await _accountService.Credit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Withdraw);
 
-                string trxHash = string.Empty;
                 try
                 {
-                    trxHash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id);
-                    await _emailService.SendEmail(new[] { currentUser.Email }, "Withdraw notification", $"{request.Amount}{request.Currency}", EmailType.WithdrawNotification);
-                    return new WithdrawCommandResult { Hash = trxHash };
+                    var hash = await _cryptoService.PublishTransaction(_currentUserService.UserId, request.Currency, request.Amount, request.Address, id);
+                    // TODO: withdraw tx hash in email.
+                    await _emailService.SendEmail(new[] { currentUser.Email }, "Withdraw Notification", $"{request.Amount}{request.Currency}", EmailType.WithdrawNotification);
+                    return new WithdrawCommandResult { Hash = hash };
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning(ex, "Error publishing {amount} {currency} to {address}.", request.Amount, request.Currency, request.Address);
+
                     await _accountService.Debit(_currentUserService.UserId, request.Currency, request.Amount, id, TransactionType.Compensating);
-                    await _emailService.SendEmail(new[] { currentUser.Email }, "Withdraw error notification", "Error while withdraw with transaction hash = " + trxHash.ToString(), EmailType.ErrorNotification);
+                    // TODO: move to tx service.
+                    //await _emailService.SendEmail(new[] { currentUser.Email }, "Withdraw Error Notification", $"Error while withdrawing {request.Currency}{request.Amount}. Transaction hash {trxHash}.", EmailType.ErrorNotification);
 
                     throw ex;
                 }

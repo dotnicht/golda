@@ -1,4 +1,5 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Gateway.Application.Enums;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly ILogger _logger;
         private readonly Email _configuration;
 
-        public EmailService(ILogger<EmailService> logger, IOptions<Email> options) => (_logger, _configuration) = (logger, options.Value);
+        public EmailService(ILogger<EmailService> logger, IOptions<Email> options) 
+            => (_logger, _configuration) = (logger, options.Value);
 
         public async Task SendEmail(string[] emails, string subject, string message, EmailType emailType)
         {
@@ -35,28 +37,15 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 throw new ArgumentNullException(nameof(message));
             }
 
-            string templateId;
-            switch (emailType)
+            var templateId = emailType switch
             {
-                case EmailType.ConfirmRegistration:
-                    templateId = _configuration.ConfirmRegistrationTemplateKey;
-                    break;
-                case EmailType.DepositNotification:
-                    templateId = _configuration.DepositConfirmTemplateKey;
-                    break;
-                case EmailType.ResetPassword:
-                    templateId = _configuration.ResetPasswordTemplateKey;
-                    break;
-                case EmailType.WithdrawNotification:
-                    templateId = _configuration.WithdrawRequestTemplateKey;
-                    break;
-                case EmailType.ErrorNotification:
-                    templateId = _configuration.ErrorNotificationTemplateKey;
-                    break;
-                default:
-                    templateId = string.Empty;
-                    break;
-            }
+                EmailType.ConfirmRegistration => _configuration.ConfirmRegistrationTemplateKey,
+                EmailType.DepositNotification => _configuration.DepositConfirmTemplateKey,
+                EmailType.ResetPassword => _configuration.ResetPasswordTemplateKey,
+                EmailType.WithdrawNotification => _configuration.WithdrawRequestTemplateKey,
+                EmailType.ErrorNotification => _configuration.ErrorNotificationTemplateKey,
+                _ => string.Empty,
+            };
 
             var dynamicTemplateData = new ExampleTemplateData
             {
@@ -67,13 +56,14 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
             if (emailType == EmailType.DepositNotification)
             {
-                dynamicTemplateData.Amount1 = message.Split(";").First();
-                dynamicTemplateData.Amount2 = message.Split(";").Last();
+                var sp = message.Split(";");
+                dynamicTemplateData.Amount1 = sp.First();
+                dynamicTemplateData.Amount2 = sp.Last();
             }
 
             if (emailType == EmailType.WithdrawNotification)
             {
-                dynamicTemplateData.Amount1 = message;               
+                dynamicTemplateData.Amount1 = message;
             }
 
             var msg = new SendGridMessage
@@ -88,26 +78,26 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
             var client = new SendGridClient(_configuration.ApiKey);
             var result = await client.SendEmailAsync(msg);
-            _logger.LogDebug($"SendGrid response {result.StatusCode}.");
+
+            _logger.LogDebug("SendGrid response {status}.", result.StatusCode);
         }
-    }
 
-    public class ExampleTemplateData
-    {
-        [JsonProperty("subject")]
-        public string Subject { get; set; }
+        private class ExampleTemplateData
+        {
+            [JsonProperty("subject")]
+            public string Subject { get; set; }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
+            [JsonProperty("name")]
+            public string Name { get; set; }
 
-        [JsonProperty("amount1")]
-        public string Amount1 { get; set; }
+            [JsonProperty("amount1")]
+            public string Amount1 { get; set; }
 
-        [JsonProperty("amount2")]
-        public string Amount2 { get; set; }
+            [JsonProperty("amount2")]
+            public string Amount2 { get; set; }
 
-        [JsonProperty("message")]
-        public string Message { get; set; }
-
+            [JsonProperty("message")]
+            public string Message { get; set; }
+        }
     }
 }
