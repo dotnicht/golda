@@ -64,7 +64,6 @@ namespace Binebase.Exchange.Gateway.Admin.Helpers
              {
                  Currency = transaction.Currency,
                  Amount = transaction.Amount,
-                 Balance = transaction.Balance,
                  DateTime = transaction.DateTime,
                  Type = transaction.Type,
                  CreatedBy = transaction.CreatedBy,

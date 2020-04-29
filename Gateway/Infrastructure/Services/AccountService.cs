@@ -100,13 +100,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
             foreach (var tx in txs.Transactions)
             {
-                assets[tx.AssetId].Balance += tx.Amount;
                 var item = new Domain.Entities.Transaction
                 {
                     Id = tx.TransactionId,
                     DateTime = tx.DateTime.DateTime,
-                    Amount = tx.Amount,
-                    Balance = assets[tx.AssetId].Balance,
+                    Amount = tx.Amount,     
                     Currency = (Common.Domain.Currency)assets[tx.AssetId].Currency,
                     Type = (Common.Domain.TransactionType)tx.Type,
                 };
