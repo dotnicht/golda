@@ -1,5 +1,6 @@
 ﻿using Binebase.Exchange.Common.Application;
 using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Enums;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
@@ -67,7 +68,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
                                         ctx.ExchangeOperations.Add(op);
 
-                                        await emailService.SendEmail(new[] { user.Email }, "Deposit notification", $"{tx.Amount}{tx.Currency};{op.Amount}{Currency.EURB}", EmailType.DepositNotification);
+                                        await emailService.SendEmail(new[] { user.Email }, "Deposit Notification", $"{tx.Amount}{tx.Currency};{op.Amount}{Currency.EURB}", EmailType.DepositNotification);
                                     }
                                 }
                                 else if (tx.Type == TransactionType.Withdraw && tx.Failed && !existing.Failed)
