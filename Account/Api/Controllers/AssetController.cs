@@ -9,9 +9,6 @@ namespace Binebase.Exchange.AccountService.Api.Controllers
 {
     public class AssetController : ApiController
     {
-        [HttpGet, ProducesResponseType(typeof(PortfolioQueryResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<PortfolioQueryResult>> Portfolio([FromQuery]PortfolioQuery query) => await Mediator.Send(query);
-
         [HttpGet, ProducesResponseType(typeof(BalanceQueryResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<BalanceQueryResult>> Balance([FromQuery]BalanceQuery query) => await Mediator.Send(query);
 

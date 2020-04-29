@@ -122,7 +122,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             var portfolio = await _cacheClient.Get<PortfolioQueryResult>(id.ToString());
             if (portfolio == null || force)
             {
-                portfolio = await _assetClient.PortfolioAsync(id);
+                portfolio = await _accountClient.PortfolioAsync(id);
                 await _cacheClient.Set(id.ToString(), portfolio, _configuration.PortfolioCacheExpiration);
             }
 

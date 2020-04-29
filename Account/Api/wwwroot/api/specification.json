@@ -6,6 +6,37 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/Account/Portfolio": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Portfolio",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Account/Transactions": {
       "get": {
         "tags": [
@@ -108,37 +139,6 @@
         "responses": {
           "204": {
             "description": ""
-          }
-        }
-      }
-    },
-    "/api/Asset/Portfolio": {
-      "get": {
-        "tags": [
-          "Asset"
-        ],
-        "operationId": "Asset_Portfolio",
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PortfolioQueryResult"
-                }
-              }
-            }
           }
         }
       }
@@ -334,6 +334,57 @@
   },
   "components": {
     "schemas": {
+      "PortfolioQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "portfolio": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Asset"
+            }
+          }
+        }
+      },
+      "Asset": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "balance": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "isLocked": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Currency": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH",
+          "EUR"
+        ],
+        "enum": [
+          "BINE",
+          "EURB",
+          "BTC",
+          "ETH",
+          "EUR"
+        ]
+      },
       "TransactionsQueryResult": {
         "type": "object",
         "additionalProperties": false,
@@ -427,57 +478,6 @@
             "format": "guid"
           }
         }
-      },
-      "PortfolioQueryResult": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "portfolio": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/Asset"
-            }
-          }
-        }
-      },
-      "Asset": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "currency": {
-            "$ref": "#/components/schemas/Currency"
-          },
-          "balance": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "isLocked": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Currency": {
-        "type": "string",
-        "description": "",
-        "x-enumNames": [
-          "BINE",
-          "EURB",
-          "BTC",
-          "ETH",
-          "EUR"
-        ],
-        "enum": [
-          "BINE",
-          "EURB",
-          "BTC",
-          "ETH",
-          "EUR"
-        ]
       },
       "BalanceQueryResult": {
         "type": "object",
