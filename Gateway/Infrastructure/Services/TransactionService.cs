@@ -67,7 +67,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
                                         ctx.ExchangeOperations.Add(op);
 
-                                        await emailService.SendDepositNotificationEmail(new[] { user.Email }, "Deposit Notification", $"{tx.Amount}{tx.Currency}",$"{op.BaseAmount}{Currency.EURB}");
+                                        await emailService.SendDepositNotificationEmail(new[] { user.Email }, "Deposit Notification", tx.Amount, tx.Currency, op.BaseAmount, Currency.EURB);
                                     }
                                 }
                                 else if (tx.Type == TransactionType.Withdraw && tx.Failed && !existing.Failed)
