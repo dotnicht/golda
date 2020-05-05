@@ -39,6 +39,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                         using var scope = _serviceProvider.CreateScope();
                         using var users = scope.ServiceProvider.GetRequiredService<IUserContext>();
                         using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+
                         var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
 
                         foreach (var user in users.Users)
@@ -52,6 +53,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                     if (tx.Type == TransactionType.Deposit)
                                     {
                                         await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, tx.Type);
+
                                         var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency), false);
 
                                         var op = new ExchangeOperation
