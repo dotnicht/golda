@@ -1,10 +1,9 @@
 ﻿using Binebase.Exchange.Common.Domain;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Services
@@ -20,11 +19,18 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public async Task PopulateBalances()
         {
+            var currencies = new[] { Currency.BINE, Currency.EURB, Currency.BTC, Currency.ETH }.ToDictionary(x => x, x => new List<Transaction>());
+            
             foreach (var id in _userContext.Users.Where(x => !x.IsSystem).Select(x => x.Id))
             {
                 var txs = await _accountService.GetTransactions(id);
-                var deposit = txs.Where(x => x.Type == TransactionType.Deposit).ToArray();
+                foreach (var group in txs.GroupBy(x => x.Currency))
+                {
+                    currencies[group.Key].AddRange(group);
+                }
             }
+
+
         }
     }
 }
