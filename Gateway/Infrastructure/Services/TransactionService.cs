@@ -50,6 +50,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                 if (existing == null)
                                 {
                                     ctx.Transactions.Add(tx);
+
                                     if (tx.Type == TransactionType.Deposit)
                                     {
                                         await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, tx.Type);

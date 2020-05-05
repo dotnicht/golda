@@ -2,6 +2,7 @@
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain;
 using Binebase.Exchange.Gateway.Domain.Entities;
+using Binebase.Exchange.Gateway.Infrastructure.Entities;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<ExchangeOperation> ExchangeOperations { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<BalanceConsistencyRecord> BalanceRecords { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUserService, IDateTime dateTime) 
             : base(options)

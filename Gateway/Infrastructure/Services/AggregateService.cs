@@ -19,14 +19,22 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
         public async Task PopulateBalances()
         {
-            var currencies = new[] { Currency.BINE, Currency.EURB, Currency.BTC, Currency.ETH }.ToDictionary(x => x, x => new List<Transaction>());
+            var currencies = new[] { Currency.BINE, Currency.EURB, Currency.BTC, Currency.ETH };
+            var transactions = currencies.ToDictionary(x => x, x => new List<Transaction>());
+            var balances = currencies.ToDictionary(x => x, x => 0M);
             
             foreach (var id in _userContext.Users.Where(x => !x.IsSystem).Select(x => x.Id))
             {
                 var txs = await _accountService.GetTransactions(id);
                 foreach (var group in txs.GroupBy(x => x.Currency))
                 {
-                    currencies[group.Key].AddRange(group);
+                    transactions[group.Key].AddRange(group);
+                }
+
+                var portfolio = await _accountService.GetPorfolio(id);
+                foreach (var asset in portfolio)
+                {
+                    balances[asset.Key] += asset.Value;
                 }
             }
 
