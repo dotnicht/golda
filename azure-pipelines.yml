@@ -20,18 +20,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
-- task: AzureRmWebAppDeployment@4
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'Azure subscription 1(d6b8f741-9c6c-4287-9109-a42ebd7ed89e)'
-    appType: 'webApp'
-    WebAppName: 'Exchange-Admin'
-    deployToSlotOrASE: true
-    ResourceGroupName: 'Backend'
-    SlotName: 'production'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    enableCustomDeployment: true
-    DeploymentType: 'webDeploy'
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
