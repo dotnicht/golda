@@ -32,7 +32,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly ICurrentUserService _currentUserService;
             private readonly IExchangeRateService _exchangeRateService;
             private readonly ILogger _logger;
-            private readonly IEmailService _emailService;
             private readonly CryptoOperations _configuration;
 
             public WithdrawCommandHandler(
@@ -44,10 +43,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 ICurrentUserService currentUserService,
                 IExchangeRateService exchangeRateService,
                 ILogger<WithdrawCommandHandler> logger,
-                IEmailService emailService,
                 IOptions<CryptoOperations> options)
-                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _emailService, _logger, _configuration)
-                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, emailService, logger, options.Value);
+                => (_dateTime, _context, _cryptoService, _accountService, _identityService, _currentUserService, _exchangeRateService, _logger, _configuration)
+                    = (dateTime, context, cryptoService, accountService, identityService, currentUserService, exchangeRateService, logger, options.Value);
 
             public async Task<WithdrawCommandResult> Handle(WithdrawCommand request, CancellationToken cancellationToken)
             {

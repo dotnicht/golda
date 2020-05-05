@@ -37,7 +37,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var result = _mapper.Map<SignInCommandResult>(user);
 
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
-                {                  
+                {
                     var auth = await _identityService.Authenticate(user);
 
                     if (!auth.Succeeded)

@@ -890,18 +890,17 @@
           "Mining"
         ],
         "operationId": "Mining_Index",
-        "requestBody": {
-          "x-name": "query",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MiningIndexQuery"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
+        "parameters": [
+          {
+            "name": "Index",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -1551,16 +1550,6 @@
           "amount": {
             "type": "number",
             "format": "decimal"
-          }
-        }
-      },
-      "MiningIndexQuery": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "index": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       }
