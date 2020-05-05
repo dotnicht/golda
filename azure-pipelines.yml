@@ -20,7 +20,12 @@ steps:
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
-
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'PublishProfile'
+    PublishProfilePath: '$(System.DefaultWorkingDirectory)/Gateway/Admin/Properties/PublishProfiles/*.pubxml'
+    PublishProfilePassword: 'AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAALvwSDYGkN0yXJ8zK/e6KQgAAAAACAAAAAAAQZgAAAAEAACAAAAAdh3T9+CaYVsDiu7zlfTgChaZf4U3ryHksHw8+ad34aAAAAAAOgAAAAAIAACAAAABZMkBlVau13XEGpZwVyJwHUu0jotG9dUvpgMYR99O6PYAAAADZtuT4SrQCOjveFKtDLAeiC1Axu5UU3aDBWnUyGzyITwVbmOvp54rR541jvA2hETvHiqCOiOqkUopgDE4eJUw5rWOdO0vDm5NPj9uR2fpBQew1X4bITyom+6L1vbHbR75jWV3H5qzvZ94jLmLPL/HUyTCGBGAzkBUdAOwPgZcNwkAAAACqp6hciX2pGtKizbeyWyiuQvpV7gsJwEPTKukH+jxKDixAj0Bcxm1QvhlyQXg7K3mBRqtCR9p2MYPt0yh8zil0'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/Gateway/Admin/bin/Release/netcoreapp3.1/'
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
