@@ -37,14 +37,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotFoundException(nameof(User), request.Id);
                 }
 
-                result = await _identityService.Authenticate(user);
-                if (!result.Succeeded)
+                var sign = _mapper.Map<SignInCommandResult>(user);
+
+                var PreSignInCheckResult = await _identityService.PreSignInCheck(user);
+                if (!PreSignInCheckResult.Succeeded)
                 {
-                    throw result.ToSecurityException();
+                    sign.ErrorCodeExt = string.Join(";", PreSignInCheckResult.Errors);
                 }
 
-                var sign = _mapper.Map<SignInCommandResult>(user);
-                sign.Token = await _identityService.GenerateAuthToken(user);
                 return sign;
             }
         }
