@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using StackExchange.Redis;
 
 namespace Worker
 {
@@ -44,9 +45,10 @@ namespace Worker
                     services.AddSingleton<ICacheClient, RedisCacheClient>();
                     services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
 
-                    services.AddTransient<IBinanceClient, BinanceClient>();
                     services.AddTransient<ITransactionService, TransactionService>();
                     services.AddTransient<IEmailService, EmailService>();
+                    services.AddTransient<IAggregateService, AggregateService>();
+                    services.AddTransient<IExchangeRateService, ExchangeRateService>();
 
                     services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
                     services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy();
@@ -55,6 +57,8 @@ namespace Worker
                     services.Configure<Crypto>(configuration.GetSection("Infrastructure.Crypto"));
                     services.Configure<Email>(configuration.GetSection("Infrastructure.Email"));
                     services.Configure<Redis>(configuration.GetSection("Infrastructure.Redis"));
+                    services.Configure<Aggregation>(configuration.GetSection("Infrastructure.Aggregation"));
+                    services.Configure<ExchangeRates>(configuration.GetSection("Application.ExchangeRates"));
 
                     services.AddCommonApplication();
                     services.AddHostedService<Worker>();
@@ -62,9 +66,6 @@ namespace Worker
                     services.AddTransient<ICurrentUserService, SystemUserService>();
                     services.AddTransient<IUserContext, ApplicationDbContext>();
                     services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
-
-                    services.AddTransient<IExchangeRateService, ExchangeRateService>();
-                    services.Configure<ExchangeRates>(configuration.GetSection("Application.ExchangeRates"));
                 });
         }
     }

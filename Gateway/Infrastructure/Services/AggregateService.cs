@@ -88,7 +88,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
                     if (balance != entity.EndBalance)
                     {
-                        _logger.LogError("Balance inconsistency detected starting {from} ending {to}. Balance {expected} not equal to {actual}.", entity.From, entity.To, balance, entity.EndBalance);
+                        _logger.LogError("Balance inconsistency detected starting {from} ending {to}. Balance {expected} not equal to {actual}.", 
+                            entity.From, entity.To, balance, entity.EndBalance);
                     }
                 }
 
