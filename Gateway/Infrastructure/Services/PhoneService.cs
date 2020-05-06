@@ -45,7 +45,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             {
                 var verificationResource = await VerificationResource.CreateAsync(
                     to: phoneNumber,
-                    channel: _configuration.VerificationServiceSID,
+                    channel: _configuration.Channel,
                     pathServiceSid: _configuration.VerificationServiceSID);
 
                 return (verificationResource.Sid, true, null);

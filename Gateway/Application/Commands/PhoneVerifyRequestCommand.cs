@@ -22,7 +22,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IMapper _mapper;
 
             public PhoneVerifyRequestCommandHandler(IIdentityService identityService, IPhoneService phoneService, IMapper mapper)
-                => (_identityService, _phoneService, _mapper) = (identityService, phoneService, mapper);
+            {
+                (_identityService, _phoneService, _mapper) = (identityService, phoneService, mapper);
+            }
 
             public async Task<Unit> Handle(PhoneVerifyRequestCommand request, CancellationToken cancellationToken)
             {
@@ -37,11 +39,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     throw new SecurityException(ErrorCode.PasswordMismatch);
                 }
-
-                var updateResult = await _identityService.UpdateUserPhoneNumber(request.Id, request.PhoneNumber);
-                 if (!updateResult.Succeeded)
-                    throw new NotSupportedException(string.Join(". ", updateResult.Errors));
-
+              
                 var (Sid, IsValid, Errors) = await _phoneService.StartVerificationAsync(request.PhoneNumber);
                 if (!IsValid)
                     throw new NotSupportedException(string.Join(". ", Errors));

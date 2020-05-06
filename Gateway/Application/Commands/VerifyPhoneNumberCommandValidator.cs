@@ -9,6 +9,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             RuleFor(x => x.Password).NotEmpty();
             RuleFor(x => x.Id).NotEmpty();
             RuleFor(x => x.Code).NotEmpty();
+            RuleFor(x => x.PhoneNumber).NotEmpty();
+            
         }
 
     }

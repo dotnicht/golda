@@ -485,12 +485,12 @@
         ]
       }
     },
-    "/api/Auth/PhoneVerifyRequest": {
+    "/api/Auth/RequestPhoneVerify": {
       "post": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_PhoneVerifyRequest",
+        "operationId": "Auth_RequestPhoneVerify",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -507,12 +507,7 @@
           "204": {
             "description": ""
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     },
     "/api/Crypto/Address": {
@@ -1190,11 +1185,15 @@
             "type": "string",
             "format": "guid"
           },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
           "code": {
             "type": "string",
             "nullable": true
           },
-          "password": {
+          "phoneNumber": {
             "type": "string",
             "nullable": true
           }

@@ -79,6 +79,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
 
             services.AddTransient<IBinanceClient, BinanceClient>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IPhoneService, PhoneService>();
             services.AddTransient<IIdentityService, IdentityService>();
 
             services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
