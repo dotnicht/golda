@@ -14,6 +14,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
         public Guid Id { get; set; }
         public string Code { get; set; }
         public string Password { get; set; }
+        public string PhoneNumber { get; set; }
 
         public class PhoneVerifyRequestCommandHandler : IRequestHandler<PhoneVerifyRequestCommand>
         {
@@ -24,7 +25,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public PhoneVerifyRequestCommandHandler(IIdentityService identityService, IPhoneService phoneService, IMapper mapper)
                 => (_identityService, _phoneService, _mapper) = (identityService, phoneService, mapper);
 
-            public async Task<VerifyPhoneNumberResult> Handle(VerifyPhoneNumberCommand request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(PhoneVerifyRequestCommand request, CancellationToken cancellationToken)
             {
                 User user = await _identityService.GetUser(request.Id);
 
@@ -33,15 +34,21 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotFoundException(nameof(User), request.Id);
                 }
 
-                var (Sid, IsValid, Errors) = await _phoneService.StartVerificationAsync(user.PhoneNumber);
+                if (!await _identityService.CheckUserPassword(user.Id, request.Password))
+                {
+                    throw new SecurityException(ErrorCode.PasswordMismatch);
+                }
 
-                return new VerifyPhoneNumberResult { Status = IsValid };
+                var updateResult = await _identityService.UpdateUserPhoneNumber(request.Id, request.PhoneNumber))
+                 if (!updateResult.Succeeded)
+                    throw new NotSupportedException(string.Join(". ", updateResult.Errors));
 
-            }
+                var (Sid, IsValid, Errors) = await _phoneService.StartVerificationAsync(request.PhoneNumber);
+                if (!IsValid)
+                    throw new NotSupportedException(string.Join(". ", Errors));
 
-            public Task<Unit> Handle(PhoneVerifyRequestCommand request, CancellationToken cancellationToken)
-            {
-                throw new NotImplementedException();
+                return Unit.Value;
+
             }
         }
     }

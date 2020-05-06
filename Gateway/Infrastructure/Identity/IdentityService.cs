@@ -131,6 +131,13 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             return updateResult.ToApplicationResult();
         }
 
+        public async Task<Result> UpdateUserPhoneNumber(Guid userId, string PhoneNumber)
+        {
+            var user = _userManager.Users.Single(u => u.Id == userId);
+            var updateResult = await _userManager.SetPhoneNumberAsync(user, PhoneNumber);
+            return updateResult.ToApplicationResult();
+        }
+
         public async Task<bool> VerifyTwoFactorToken(Guid userId, string token)
             => await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);
 

@@ -39,14 +39,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 }
 
                 var (Sid, IsValid, Errors) = await _phoneService.CheckVerificationAsync(user.PhoneNumber, request.Code);
-             
-                if (IsValid)
-                {
-                    var updateResult = await _identityService.SetPhoneNumberVerify(user.Id, true);
-                    return new VerifyPhoneNumberResult { Status = updateResult.Succeeded };
-                }
+                if (!IsValid)
+                    throw new NotSupportedException(string.Join(". ", Errors));
 
-                return new VerifyPhoneNumberResult { Status = IsValid };
+                var updateResult = await _identityService.SetPhoneNumberVerify(user.Id, true);
+                if (!updateResult.Succeeded)
+                    throw new NotSupportedException(string.Join(". ", Errors));
+
+                return new VerifyPhoneNumberResult { Status = updateResult.Succeeded };
             }
         }
     }
