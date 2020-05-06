@@ -515,46 +515,6 @@
         ]
       }
     },
-    "/api/Auth/PhoneVerifyStatus": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "operationId": "Auth_PhoneVerifyStatus",
-        "parameters": [
-          {
-            "name": "query",
-            "in": "query",
-            "schema": {
-              "nullable": true,
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/PhoneVerifyStatusQuery"
-                }
-              ]
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MultiFactorStatusQueryResult"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
     "/api/Crypto/Address": {
       "get": {
         "tags": [
@@ -1180,6 +1140,10 @@
             "type": "string",
             "nullable": true
           },
+          "errorCodeExt": {
+            "type": "string",
+            "nullable": true
+          },
           "token": {
             "type": "string",
             "nullable": true
@@ -1350,10 +1314,6 @@
             "nullable": true
           }
         }
-      },
-      "PhoneVerifyStatusQuery": {
-        "type": "object",
-        "additionalProperties": false
       },
       "AddressQueryResult": {
         "type": "object",
