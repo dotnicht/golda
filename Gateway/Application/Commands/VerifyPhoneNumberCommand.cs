@@ -39,7 +39,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new SecurityException(ErrorCode.PasswordMismatch);
                 }
 
-                var (Sid, IsValid, Errors) = await _phoneService.CheckVerificationAsync(user.PhoneNumber, request.Code);
+                var (Sid, IsValid, Errors) = await _phoneService.CheckVerificationAsync(request.PhoneNumber, request.Code);
                 if (!IsValid)
                     throw new NotSupportedException(string.Join(". ", Errors));
 
