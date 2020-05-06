@@ -10,7 +10,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
     {
         Task CretateDefaultAccount(Guid id);
         Task<decimal> GetBalance(Guid id, Currency currency);
-        Task<Dictionary<Currency, decimal>> GetPorfolio(Guid id);
+        Task<Dictionary<Currency, decimal>> GetPorfolio(Guid id, bool force = false);
         Task Debit(Guid id, Currency currency, decimal amount, Guid externalId, TransactionType source);
         Task Credit(Guid id, Currency currency, decimal amount, Guid externalId, TransactionType source);
         Task<Transaction[]> GetTransactions(Guid id);

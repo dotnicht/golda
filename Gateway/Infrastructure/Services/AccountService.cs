@@ -45,9 +45,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             throw new NotSupportedException(ErrorCode.CurrencyNotSupported);
         }
 
-        public async Task<Dictionary<Common.Domain.Currency, decimal>> GetPorfolio(Guid id)
+        public async Task<Dictionary<Common.Domain.Currency, decimal>> GetPorfolio(Guid id, bool force = false)
         {
-            var portfolio = await GetPortfolioInternal(id);
+            var portfolio = await GetPortfolioInternal(id, force);
             return portfolio.Portfolio.ToDictionary(k => (Common.Domain.Currency)k.Currency, k => k.Balance);
         }
 

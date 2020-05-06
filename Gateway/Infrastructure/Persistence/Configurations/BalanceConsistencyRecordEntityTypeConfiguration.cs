@@ -16,6 +16,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
             builder.Property(x => x.EndBalance).HasColumnType(CommonInfrastructure.DecimalFormat);
             builder.Property(x => x.TotalDebit).HasColumnType(CommonInfrastructure.DecimalFormat);
             builder.Property(x => x.TotalCredit).HasColumnType(CommonInfrastructure.DecimalFormat);
+            builder.HasIndex(x => x.To).IsClustered(false);
         }
     }
 }
