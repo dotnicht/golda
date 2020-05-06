@@ -28,7 +28,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
             foreach (var currency in _configuration.Currencies)
             {
-                await AddCurrency(id, currency);
+                await _assetClient.AssetAsync(new AddAssetCommand { Id = id, AssetId = Guid.NewGuid(), Currency = (Currency)currency });
             }
 
             await GetPortfolioInternal(id);
@@ -50,12 +50,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             var portfolio = await GetPortfolioInternal(id);
             return portfolio.Portfolio.ToDictionary(k => (Common.Domain.Currency)k.Currency, k => k.Balance);
         }
-
-        public async Task Create(Guid id)
-            => await _accountClient.NewAsync(new NewAccountCommand { Id = id });
-
-        public async Task AddCurrency(Guid id, Common.Domain.Currency currency)
-            => await _assetClient.AssetAsync(new AddAssetCommand { Id = id, AssetId = Guid.NewGuid(), Currency = (Currency)currency });
 
         public async Task Debit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, Common.Domain.TransactionType type)
         {

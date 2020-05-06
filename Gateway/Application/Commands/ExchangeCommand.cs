@@ -60,8 +60,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                         QuoteAmount = request.QuoteAmount.Value
                     };
 
-                    await _accountService.Credit(_currentUserService.UserId, request.Quote, request.QuoteAmount.Value, op.Id, TransactionType.Exchange);
-                    await _accountService.Debit(_currentUserService.UserId, request.Base, request.BaseAmount.Value, op.Id, TransactionType.Exchange);
+                    await _accountService.Credit(_currentUserService.UserId, request.Base, request.BaseAmount.Value, op.Id, TransactionType.Exchange);
+                    await _accountService.Debit(_currentUserService.UserId, request.Quote, request.QuoteAmount.Value, op.Id, TransactionType.Exchange);
 
                     _context.ExchangeOperations.Add(op);
                     await _context.SaveChangesAsync();

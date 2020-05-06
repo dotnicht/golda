@@ -1,4 +1,5 @@
-﻿using Binebase.Exchange.Gateway.Application.Interfaces;
+﻿using Binebase.Exchange.Common.Domain;
+using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,9 +25,20 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             return SendEmail(emails, subject, message, _configuration.ConfirmRegistrationTemplateKey, new TemplateData());
         }
 
-        public Task SendDepositNotificationEmail(string[] emails, string subject, string amount1, string amount2)
+        public Task SendDepositNotificationEmail(string[] emails, string subject, decimal amount1, Currency currency1, decimal amount2, Currency currency2)
         {
-            return SendEmail(emails, subject, string.Empty, _configuration.DepositConfirmTemplateKey, new TemplateData { Amount1 = amount1, Amount2 = amount2 });
+            return SendEmail(emails, subject, string.Empty, _configuration.DepositConfirmTemplateKey,
+                                new TemplateData
+                                {
+                                    Amount1 = ToStringWithCurrencyPrecision(amount1, currency1),
+                                    Amount2 = ToStringWithCurrencyPrecision(amount2, currency2)
+                                });
+        }
+
+        public Task SendWithdrawNotificationEmail(string[] emails, string subject, decimal amount1, Currency currency1)
+        {
+            return SendEmail(emails, subject, string.Empty, _configuration.WithdrawRequestTemplateKey,
+                                new TemplateData { Amount1 = ToStringWithCurrencyPrecision(amount1, currency1) });
         }
 
         public Task SendErrorNotificationEmail(string[] emails, string subject, string message)
@@ -37,11 +49,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         public Task SendResetPasswordEmail(string[] emails, string subject, string message)
         {
             return SendEmail(emails, subject, message, _configuration.ResetPasswordTemplateKey, new TemplateData());
-        }
-
-        public Task SendWithdrawNotificationEmail(string[] emails, string subject, string amount)
-        {
-            return SendEmail(emails, subject, string.Empty, _configuration.WithdrawRequestTemplateKey, new TemplateData { Amount1 = amount });
         }
 
         private async Task SendEmail(string[] emails, string subject, string message, string templateId, TemplateData templateData)
@@ -78,6 +85,22 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             var result = await client.SendEmailAsync(msg);
 
             _logger.LogDebug("SendGrid response {status}.", result.StatusCode);
+        }
+
+        private string ToStringWithCurrencyPrecision(decimal amount, Currency currency)
+        {
+            string strAmount = amount.ToString();
+            int dotIndex = strAmount.IndexOf('.');
+
+            string result = currency switch
+            {
+                Currency.BINE => $"{strAmount.Substring(0, dotIndex + 2)} {currency}",
+                Currency.EURB => $"{strAmount.Substring(0, dotIndex + 3)} {currency}",
+                Currency.BTC => $"{strAmount.Substring(0, dotIndex + 7)} {currency}",
+                Currency.ETH => $"{strAmount.Substring(0, dotIndex + 5)} {currency}",
+                _ => $"{amount} {currency}",
+            };
+            return result;
         }
 
         private class TemplateData

@@ -38,12 +38,16 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
+<<<<<<< HEAD
                     var PreSignInCheckResult = await _identityService.PreSignInCheck(user);
                     if (!PreSignInCheckResult.Succeeded)
                     {
                         result.ErrorCodeExt = string.Join(";", PreSignInCheckResult.Errors);
                         return result;
                     }
+=======
+                    var auth = await _identityService.Authenticate(user);
+>>>>>>> develop
 
                     var auth = await _identityService.Authenticate(user);
                     if (!auth.Succeeded)

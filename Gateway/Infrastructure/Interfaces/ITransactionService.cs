@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Binebase.Exchange.Gateway.Application.Interfaces
+namespace Binebase.Exchange.Gateway.Infrastructure.Interfaces
 {
     public interface ITransactionService
     {
