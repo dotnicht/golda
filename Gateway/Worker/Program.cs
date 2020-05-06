@@ -64,7 +64,7 @@ namespace Worker
                     services.AddHostedService<Worker>();
 
                     services.AddTransient<ICurrentUserService, SystemUserService>();
-                    services.AddTransient<IUserContext, ApplicationDbContext>();
+                    services.AddTransient<IInfrastructureContext, ApplicationDbContext>();
                     services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
                 });
         }

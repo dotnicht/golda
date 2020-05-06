@@ -37,7 +37,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     using (new ElapsedTimer(_logger, "CryptoTxProcess"))
                     {
                         using var scope = _serviceProvider.CreateScope();
-                        using var users = scope.ServiceProvider.GetRequiredService<IUserContext>();
+                        using var users = scope.ServiceProvider.GetRequiredService<IInfrastructureContext>();
                         using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
                         var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();

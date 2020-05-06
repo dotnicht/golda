@@ -19,14 +19,14 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly Aggregation _configuration;
         private readonly ILogger _logger;
         private readonly IDateTime _dateTime;
-        private readonly IUserContext _userContext;
+        private readonly IInfrastructureContext _userContext;
         private readonly IAccountService _accountService;
 
         public AggregateService(
             IOptions<Aggregation> options,
             ILogger<AggregateService> logger,
             IDateTime dateTime,
-            IUserContext userContext,
+            IInfrastructureContext userContext,
             IAccountService accountService)
             => (_configuration, _logger, _dateTime, _userContext, _accountService)
             = (options.Value, logger, dateTime, userContext, accountService);
