@@ -38,7 +38,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new SecurityException(ErrorCode.PasswordMismatch);
                 }
 
-                var updateResult = await _identityService.UpdateUserPhoneNumber(request.Id, request.PhoneNumber))
+                var updateResult = await _identityService.UpdateUserPhoneNumber(request.Id, request.PhoneNumber);
                  if (!updateResult.Succeeded)
                     throw new NotSupportedException(string.Join(". ", updateResult.Errors));
 
