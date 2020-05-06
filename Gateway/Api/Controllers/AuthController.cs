@@ -22,7 +22,7 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         public async Task<ActionResult<SignInCommandResult>> SignInMultiFactor(SignInMultiFactorCommand command)
             => await Mediator.Send(command);
         [HttpPost, ProducesResponseType(typeof(SignInCommandResult), StatusCodes.Status200OK)]
-        public async Task<ActionResult<SignInPhoneVerifyResult>> SignInPhoneVerify(SignInPhoneVerifyCommand command)
+        public async Task<ActionResult<VerifyPhoneNumberResult>> VerifyPhoneNumber(VerifyPhoneNumberCommand command)
           => await Mediator.Send(command);
 
         [HttpPost, ProducesResponseType(typeof(SignInCommandResult), StatusCodes.Status200OK)]

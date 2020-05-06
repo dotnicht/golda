@@ -24,7 +24,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             public PhoneVerifyRequestCommandHandler(IIdentityService identityService, IPhoneService phoneService, IMapper mapper)
                 => (_identityService, _phoneService, _mapper) = (identityService, phoneService, mapper);
 
-            public async Task<SignInPhoneVerifyResult> Handle(SignInPhoneVerifyCommand request, CancellationToken cancellationToken)
+            public async Task<VerifyPhoneNumberResult> Handle(VerifyPhoneNumberCommand request, CancellationToken cancellationToken)
             {
                 User user = await _identityService.GetUser(request.Id);
 
@@ -35,7 +35,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 var (Sid, IsValid, Errors) = await _phoneService.StartVerificationAsync(user.PhoneNumber);
 
-                return new SignInPhoneVerifyResult { Status = IsValid };
+                return new VerifyPhoneNumberResult { Status = IsValid };
 
             }
 

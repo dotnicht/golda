@@ -248,18 +248,18 @@
         }
       }
     },
-    "/api/Auth/SignInPhoneVerify": {
+    "/api/Auth/VerifyPhoneNumber": {
       "post": {
         "tags": [
           "Auth"
         ],
-        "operationId": "Auth_SignInPhoneVerify",
+        "operationId": "Auth_VerifyPhoneNumber",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SignInPhoneVerifyCommand"
+                "$ref": "#/components/schemas/VerifyPhoneNumberCommand"
               }
             }
           },
@@ -1182,7 +1182,7 @@
           }
         }
       },
-      "SignInPhoneVerifyCommand": {
+      "VerifyPhoneNumberCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

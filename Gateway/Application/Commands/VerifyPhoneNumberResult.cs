@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
-    public class SignInPhoneVerifyResult : IRequest
+    public class VerifyPhoneNumberResult : IRequest
     {
         public bool Status { get; set; }
     }

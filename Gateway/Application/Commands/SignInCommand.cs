@@ -43,6 +43,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     {
                         result.ErrorCodeExt = string.Join(";", PreSignInCheckResult.Errors);
                         return result;
+                        //throw new SecurityException(result.ErrorCodeExt);
                     }
 
                     var auth = await _identityService.Authenticate(user);
