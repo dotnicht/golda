@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Interfaces
 {
-    public interface IUserContext : IDbContext
+    public interface IInfrastructureContext : IDbContext
     {
         DbSet<ApplicationUser> Users { get; set; }
         DbSet<BalanceConsistencyRecord> BalanceRecords { get; set; }

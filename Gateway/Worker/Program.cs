@@ -5,7 +5,6 @@ using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Gateway.Application.Configuration;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Application.Services;
-using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
@@ -18,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using StackExchange.Redis;
 
 namespace Worker
 {
@@ -64,7 +62,7 @@ namespace Worker
                     services.AddHostedService<Worker>();
 
                     services.AddTransient<ICurrentUserService, SystemUserService>();
-                    services.AddTransient<IUserContext, ApplicationDbContext>();
+                    services.AddTransient<IInfrastructureContext, ApplicationDbContext>();
                     services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
                 });
         }

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IApplicationDbContext, IUserContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IApplicationDbContext, IInfrastructureContext
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTime _dateTime;
