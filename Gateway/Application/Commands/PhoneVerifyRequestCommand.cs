@@ -12,7 +12,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     public class PhoneVerifyRequestCommand : IRequest
     {
         public Guid Id { get; set; }
-        public string Code { get; set; }
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
 
