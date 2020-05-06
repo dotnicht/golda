@@ -12,7 +12,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     public class VerifyPhoneNumberCommand : IRequest<SignInCommandResult>
     {
         public Guid Id { get; set; }
-        public string Password { get; set; }
         public string Code { get; set; }
         public string PhoneNumber { get; set; }
 
@@ -32,11 +31,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 if (user == null)
                 {
                     throw new NotFoundException(nameof(User), request.Id);
-                }
-
-                if (!await _identityService.CheckUserPassword(user.Id, request.Password))
-                {
-                    throw new SecurityException(ErrorCode.PasswordMismatch);
                 }
 
                 var (Sid, IsValid, Errors) = await _phoneService.CheckVerificationAsync(request.PhoneNumber, request.Code);

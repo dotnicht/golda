@@ -1185,10 +1185,6 @@
             "type": "string",
             "format": "guid"
           },
-          "password": {
-            "type": "string",
-            "nullable": true
-          },
           "code": {
             "type": "string",
             "nullable": true
@@ -1303,10 +1299,6 @@
           "id": {
             "type": "string",
             "format": "guid"
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
           },
           "phoneNumber": {
             "type": "string",

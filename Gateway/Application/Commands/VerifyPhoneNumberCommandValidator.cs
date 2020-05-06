@@ -6,12 +6,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public VerifyPhoneNumberCommandValidator()
         {
-            RuleFor(x => x.Password).NotEmpty();
             RuleFor(x => x.Id).NotEmpty();
             RuleFor(x => x.Code).NotEmpty();
             RuleFor(x => x.PhoneNumber).NotEmpty();
-            
         }
-
     }
 }
