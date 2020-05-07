@@ -211,17 +211,17 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             {
                 _logger.LogError("User '{Id}' is locked out.", user.Id);
                 return Result.Failure(ErrorCode.UserIsLocked);
-            }
-            if (_signInManager.Options.SignIn.RequireConfirmedPhoneNumber && string.IsNullOrEmpty(user.PhoneNumber))
-            {
-                _logger.LogError("Phone number is empty for user with Id = '{Id}'", user.Id);
-                return Result.Failure(ErrorCode.InvalidPhoneNumber);
-            }
+            }         
             if (_signInManager.Options.SignIn.RequireConfirmedEmail && !(await _userManager.IsEmailConfirmedAsync(user)))
             {
                 _logger.LogError("User '{Id}' cannot sign in without a confirmed email.", user.Id);
                 resuit = Result.Failure(ErrorCode.NotConfirmedEmail);
                 notConfirmedEmail = true;
+            }
+            if (_signInManager.Options.SignIn.RequireConfirmedPhoneNumber && string.IsNullOrEmpty(user.PhoneNumber))
+            {
+                _logger.LogError("Phone number is empty for user with Id = '{Id}'", user.Id);
+                return Result.Failure(ErrorCode.InvalidPhoneNumber);
             }
             if (_signInManager.Options.SignIn.RequireConfirmedPhoneNumber && !(await _userManager.IsPhoneNumberConfirmedAsync(user)))
             {
