@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
+namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200506095509_ConsistencyIndex")]
-    partial class ConsistencyIndex
+    [Migration("20200508132935_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

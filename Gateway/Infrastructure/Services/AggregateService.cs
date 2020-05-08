@@ -5,8 +5,10 @@ using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Entities;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -19,30 +21,33 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly Aggregation _configuration;
         private readonly ILogger _logger;
         private readonly IDateTime _dateTime;
-        private readonly IInfrastructureContext _userContext;
         private readonly IAccountService _accountService;
+        private readonly IServiceProvider _serviceProvider;
 
         public AggregateService(
             IOptions<Aggregation> options,
             ILogger<AggregateService> logger,
             IDateTime dateTime,
-            IInfrastructureContext userContext,
-            IAccountService accountService)
-            => (_configuration, _logger, _dateTime, _userContext, _accountService)
-            = (options.Value, logger, dateTime, userContext, accountService);
+            IAccountService accountService,
+            IServiceProvider serviceProvider)
+            => (_configuration, _logger, _dateTime, _accountService, _serviceProvider)
+            = (options.Value, logger, dateTime, accountService, serviceProvider);
 
         public async Task PopulateBalances(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var previous = _userContext.BalanceRecords.OrderByDescending(x => x.To).FirstOrDefault();
+                using var scope = _serviceProvider.CreateScope();
+                using var ctx = scope.ServiceProvider.GetRequiredService<IInfrastructureContext>();
+
+                var previous = ctx.BalanceRecords.OrderByDescending(x => x.To).FirstOrDefault();
                 var from = previous?.From ?? default;
 
                 var currencies = new[] { Currency.BINE, Currency.EURB, Currency.BTC, Currency.ETH };
                 var transactions = currencies.ToDictionary(x => x, x => new List<Transaction>());
                 var balances = currencies.ToDictionary(x => x, x => 0M);
 
-                foreach (var id in _userContext.Users.Select(x => x.Id))
+                foreach (var id in ctx.Users.Select(x => x.Id))
                 {
                     var txs = await _accountService.GetTransactions(id);
                     var portfolio = await _accountService.GetPorfolio(id, true);
@@ -81,8 +86,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                         EndBalance = balances[currency],
                     };
 
-                    _userContext.BalanceRecords.Add(entity);
-                    await _userContext.SaveChangesAsync(cancellationToken);
+                    ctx.BalanceRecords.Add(entity);
+                    await ctx.SaveChangesAsync(cancellationToken);
 
                     var balance = entity.StartBalance + entity.TotalDebit - entity.TotalCredit;
 

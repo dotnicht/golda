@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
+namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 {
     public partial class Initial : Migration
     {
@@ -40,6 +40,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
+                    IsSystem = table.Column<bool>(nullable: false),
                     Registered = table.Column<DateTime>(nullable: false),
                     ReferralCode = table.Column<string>(nullable: true),
                     ReferralId = table.Column<Guid>(nullable: true)
@@ -56,6 +57,28 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BalanceRecords",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    From = table.Column<DateTime>(nullable: false),
+                    To = table.Column<DateTime>(nullable: false),
+                    Currency = table.Column<string>(nullable: false),
+                    TotalDebit = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
+                    TotalCredit = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
+                    DebitCount = table.Column<int>(nullable: false),
+                    CreditCount = table.Column<int>(nullable: false),
+                    StartBalance = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
+                    EndBalance = table.Column<decimal>(type: "decimal(18,8)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BalanceRecords", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ExchangeOperations",
                 columns: table => new
                 {
@@ -66,7 +89,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     LastModifiedBy = table.Column<Guid>(nullable: true),
                     Base = table.Column<string>(nullable: true),
                     Quote = table.Column<string>(nullable: true),
-                    Amount = table.Column<decimal>(type: "decimal(18,8)", nullable: false)
+                    BaseAmount = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
+                    QuoteAmount = table.Column<decimal>(type: "decimal(18,8)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,7 +128,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     LastModifiedBy = table.Column<Guid>(nullable: true),
                     Currency = table.Column<string>(nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
                     DateTime = table.Column<DateTime>(nullable: false),
                     Type = table.Column<string>(nullable: false),
                     Hash = table.Column<string>(nullable: true),
@@ -292,6 +315,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                 column: "ReferralId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BalanceRecords_To",
+                table: "BalanceRecords",
+                column: "To")
+                .Annotation("SqlServer:Clustered", false);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Promotions_MiningRequestId",
                 table: "Promotions",
                 column: "MiningRequestId");
@@ -313,6 +342,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "BalanceRecords");
 
             migrationBuilder.DropTable(
                 name: "ExchangeOperations");
