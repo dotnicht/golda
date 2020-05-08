@@ -82,5 +82,9 @@
         /// User cannot sign in without a confirmed email and phone number
         /// </summary>
         public const string NotConfirmedUser = "not_confirmed_user";
+        /// <summary>
+        /// Input phone number is already in use
+        /// </summary>
+        public const string PhoneNumberAlreadyInUse = "phone_number_already_in_use";
     }
 }

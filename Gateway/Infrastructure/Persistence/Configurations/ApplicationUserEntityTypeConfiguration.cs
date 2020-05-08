@@ -9,6 +9,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
             builder.HasOne(x => x.ReferralUser).WithMany(x => x.Refferals).HasForeignKey(x => x.ReferralId);
+            builder.HasIndex(x => x.PhoneNumber).IsUnique(true);
         }
     }
 }

@@ -33,6 +33,11 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotFoundException(nameof(User), request.Id);
                 }
 
+                if (!_identityService.CheckPhoneNumberForUniqueness(request.PhoneNumber))
+                {
+                    throw new SecurityException(ErrorCode.PhoneNumberAlreadyInUse);
+                }
+
                 var (Sid, IsValid, Errors) = await _phoneService.CheckVerificationAsync(request.PhoneNumber, request.Code);
                 if (!IsValid)
                     throw new NotSupportedException(string.Join(". ", Errors));

@@ -131,10 +131,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             return updateResult.ToApplicationResult();
         }
 
-        public async Task<Result> UpdateUserPhoneNumber(Guid userId, string PhoneNumber)
+        public async Task<Result> UpdateUserPhoneNumber(Guid userId, string phoneNumber)
         {
             var user = _userManager.Users.Single(u => u.Id == userId);
-            var updateResult = await _userManager.SetPhoneNumberAsync(user, PhoneNumber);
+            var updateResult = await _userManager.SetPhoneNumberAsync(user, phoneNumber);
             return updateResult.ToApplicationResult();
         }
 
@@ -220,6 +220,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             }
 
             return Result.Success();
+        }
+
+        public bool CheckPhoneNumberForUniqueness(string phoneNumber)
+        {
+            return !_userManager.Users.Any(x => x.PhoneNumber.Equals(phoneNumber));
         }
     }
 }

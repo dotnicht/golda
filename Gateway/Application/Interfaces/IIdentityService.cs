@@ -24,6 +24,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<bool> CheckUserPassword(Guid userId, string password);
         Task<Result> SetPhoneNumberVerify(Guid userId, bool isEnabled);
         Task<Result> PreSignInCheck(User user);
-        Task<Result> UpdateUserPhoneNumber(Guid userId, string PhoneNumber);
+        Task<Result> UpdateUserPhoneNumber(Guid userId, string phoneNumber);
+        bool CheckPhoneNumberForUniqueness(string phoneNumber);
     }
 }
