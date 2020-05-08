@@ -36,7 +36,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
+            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
@@ -45,9 +45,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             {
                 x.SignIn.RequireConfirmedEmail = true;
                 x.SignIn.RequireConfirmedPhoneNumber = true;
-            })
-                .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            }).AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication(x =>
             {
