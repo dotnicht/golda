@@ -203,37 +203,23 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         private async Task<Result> PreSignInCheck(ApplicationUser user)
         {
-            bool notConfirmedEmail = false;
-            bool NotConfirmedPhoneNumber = false;
-            Result resuit = Result.Success();
-
             if (await _userManager.IsLockedOutAsync(user))
             {
                 _logger.LogError("User '{Id}' is locked out.", user.Id);
                 return Result.Failure(ErrorCode.UserIsLocked);
-            }         
+            }
             if (_signInManager.Options.SignIn.RequireConfirmedEmail && !(await _userManager.IsEmailConfirmedAsync(user)))
             {
                 _logger.LogError("User '{Id}' cannot sign in without a confirmed email.", user.Id);
-                resuit = Result.Failure(ErrorCode.NotConfirmedEmail);
-                notConfirmedEmail = true;
-            }
-            if (_signInManager.Options.SignIn.RequireConfirmedPhoneNumber && string.IsNullOrEmpty(user.PhoneNumber))
-            {
-                _logger.LogError("Phone number is empty for user with Id = '{Id}'", user.Id);
-                return Result.Failure(ErrorCode.InvalidPhoneNumber);
+                return Result.Failure(ErrorCode.NotConfirmedEmail);
             }
             if (_signInManager.Options.SignIn.RequireConfirmedPhoneNumber && !(await _userManager.IsPhoneNumberConfirmedAsync(user)))
             {
                 _logger.LogError("User '{Id}' cannot sign in without a confirmed phone number.", user.Id);
-                resuit = Result.Failure(ErrorCode.NotConfirmedPhoneNumber);
-                NotConfirmedPhoneNumber = true;
+                return Result.Failure(ErrorCode.InvalidPhoneNumber);
             }
-            if (NotConfirmedPhoneNumber && notConfirmedEmail)
-            {
-                resuit = Result.Failure(ErrorCode.NotConfirmedUser);
-            }
-            return resuit;
+
+            return Result.Success();
         }
     }
 }
