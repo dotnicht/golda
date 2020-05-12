@@ -10,6 +10,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
         {
             builder.HasOne(x => x.ReferralUser).WithMany(x => x.Refferals).HasForeignKey(x => x.ReferralId);
             builder.HasIndex(x => x.PhoneNumber).IsUnique(true);
+            builder.HasQueryFilter(x => !x.IsSystem);
         }
     }
 }

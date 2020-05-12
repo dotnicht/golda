@@ -53,10 +53,6 @@
           <DependentUpon>appsettings.json</DependentUpon>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Update="appsettings.Test.json">
-          <DependentUpon>appsettings.json</DependentUpon>
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 
     <Target Name="NSwag" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">

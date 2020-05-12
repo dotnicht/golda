@@ -6,6 +6,7 @@ using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -42,6 +43,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 
         public async Task<User> GetUser(Guid userId)
             => _mapper.Map<User>(await _userManager.FindByIdAsync(userId.ToString()));
+
+        public async Task<int> GetReferrersCount(Guid id)
+            => await _userManager.Users.CountAsync(x => x.ReferralId == id);
 
         public async Task<Result> CreateUser(Guid id, string userName, string password, string code)
         {

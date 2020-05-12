@@ -8,6 +8,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
     public interface IIdentityService
     {
         Task<Result> CreateUser(Guid id, string userName, string password, string code);
+        Task<int> GetReferrersCount(Guid id);
         Task<User> GetUser(string userName);
         Task<User> GetUser(Guid userId);
         Task<Result> Authenticate(User user);

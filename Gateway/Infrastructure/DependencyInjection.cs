@@ -72,7 +72,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             services.AddCommonInfrastructure(configuration);
 
             services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
-            services.AddSingleton<ICacheClient, RedisCacheClient>();
             services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
 
             services.AddTransient<IBinanceClient, BinanceClient>();
@@ -90,7 +89,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             services.Configure<Email>(configuration.GetSection("Infrastructure.Email"));
             services.Configure<Phone>(configuration.GetSection("Infrastructure.Phone"));
             services.Configure<Configuration.Identity>(configuration.GetSection("Infrastructure.Identity"));
-            services.Configure<Redis>(configuration.GetSection("Infrastructure.Redis"));
 
             return services;
         }

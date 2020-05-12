@@ -9,6 +9,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         DbSet<MiningRequest> MiningRequests { get; set; }
         DbSet<Promotion> Promotions { get; set; }
         DbSet<ExchangeOperation> ExchangeOperations { get; set; }
+        DbSet<ExchangeRate> ExchangeRates { get; set; }
         DbSet<Transaction> Transactions { get; set; }
     }
 }

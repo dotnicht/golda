@@ -8,6 +8,5 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
     public interface IExchangeRateProvider
     {
         Task Subscribe(Pair pair, Action<ExchangeRate> handle);
-        Task<ExchangeRate> GetExchangeRate(Pair pair);
     }
 }
