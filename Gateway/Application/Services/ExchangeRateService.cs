@@ -61,13 +61,13 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             var rates = ctx.ExchangeRates.OrderByDescending(x => x.DateTime);
 
-            var rate = await rates.FirstOrDefaultAsync(x => x.Pair == pair);
+            var rate = await rates.FirstOrDefaultAsync(x => x.Pair.Base == pair.Base && x.Pair.Quote == pair.Quote);
 
             if (rate == null)
             {
-                var first = await rates.FirstOrDefaultAsync(x => x.Pair == new Pair(pair.Base, Currency.EURB))
+                var first = await rates.FirstOrDefaultAsync(x => x.Pair.Base == pair.Base && x.Pair.Quote == Currency.EURB)
                     ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
-                var second = await rates.FirstOrDefaultAsync(x => x.Pair == new Pair(Currency.EURB, pair.Quote))
+                var second = await rates.FirstOrDefaultAsync(x => x.Pair.Base == Currency.EURB && x.Pair.Quote == pair.Quote)
                     ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
 
                 rate = new ExchangeRate
@@ -97,7 +97,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
             var key = pair.ToString();
-            return await ctx.ExchangeRates.Where(x => x.Pair == pair).ToArrayAsync();
+            return await ctx.ExchangeRates.Where(x => x.Pair.Base == pair.Base && x.Pair.Quote == pair.Quote).ToArrayAsync();
         }
 
         public async Task<ExchangeRate[]> GetExchangeRates()
