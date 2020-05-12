@@ -40,7 +40,6 @@ namespace Worker
                     services.AddCommonInfrastructure(configuration);
 
                     services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
-                    services.AddSingleton<ICacheClient, RedisCacheClient>();
                     services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
 
                     services.AddTransient<ITransactionService, TransactionService>();

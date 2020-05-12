@@ -70,7 +70,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             services.AddCommonInfrastructure(configuration);
 
             services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
-            services.AddSingleton<ICacheClient, RedisCacheClient>();
             services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
 
             services.AddTransient<IBinanceClient, BinanceClient>();

@@ -50,7 +50,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 foreach (var id in ctx.Users.Select(x => x.Id))
                 {
                     var txs = await _accountService.GetTransactions(id);
-                    var portfolio = await _accountService.GetPorfolio(id, true);
+                    var portfolio = await _accountService.GetPorfolio(id);
 
                     if (txs.Length > 0 && (from == default || txs[0].DateTime < from))
                     {

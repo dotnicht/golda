@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
 {
-    public class ExchangeRateEntityTypeConfiguration //: IEntityTypeConfiguration<ExchangeRate>
+    public class ExchangeRateEntityTypeConfiguration : IEntityTypeConfiguration<ExchangeRate>
     {
         public void Configure(EntityTypeBuilder<ExchangeRate> builder)
         {
