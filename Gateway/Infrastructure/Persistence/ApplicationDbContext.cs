@@ -38,10 +38,21 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedBy = entry.Entity.CreatedBy == default ? _currentUserService.UserId : entry.Entity.CreatedBy;
-                        entry.Entity.Created = _dateTime.UtcNow;
                         break;
                     case EntityState.Modified:
                         entry.Entity.LastModifiedBy = entry.Entity.LastModifiedBy == default ? _currentUserService.UserId : entry.Entity.LastModifiedBy;
+                        break;
+                }
+            }
+
+            foreach (var entry in ChangeTracker.Entries<Common.Domain.AuditableEntity>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.Created = _dateTime.UtcNow;
+                        break;
+                    case EntityState.Modified:
                         entry.Entity.LastModified = _dateTime.UtcNow;
                         break;
                 }
