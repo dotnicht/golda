@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200508132935_Initial")]
+    [Migration("20200512135144_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,29 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExchangeOperations");
+                });
+
+            modelBuilder.Entity("Binebase.Exchange.Gateway.Domain.Entities.ExchangeRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18,8)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExchangeRates");
                 });
 
             modelBuilder.Entity("Binebase.Exchange.Gateway.Domain.Entities.MiningRequest", b =>
@@ -291,7 +314,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -324,6 +347,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasFilter("[PhoneNumber] IS NOT NULL");
 
                     b.HasIndex("ReferralId");
 
@@ -454,6 +481,32 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("ExchangeOperationId");
+                        });
+                });
+
+            modelBuilder.Entity("Binebase.Exchange.Gateway.Domain.Entities.ExchangeRate", b =>
+                {
+                    b.OwnsOne("Binebase.Exchange.Gateway.Domain.ValueObjects.Pair", "Pair", b1 =>
+                        {
+                            b1.Property<Guid>("ExchangeRateId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Base")
+                                .IsRequired()
+                                .HasColumnName("Base")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Quote")
+                                .IsRequired()
+                                .HasColumnName("Quote")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ExchangeRateId");
+
+                            b1.ToTable("ExchangeRates");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ExchangeRateId");
                         });
                 });
 

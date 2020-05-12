@@ -98,6 +98,23 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExchangeRates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    Base = table.Column<string>(nullable: true),
+                    Quote = table.Column<string>(nullable: true),
+                    Rate = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
+                    DateTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExchangeRates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MiningRequests",
                 columns: table => new
                 {
@@ -310,6 +327,13 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_PhoneNumber",
+                table: "AspNetUsers",
+                column: "PhoneNumber",
+                unique: true,
+                filter: "[PhoneNumber] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_ReferralId",
                 table: "AspNetUsers",
                 column: "ReferralId");
@@ -348,6 +372,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ExchangeOperations");
+
+            migrationBuilder.DropTable(
+                name: "ExchangeRates");
 
             migrationBuilder.DropTable(
                 name: "Promotions");
