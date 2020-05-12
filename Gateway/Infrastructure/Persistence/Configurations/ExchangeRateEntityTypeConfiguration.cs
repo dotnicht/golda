@@ -12,7 +12,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ExchangeRate> builder)
         {
-            //builder.HasKey(x => new { x.Pair.Base, x.Pair.Quote, x.DateTime });
             builder.OwnsOne(x => x.Pair, x =>
                 {
                     x.WithOwner();

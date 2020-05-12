@@ -53,7 +53,6 @@ namespace Worker
                     services.Configure<Account>(configuration.GetSection("Infrastructure.Account"));
                     services.Configure<Crypto>(configuration.GetSection("Infrastructure.Crypto"));
                     services.Configure<Email>(configuration.GetSection("Infrastructure.Email"));
-                    services.Configure<Redis>(configuration.GetSection("Infrastructure.Redis"));
                     services.Configure<Aggregation>(configuration.GetSection("Infrastructure.Aggregation"));
                     services.Configure<ExchangeRates>(configuration.GetSection("Application.ExchangeRates"));
 
