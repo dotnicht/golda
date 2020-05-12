@@ -965,6 +965,10 @@
               "type": "number",
               "format": "decimal"
             }
+          },
+          "referrers": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
