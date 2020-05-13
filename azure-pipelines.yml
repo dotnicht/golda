@@ -16,8 +16,12 @@ variables:
 
 steps:
 
-- script: dotnet restore --configuration $(buildConfiguration)
-  displayName: 'dotnet restore configuration $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: 'restore solution'
+  inputs:
+    command: 'restore'
+    projects: '$(solution)'
+    arguments: '--configuration $(buildConfiguration)'
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build configuration $(buildConfiguration)'
