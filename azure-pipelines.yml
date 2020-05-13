@@ -9,47 +9,79 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
-steps:
+variables:
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
 
+steps:
+#--------------------------------------------
 - task: DotNetCoreCLI@2
   displayName: 'restore Account.Api'
   inputs:
     command: 'restore'
     projects: '**/Account/Api/Api.csproj'
-    arguments: '--configuration release'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: VSBuild@1
   displayName: 'build Account.Api'
   inputs:
     solution: '**/Account/Api/Api.csproj'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Account_Api.zip"'
-    configuration: 'release'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
+
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Crypto.Api'
+  inputs:
+    command: 'restore'
+    projects: '**/Crypto/Api/Api.csproj'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: VSBuild@1
   displayName: 'build Crypto.Api'
   inputs:
     solution: '**/Crypto/Api/Api.csproj'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Api.zip"'
-    configuration: 'release'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
+
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Gateway.Api'
+  inputs:
+    command: 'restore'
+    projects: '**/Gateway/Api/Api.csproj'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: VSBuild@1
   displayName: 'build Gateway.Api'
   inputs:
     solution: '**/Gateway/Api/Api.csproj'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Api.zip"'
-    configuration: 'release'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
+
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Gateway.Admin'
+  inputs:
+    command: 'restore'
+    projects: '**/Gateway/Admin/Admin.csproj'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: VSBuild@1
   displayName: 'build Gateway.Admin'
   inputs:
     solution: '**/Gateway/Admin/Admin.csproj'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Admin.zip"'
-    configuration: 'release'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
-
+#--------------------------------------------
 - task: PublishBuildArtifacts@1
   displayName: "Upload Artifacts"
   inputs:
