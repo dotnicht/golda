@@ -15,7 +15,6 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-
 - task: UseDotNet@2 
   displayName: ".NET Core 3.1.x"
   inputs:
@@ -70,5 +69,5 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: "Upload Artifacts"
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/Account_Api' 
     artifactName: 'Account.Api' 
