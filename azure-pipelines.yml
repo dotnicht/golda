@@ -19,23 +19,9 @@ steps:
     arguments: '--configuration release'
 
 - task: VSBuild@1
+  displayName: 'build Account.Api'
   inputs:
-    solution: '**\Account\Api\Api.csproj'
-    platform: 'any cpu'
+    solution: '**/Account/Api/Api.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Account_Api.zip"'
     configuration: 'release'
     msbuildArchitecture: 'x64'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Publish Account.Api'
-  inputs:
-    command: publish
-    projects: '**/Account/Api/Api.csproj'
-    publishWebProjects: True
-    arguments: '--configuration release --output $(Build.ArtifactStagingDirectory)/Account_Api'
-    zipAfterPublish: True
-
-- task: PublishBuildArtifacts@1
-  displayName: "Upload Artifacts"
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/Account_Api' 
-    artifactName: 'Account.Api' 
