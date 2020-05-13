@@ -16,6 +16,13 @@ variables:
 
 steps:
 
+- task: UseDotNet@2 
+  displayName: ".NET Core 3.1.x"
+  inputs:
+    version: '3.1.x'
+    packageType: sdk
+
+
 #- task: DotNetCoreCLI@2
 #  displayName: 'restore solution'
 #  inputs:
@@ -60,3 +67,8 @@ steps:
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/Account_Api'
     zipAfterPublish: True
 
+- task: PublishBuildArtifacts@1
+  displayName: "Upload Artifacts"
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'Account.Api' 
