@@ -29,5 +29,5 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: "Upload Artifacts"
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/Account_Api' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: 'Account.Api' 
