@@ -29,5 +29,5 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: "Upload Artifacts"
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/Account/Api/obj/release/netcoreapp3.1/PubTmp/Out' 
     artifactName: 'Account.Api' 
