@@ -28,6 +28,15 @@ steps:
     
 - task: publishBuildArtifacts@1
   displayName: 'publish artifacts'
+
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: '**/Account/Api/Api.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
