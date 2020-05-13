@@ -25,4 +25,17 @@ steps:
     configuration: 'release'
     msbuildArchitecture: 'x64'
 
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Account.Api'
+  inputs:
+    command: publish
+    projects: '**/Account/Api/Api.csproj'
+    publishWebProjects: True
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/Account_Api'
+    zipAfterPublish: True
 
+- task: PublishBuildArtifacts@1
+  displayName: "Upload Artifacts"
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/Account_Api' 
+    artifactName: 'Account.Api' 
