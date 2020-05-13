@@ -19,13 +19,14 @@ steps:
   displayName: 'dotnet build configuration $(buildConfiguration)'
   
 - task: DotNetCoreCLI@2
+  displayName: 'restore Account.Api'
   inputs:
     command: 'restore'
     projects: '**/Account/Api/Api.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-
 - task: DotNetCoreCLI@2
+  displayName: 'build Account.Api'
   inputs:
     command: 'build'
     projects: '**/Account/Api/Api.csproj'
