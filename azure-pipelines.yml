@@ -26,8 +26,32 @@ steps:
     configuration: 'release'
     msbuildArchitecture: 'x64'
 
+- task: VSBuild@1
+  displayName: 'build Crypto.Api'
+  inputs:
+    solution: '**/Crypto/Api/Api.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Api.zip"'
+    configuration: 'release'
+    msbuildArchitecture: 'x64'
+
+- task: VSBuild@1
+  displayName: 'build Gateway.Api'
+  inputs:
+    solution: '**/Gateway/Api/Api.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Api.zip"'
+    configuration: 'release'
+    msbuildArchitecture: 'x64'
+
+- task: VSBuild@1
+  displayName: 'build Gateway.Admin'
+  inputs:
+    solution: '**/Gateway/Admin/Admin.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Admin.zip"'
+    configuration: 'release'
+    msbuildArchitecture: 'x64'
+
 - task: PublishBuildArtifacts@1
   displayName: "Upload Artifacts"
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: 'Account.Api' 
+    artifactName: 'Binebase.Api' 
