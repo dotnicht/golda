@@ -62,6 +62,7 @@ steps:
   displayName: 'Publish Account.Api'
   inputs:
     command: publish
+    projects: '**/Account/Api/Api.csproj'
     publishWebProjects: True
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/Account_Api'
     zipAfterPublish: True
