@@ -10,25 +10,114 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Account.Api'
   inputs:
-    restoreSolution: '$(solution)'
+    command: 'restore'
+    projects: '**/Account/Api/Api.csproj'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: VSBuild@1
+  displayName: 'build Account.Api'
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    solution: '**/Account/Api/Api.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Production\Account_Api_Prod.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArchitecture: 'x64'
 
-- task: VSTest@2
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Crypto.Api'
   inputs:
+    command: 'restore'
+    projects: '**/Crypto/Api/Api.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: VSBuild@1
+  displayName: 'build Crypto.Api'
+  inputs:
+    solution: '**/Crypto/Api/Api.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Production\Crypto_Api_Prod.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArchitecture: 'x64'
+
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Gateway.Api'
+  inputs:
+    command: 'restore'
+    projects: '**/Gateway/Api/Api.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: VSBuild@1
+  displayName: 'build Gateway.Api'
+  inputs:
+    solution: '**/Gateway/Api/Api.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Production\Gateway_Api_Prod.zip"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    msbuildArchitecture: 'x64'
+
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Gateway.Admin'
+  inputs:
+    command: 'restore'
+    projects: '**/Gateway/Admin/Admin.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: VSBuild@1
+  displayName: 'build Gateway.Admin'
+  inputs:
+    solution: '**/Gateway/Admin/Admin.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Production\Gateway_Admin_Prod.zip"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    msbuildArchitecture: 'x64'
+
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Gateway.Worker'
+  inputs:
+    command: 'restore'
+    projects: '**/Gateway/Worker/Worker.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: VSBuild@1
+  displayName: 'build Gateway.Worker'
+  inputs:
+    solution: '**/Gateway/Admin/Admin.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Production\Gateway_Worker_Prod.zip"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    msbuildArchitecture: 'x64'
+
+#--------------------------------------------
+- task: DotNetCoreCLI@2
+  displayName: 'restore Crypto.Worker'
+  inputs:
+    command: 'restore'
+    projects: '**/Crypto/Worker/Worker.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: VSBuild@1
+  displayName: 'build Crypto.Worker'
+  inputs:
+    solution: '**/Crypto/Worker/Worker.csproj'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Production\Crypto_Worker_Prod.zip"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    msbuildArchitecture: 'x64'
+#--------------------------------------------
+- task: PublishBuildArtifacts@1
+  displayName: "Upload Artifacts"
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'Binebase.Api' 
