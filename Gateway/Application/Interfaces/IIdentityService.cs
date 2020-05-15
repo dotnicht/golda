@@ -8,6 +8,7 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
     public interface IIdentityService
     {
         Task<Result> CreateUser(Guid id, string userName, string password, string code);
+        Task<int> GetReferrersCount(Guid id);
         Task<User> GetUser(string userName);
         Task<User> GetUser(Guid userId);
         Task<Result> Authenticate(User user);
@@ -22,5 +23,9 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<Result> SetTwoFactorAuthentication(Guid userId, bool isEnabled);
         Task<bool> VerifyTwoFactorToken(Guid userId, string token);
         Task<bool> CheckUserPassword(Guid userId, string password);
+        Task<Result> SetPhoneNumberVerify(Guid userId, bool isEnabled);
+        Task<Result> PreSignInCheck(User user);
+        Task<Result> UpdateUserPhoneNumber(Guid userId, string phoneNumber);
+        bool CheckPhoneNumberForUniqueness(string phoneNumber);
     }
 }

@@ -37,8 +37,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                     using (new ElapsedTimer(_logger, "CryptoTxProcess"))
                     {
                         using var scope = _serviceProvider.CreateScope();
-                        using var users = scope.ServiceProvider.GetRequiredService<IUserContext>();
+                        using var users = scope.ServiceProvider.GetRequiredService<IInfrastructureContext>();
                         using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+
                         var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
 
                         foreach (var user in users.Users)
@@ -49,9 +50,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                 if (existing == null)
                                 {
                                     ctx.Transactions.Add(tx);
+
                                     if (tx.Type == TransactionType.Deposit)
                                     {
                                         await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, tx.Type);
+
                                         var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency), false);
 
                                         var op = new ExchangeOperation
@@ -59,7 +62,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                             CreatedBy = user.Id,
                                             Id = tx.Id,
                                             Pair = ex.Pair,
-                                            BaseAmount = tx.Amount / ex.Rate
+                                            BaseAmount = tx.Amount / ex.Rate,
+                                            QuoteAmount = tx.Amount
                                         };
 
                                         await _accountService.Credit(user.Id, tx.Currency, tx.Amount, op.Id, TransactionType.Exchange);

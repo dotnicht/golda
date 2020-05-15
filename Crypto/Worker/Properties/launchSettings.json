@@ -1,10 +1,7 @@
 ﻿{
   "profiles": {
     "Binebase.Exchange.Crypto.Worker": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
-      }
+      "commandName": "Project"
     }
   }
 }

@@ -10,19 +10,13 @@
     "profiles": {
         "IIS Express": {
             "commandName": "IISExpress",
-            "launchBrowser": true,
-            "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            }
+            "launchBrowser": true
         },
         "Binebase.Exchange.Gateway.Api": {
             "commandName": "Project",
             "launchBrowser": true,
             "launchUrl": "https://localhost:5000/api",
-            "applicationUrl": "https://localhost:5000",
-            "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            }
+            "applicationUrl": "https://localhost:5000"
         }
     }
 }

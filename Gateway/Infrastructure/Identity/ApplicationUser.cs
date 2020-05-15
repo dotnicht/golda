@@ -9,6 +9,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 {
     public class ApplicationUser : IdentityUser<Guid>, IMapTo<User>
     {
+        public bool IsSystem { get; set; }
         public DateTime Registered { get; set; }
         public string ReferralCode { get; set; }
         public Guid? ReferralId { get; set; }

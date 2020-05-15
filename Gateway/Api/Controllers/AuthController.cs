@@ -23,6 +23,10 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
             => await Mediator.Send(command);
 
         [HttpPost, ProducesResponseType(typeof(SignInCommandResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<SignInCommandResult>> VerifyPhoneNumber(VerifyPhoneNumberCommand command)
+          => await Mediator.Send(command);
+
+        [HttpPost, ProducesResponseType(typeof(SignInCommandResult), StatusCodes.Status200OK)]
         public async Task<SignInCommandResult> Confirm(ConfirmCommand command) 
             => await Mediator.Send(command);
 
@@ -49,5 +53,9 @@ namespace Binebase.Exchange.Gateway.Api.Controllers
         [HttpDelete, Authorize, ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> MultiFactor(DisableMultiFactorCommand command) 
             => Convert(await Mediator.Send(command));
+
+        [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> RequestPhoneVerify(PhoneVerifyRequestCommand command)
+          => Convert(await Mediator.Send(command));
     }
 }

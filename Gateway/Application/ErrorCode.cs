@@ -62,5 +62,29 @@
         /// The request didn't reach withdraw minimum requirement.
         /// </summary>
         public const string WithdrawMinimum = "withdraw_minimum";
+        /// <summary>
+        /// Phone number is empty or has invalid format
+        /// </summary>
+        public const string InvalidPhoneNumber = "invalid_phone_number";
+        /// <summary>
+        /// User cannot sign in without a confirmed phone number.
+        /// </summary>
+        public const string NotConfirmedPhoneNumber = "not_confirmed_phone_number";
+        /// <summary>
+        ///User cannot sign in without a confirmed email.
+        /// </summary>
+        public const string NotConfirmedEmail = "not_confirmed_email";
+        /// <summary>
+        /// User is locked out.
+        /// </summary>
+        public const string UserIsLocked = "user_is_locked";
+        /// <summary>
+        /// User cannot sign in without a confirmed email and phone number
+        /// </summary>
+        public const string NotConfirmedUser = "not_confirmed_user";
+        /// <summary>
+        /// Input phone number is already in use
+        /// </summary>
+        public const string PhoneNumberAlreadyInUse = "phone_number_already_in_use";
     }
 }

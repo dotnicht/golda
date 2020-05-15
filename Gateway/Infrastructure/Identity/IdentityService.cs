@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Binebase.Exchange.Common.Application.Interfaces;
 using Binebase.Exchange.Common.Application.Models;
+using Binebase.Exchange.Gateway.Application;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -19,26 +22,30 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
 {
     public class IdentityService : IIdentityService
     {
+        private readonly ILogger _logger;
         private readonly IDateTime _dateTime;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly Configuration.Identity _configuration;
 
-        public IdentityService(
+        public IdentityService(ILogger<IdentityService> logger,
             IDateTime dateTime,
             IMapper mapper,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<Configuration.Identity> options)
-            => (_userManager, _signInManager, _dateTime, _mapper, _configuration)
-                = (userManager, signInManager, dateTime, mapper, options.Value);
+            => (_logger, _userManager, _signInManager, _dateTime, _mapper, _configuration)
+                = (logger, userManager, signInManager, dateTime, mapper, options.Value);
 
         public async Task<User> GetUser(string userName)
             => _mapper.Map<User>(await _userManager.FindByNameAsync(userName));
 
         public async Task<User> GetUser(Guid userId)
             => _mapper.Map<User>(await _userManager.FindByIdAsync(userId.ToString()));
+
+        public async Task<int> GetReferrersCount(Guid id)
+            => await _userManager.Users.CountAsync(x => x.ReferralId == id);
 
         public async Task<Result> CreateUser(Guid id, string userName, string password, string code)
         {
@@ -120,6 +127,21 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
             return result.ToApplicationResult();
         }
 
+        public async Task<Result> SetPhoneNumberVerify(Guid userId, bool isEnabled)
+        {
+            var user = _userManager.Users.Single(u => u.Id == userId);
+            user.PhoneNumberConfirmed = isEnabled;
+            var updateResult = await _userManager.UpdateAsync(user);
+            return updateResult.ToApplicationResult();
+        }
+
+        public async Task<Result> UpdateUserPhoneNumber(Guid userId, string phoneNumber)
+        {
+            var user = _userManager.Users.Single(u => u.Id == userId);
+            var updateResult = await _userManager.SetPhoneNumberAsync(user, phoneNumber);
+            return updateResult.ToApplicationResult();
+        }
+
         public async Task<bool> VerifyTwoFactorToken(Guid userId, string token)
             => await _userManager.VerifyTwoFactorTokenAsync(_userManager.Users.Single(u => u.Id == userId), _userManager.Options.Tokens.AuthenticatorTokenProvider, token);
 
@@ -165,14 +187,48 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var app = await _userManager.FindByNameAsync(user.Email);
-            if (!await _signInManager.CanSignInAsync(app))
+            var appUser = await _userManager.FindByNameAsync(user.Email);
+
+            var checkResult = await PreSignInCheck(appUser);
+
+            if (!checkResult.Succeeded)
             {
-                return Result.Failure("signin_error");
+                return checkResult;
+            }
+            await _signInManager.SignInAsync(appUser, true);
+            return Result.Success();
+        }
+
+        public async Task<Result> PreSignInCheck(User user)
+        {
+            var appUser = await _userManager.FindByNameAsync(user.Email);
+            return await PreSignInCheck(appUser);
+        }
+
+        private async Task<Result> PreSignInCheck(ApplicationUser user)
+        {
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                _logger.LogError("User '{Id}' is locked out.", user.Id);
+                return Result.Failure(ErrorCode.UserIsLocked);
+            }
+            if (_signInManager.Options.SignIn.RequireConfirmedEmail && !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                _logger.LogError("User '{Id}' cannot sign in without a confirmed email.", user.Id);
+                return Result.Failure(ErrorCode.NotConfirmedEmail);
+            }
+            if (_signInManager.Options.SignIn.RequireConfirmedPhoneNumber && !(await _userManager.IsPhoneNumberConfirmedAsync(user)))
+            {
+                _logger.LogError("User '{Id}' cannot sign in without a confirmed phone number.", user.Id);
+                return Result.Failure(ErrorCode.InvalidPhoneNumber);
             }
 
-            await _signInManager.SignInAsync(app, true);
             return Result.Success();
+        }
+
+        public bool CheckPhoneNumberForUniqueness(string phoneNumber)
+        {
+            return !_userManager.Users.Any(x => x.PhoneNumber.Equals(phoneNumber));
         }
     }
 }

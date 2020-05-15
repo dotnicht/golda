@@ -248,6 +248,38 @@
         }
       }
     },
+    "/api/Auth/VerifyPhoneNumber": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_VerifyPhoneNumber",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyPhoneNumberCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInCommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Auth/Confirm": {
       "post": {
         "tags": [
@@ -451,6 +483,31 @@
             "JWT": []
           }
         ]
+      }
+    },
+    "/api/Auth/RequestPhoneVerify": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_RequestPhoneVerify",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhoneVerifyRequestCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
       }
     },
     "/api/Crypto/Address": {
@@ -965,6 +1022,10 @@
               "type": "number",
               "format": "decimal"
             }
+          },
+          "referrers": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -1078,6 +1139,10 @@
             "type": "string",
             "nullable": true
           },
+          "errorCodeExt": {
+            "type": "string",
+            "nullable": true
+          },
           "token": {
             "type": "string",
             "nullable": true
@@ -1111,6 +1176,24 @@
             "nullable": true
           },
           "password": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "VerifyPhoneNumberCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
             "type": "string",
             "nullable": true
           }
@@ -1208,6 +1291,20 @@
             "nullable": true
           },
           "code": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PhoneVerifyRequestCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "phoneNumber": {
             "type": "string",
             "nullable": true
           }

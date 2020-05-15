@@ -8,11 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Configurations
 {
-    public class ExchangeRateEntityTypeConfiguration //: IEntityTypeConfiguration<ExchangeRate>
+    public class ExchangeRateEntityTypeConfiguration : IEntityTypeConfiguration<ExchangeRate>
     {
         public void Configure(EntityTypeBuilder<ExchangeRate> builder)
         {
-            builder.HasKey(x => new { x.Pair.Base, x.Pair.Quote, x.DateTime });
             builder.OwnsOne(x => x.Pair, x =>
                 {
                     x.WithOwner();

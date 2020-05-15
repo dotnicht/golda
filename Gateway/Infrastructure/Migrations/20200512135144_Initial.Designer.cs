@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
+namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200430092327_ExchangeAmounts")]
-    partial class ExchangeAmounts
+    [Migration("20200512135144_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -76,6 +76,29 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExchangeOperations");
+                });
+
+            modelBuilder.Entity("Binebase.Exchange.Gateway.Domain.Entities.ExchangeRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18,8)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExchangeRates");
                 });
 
             modelBuilder.Entity("Binebase.Exchange.Gateway.Domain.Entities.MiningRequest", b =>
@@ -202,6 +225,54 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     b.ToTable("Transactions");
                 });
 
+            modelBuilder.Entity("Binebase.Exchange.Gateway.Infrastructure.Entities.BalanceConsistencyRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreditCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DebitCount")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("EndBalance")
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("StartBalance")
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<DateTime>("To")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TotalCredit")
+                        .HasColumnType("decimal(18,8)");
+
+                    b.Property<decimal>("TotalDebit")
+                        .HasColumnType("decimal(18,8)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("To")
+                        .HasAnnotation("SqlServer:Clustered", false);
+
+                    b.ToTable("BalanceRecords");
+                });
+
             modelBuilder.Entity("Binebase.Exchange.Gateway.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -222,6 +293,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -240,7 +314,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -273,6 +347,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasFilter("[PhoneNumber] IS NOT NULL");
 
                     b.HasIndex("ReferralId");
 
@@ -403,6 +481,32 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("ExchangeOperationId");
+                        });
+                });
+
+            modelBuilder.Entity("Binebase.Exchange.Gateway.Domain.Entities.ExchangeRate", b =>
+                {
+                    b.OwnsOne("Binebase.Exchange.Gateway.Domain.ValueObjects.Pair", "Pair", b1 =>
+                        {
+                            b1.Property<Guid>("ExchangeRateId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Base")
+                                .IsRequired()
+                                .HasColumnName("Base")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Quote")
+                                .IsRequired()
+                                .HasColumnName("Quote")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ExchangeRateId");
+
+                            b1.ToTable("ExchangeRates");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ExchangeRateId");
                         });
                 });
 

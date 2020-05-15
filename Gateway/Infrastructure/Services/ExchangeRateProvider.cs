@@ -11,25 +11,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 {
     public class ExchangeRateProvider : IExchangeRateProvider
     {
-        private readonly IBinanceClient _binanceClient;
         private readonly IBinanceSocketClient _binanceSocketClient;
         private readonly IDateTime _dateTime;
         private readonly ILogger _logger;
 
-        public ExchangeRateProvider(IBinanceClient binanceClient, IBinanceSocketClient binanceSocketClient, IDateTime dateTime, ILogger<ExchangeRateProvider> logger)
-            => (_binanceClient, _binanceSocketClient, _dateTime, _logger) = (binanceClient, binanceSocketClient, dateTime, logger);
-
-        public async Task<ExchangeRate> GetExchangeRate(Pair pair)
-        {
-            if (pair is null)
-            {
-                throw new ArgumentNullException(nameof(pair));
-            }
-
-            var symbol = $"{pair.Base}{pair.Quote}";
-            var result = await _binanceClient.GetPriceAsync(symbol);
-            return new ExchangeRate { Pair = pair, DateTime = _dateTime.UtcNow, Rate = result.Data.Price };
-        }
+        public ExchangeRateProvider(IBinanceSocketClient binanceSocketClient, IDateTime dateTime, ILogger<ExchangeRateProvider> logger)
+            => (_binanceSocketClient, _dateTime, _logger) = (binanceSocketClient, dateTime, logger);
 
         public async Task Subscribe(Pair pair, Action<ExchangeRate> handle)
         {

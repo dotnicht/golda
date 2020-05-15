@@ -36,14 +36,16 @@ namespace Binebase.Exchange.Gateway.Infrastructure
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
+            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             services.AddScoped<IApplicationDbContext>(x => x.GetRequiredService<ApplicationDbContext>());
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>(x => x.SignIn.RequireConfirmedEmail = false)
-                .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<ApplicationUser, ApplicationRole>(x =>
+            {
+                x.SignIn.RequireConfirmedEmail = true;
+                x.SignIn.RequireConfirmedPhoneNumber = true;
+            }).AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication(x =>
             {
@@ -70,11 +72,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             services.AddCommonInfrastructure(configuration);
 
             services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
-            services.AddSingleton<ICacheClient, RedisCacheClient>();
             services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
 
             services.AddTransient<IBinanceClient, BinanceClient>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IPhoneService, PhoneService>();
             services.AddTransient<IIdentityService, IdentityService>();
 
             services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
@@ -85,8 +87,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure
             services.Configure<Account>(configuration.GetSection("Infrastructure.Account"));
             services.Configure<Crypto>(configuration.GetSection("Infrastructure.Crypto"));
             services.Configure<Email>(configuration.GetSection("Infrastructure.Email"));
+            services.Configure<Phone>(configuration.GetSection("Infrastructure.Phone"));
             services.Configure<Configuration.Identity>(configuration.GetSection("Infrastructure.Identity"));
-            services.Configure<Redis>(configuration.GetSection("Infrastructure.Redis"));
 
             return services;
         }

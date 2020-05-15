@@ -25,27 +25,19 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<SignInCommandResult> Handle(ConfirmCommand request, CancellationToken cancellationToken)
             {
-                var result = await _identityService.ConfirmToken(request.Id, request.Code);
-                if (!result.Succeeded)
-                {
-                    throw result.ToValidationException(nameof(ConfirmCommandHandler)); // TODO: map err codes.
-                }
-
                 var user = await _identityService.GetUser(request.Id);
                 if (user == null)
                 {
                     throw new NotFoundException(nameof(User), request.Id);
                 }
 
-                result = await _identityService.Authenticate(user);
+                var result = await _identityService.ConfirmToken(request.Id, request.Code);
                 if (!result.Succeeded)
                 {
-                    throw result.ToSecurityException();
+                    throw result.ToValidationException(nameof(ConfirmCommandHandler)); // TODO: map err codes.
                 }
 
-                var sign = _mapper.Map<SignInCommandResult>(user);
-                sign.Token = await _identityService.GenerateAuthToken(user);
-                return sign;
+                return _mapper.Map<SignInCommandResult>(user);
             }
         }
     }

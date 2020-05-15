@@ -3,7 +3,7 @@ using System;
 
 namespace Binebase.Exchange.Gateway.Domain.Entities
 {
-    public class ExchangeRate
+    public class ExchangeRate : Common.Domain.AuditableEntity
     {
         public Pair Pair { get; set; }
         public decimal Rate { get; set; }

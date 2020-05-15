@@ -28,7 +28,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     throw new NotFoundException(nameof(User), request.Email);
                 }
-               
+
                 if (!await _identityService.CheckUserPassword(user.Id, request.Password))
                 {
                     throw new SecurityException(ErrorCode.PasswordMismatch);
@@ -38,8 +38,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 if (!await _identityService.GetTwoFactorEnabled(user.Id))
                 {
-                    var auth = await _identityService.Authenticate(user);
+                    var PreSignInCheckResult = await _identityService.PreSignInCheck(user);
+                    if (!PreSignInCheckResult.Succeeded)
+                    {
+                        result.ErrorCodeExt = string.Join(";", PreSignInCheckResult.Errors);
+                        return result;
+                    }
 
+                    var auth = await _identityService.Authenticate(user);
                     if (!auth.Succeeded)
                     {
                         throw auth.ToSecurityException();
