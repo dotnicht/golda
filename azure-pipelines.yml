@@ -93,8 +93,8 @@ steps:
 - task: VSBuild@1
   displayName: 'build Gateway.Worker'
   inputs:
-    solution: '**/Gateway/Admin/Admin.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Worker_Dev.zip"'
+    solution: '**/Gateway/Worker/Worker.csproj'
+    msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\GatewayWorker\app_data\Jobs\Continuous\GatewayWorker'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -107,14 +107,6 @@ steps:
     projects: '**/Crypto/Worker/Worker.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-#- task: VSBuild@1
-#  displayName: 'build Crypto.Worker'
-#  inputs:
-#    solution: '**/Crypto/Worker/Worker.csproj'
-#    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation=Crypto_Worker_Dev.zip"'
-#    platform: '$(buildPlatform)'
-#    configuration: '$(buildConfiguration)'
-#    msbuildArchitecture: 'x64'
 #--------------------------------------------
 - task: VSBuild@1
   displayName: 'build Crypto.Worker'
@@ -122,7 +114,7 @@ steps:
     solution: '**/Crypto/Worker/Worker.csproj'
     msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\CryptoWorker\app_data\Jobs\Continuous\CtyptoWorker'
     platform: 'x64'
-    configuration: 'release'
+    configuration: '$(buildConfiguration)'
 #--------------------------------------------
 - task: PublishBuildArtifacts@1
   displayName: "Upload Artifacts"
