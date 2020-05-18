@@ -31,7 +31,7 @@ steps:
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
 
-#--------------------------------------------
+    #--------------------------------------------
 - task: DotNetCoreCLI@2
   displayName: 'restore Crypto.Api'
   inputs:
@@ -107,7 +107,6 @@ steps:
     projects: '**/Crypto/Worker/Worker.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-#--------------------------------------------
 - task: VSBuild@1
   displayName: 'build Crypto.Worker'
   inputs:
@@ -115,6 +114,7 @@ steps:
     msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\CryptoWorker\app_data\Jobs\Continuous\CtyptoWorker'
     platform: 'x64'
     configuration: '$(buildConfiguration)'
+
 #--------------------------------------------
 - task: PublishBuildArtifacts@1
   displayName: "Upload Artifacts"
