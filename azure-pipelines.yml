@@ -43,7 +43,8 @@ steps:
   displayName: 'build Crypto.Api'
   inputs:
     solution: '**/Crypto/Api/Api.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Api_Dev.zip"'
+    #msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Api_Dev.zip"'
+    msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\Crypto_Api_Dev'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -112,7 +113,8 @@ steps:
   displayName: 'build Crypto.Worker'
   inputs:
     solution: '**/Crypto/Worker/Worker.csproj'
-    msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\CryptoWorker\app_data\Jobs\Continuous\CtyptoWorker'
+    #msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\CryptoWorker\app_data\Jobs\Continuous\CtyptoWorker'
+    msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\Crypto_Api_Dev\app_data\Jobs\Continuous\CtyptoWorker'
     platform: 'x64'
     configuration: '$(buildConfiguration)'
 #--------------------------------------------
