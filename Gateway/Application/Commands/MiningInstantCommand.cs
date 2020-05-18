@@ -46,12 +46,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             {
                 var index = _context.MiningRequests.Count(x => x.CreatedBy == _currentUserService.UserId && x.Type == MiningType.Instant);
 
-                if (request.Boost > 0
-                    && (!_configuration.Instant.BoostMapping.Any(x => x.Value == request.Boost)
-                    || index < request.Boost
-                    || request.Boost * _configuration.Instant.Fee > await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB)))
+                if (request.Boost > 0 && (!_configuration.Instant.BoostMapping.Any(x => x.Value == request.Boost) || index < request.Boost))
                 {
                     throw new NotSupportedException(ErrorCode.UnsupportedBoost);
+                }
+
+                if (request.Boost * _configuration.Instant.Fee > await _accountService.GetBalance(_currentUserService.UserId, Currency.EURB))
+                {
+                    throw new NotSupportedException(ErrorCode.InsufficientBalance);
                 }
 
                 var mining = _context.MiningRequests
