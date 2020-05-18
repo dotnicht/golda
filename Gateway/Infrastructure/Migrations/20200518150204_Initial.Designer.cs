@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200512135144_Initial")]
+    [Migration("20200518150204_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,6 +84,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Base")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -93,10 +97,18 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Quote")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<decimal>("Rate")
                         .HasColumnType("decimal(18,8)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DateTime");
+
+                    b.HasIndex("Base", "Quote");
 
                     b.ToTable("ExchangeRates");
                 });
@@ -481,32 +493,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("ExchangeOperationId");
-                        });
-                });
-
-            modelBuilder.Entity("Binebase.Exchange.Gateway.Domain.Entities.ExchangeRate", b =>
-                {
-                    b.OwnsOne("Binebase.Exchange.Gateway.Domain.ValueObjects.Pair", "Pair", b1 =>
-                        {
-                            b1.Property<Guid>("ExchangeRateId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Base")
-                                .IsRequired()
-                                .HasColumnName("Base")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Quote")
-                                .IsRequired()
-                                .HasColumnName("Quote")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("ExchangeRateId");
-
-                            b1.ToTable("ExchangeRates");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ExchangeRateId");
                         });
                 });
 

@@ -29,6 +29,7 @@ namespace Worker
         {
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog()
+                .ConfigureHostConfiguration(x => x.AddEnvironmentVariables("ASPNETCORE_"))
                 .ConfigureServices((hostContext, services) =>
                 {
                     CommonInfrastructure.ConfigureLogging(hostContext.Configuration, hostContext.HostingEnvironment);
