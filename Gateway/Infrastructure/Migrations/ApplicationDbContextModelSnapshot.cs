@@ -104,14 +104,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Base")
-                        .HasAnnotation("SqlServer:Clustered", false);
+                    b.HasIndex("DateTime");
 
-                    b.HasIndex("DateTime")
-                        .HasAnnotation("SqlServer:Clustered", true);
-
-                    b.HasIndex("Quote")
-                        .HasAnnotation("SqlServer:Clustered", false);
+                    b.HasIndex("Base", "Quote");
 
                     b.ToTable("ExchangeRates");
                 });
