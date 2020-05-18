@@ -10,18 +10,12 @@
     "profiles": {
         "IIS Express": {
             "commandName": "IISExpress",
-            "launchBrowser": true,
-            "environmentVariables": {
-                "DOTNET_ENVIRONMENT": "Development"
-            }
+            "launchBrowser": true
         },
         "Binebase.Exchange.CryptoService.Api": {
             "commandName": "Project",
             "launchBrowser": false,
             "launchUrl": "https://localhost:5002/api",
-            "environmentVariables": {
-                "DOTNET_ENVIRONMENT": "Development"
-            },
             "applicationUrl": "https://localhost:5002"
         }
     }

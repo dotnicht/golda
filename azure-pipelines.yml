@@ -14,7 +14,7 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-#--------------------------------------------
+#----------------------------------------------
 - task: DotNetCoreCLI@2
   displayName: 'restore Account.Api'
   inputs:
@@ -26,7 +26,7 @@ steps:
   displayName: 'build Account.Api'
   inputs:
     solution: '**/Account/Api/Api.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Account_Api.zip"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Account_Api_Dev.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -43,7 +43,7 @@ steps:
   displayName: 'build Crypto.Api'
   inputs:
     solution: '**/Crypto/Api/Api.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Api.zip"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Api_Dev.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -60,7 +60,7 @@ steps:
   displayName: 'build Gateway.Api'
   inputs:
     solution: '**/Gateway/Api/Api.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Api.zip"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Api_Dev.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -77,7 +77,7 @@ steps:
   displayName: 'build Gateway.Admin'
   inputs:
     solution: '**/Gateway/Admin/Admin.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Admin.zip"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Admin_Dev.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -93,8 +93,8 @@ steps:
 - task: VSBuild@1
   displayName: 'build Gateway.Worker'
   inputs:
-    solution: '**/Gateway/Admin/Admin.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Worker.zip"'
+    solution: '**/Gateway/Worker/Worker.csproj'
+    msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\GatewayWorker\app_data\Jobs\Continuous\GatewayWorker'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -107,14 +107,14 @@ steps:
     projects: '**/Crypto/Worker/Worker.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
+#--------------------------------------------
 - task: VSBuild@1
   displayName: 'build Crypto.Worker'
   inputs:
     solution: '**/Crypto/Worker/Worker.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Worker.zip"'
-    platform: '$(buildPlatform)'
+    msbuildArgs: '/p:OutputPath=$(build.artifactStagingDirectory)\CryptoWorker\app_data\Jobs\Continuous\CtyptoWorker'
+    platform: 'x64'
     configuration: '$(buildConfiguration)'
-    msbuildArchitecture: 'x64'
 #--------------------------------------------
 - task: PublishBuildArtifacts@1
   displayName: "Upload Artifacts"
