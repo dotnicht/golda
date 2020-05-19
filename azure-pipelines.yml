@@ -119,7 +119,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '''**/Crypto/Worker/Worker.csproj'''
+    projects: '**/Crypto/Worker/Worker.csproj'
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)\CryptoWorker2\app_data\Jobs\Continuous\CtyptoWorker'
 #--------------------------------------------
 - task: PublishBuildArtifacts@1
