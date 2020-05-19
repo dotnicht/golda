@@ -82,6 +82,14 @@ steps:
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
 
+- task: DotNetCoreCLI@2
+  displayName: 'build Gateway.Admin2'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '**/Gateway/Admin/Admin.csproj'
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)\CryptoWorker2'
+
 #--------------------------------------------
 - task: DotNetCoreCLI@2
   displayName: 'restore Gateway.Worker'
@@ -116,6 +124,7 @@ steps:
     configuration: '$(buildConfiguration)'
 #--------------------------------------------
 - task: DotNetCoreCLI@2
+  displayName: 'build CtyptoWorker2'
   inputs:
     command: 'publish'
     publishWebProjects: false
