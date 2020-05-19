@@ -60,7 +60,6 @@ namespace Binebase.Exchange.Gateway.Application.Services
             using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
             var rates = ctx.ExchangeRates.OrderByDescending(x => x.DateTime);
-
             var rate = await rates.FirstOrDefaultAsync(x => x.Base == pair.Base && x.Quote == pair.Quote);
 
             if (rate == null)
@@ -103,13 +102,15 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task<ExchangeRate[]> GetExchangeRates()
         {
-            var result = _supportedPairs.Select(x => GetExchangeRate(x).Result);
+            var result = _supportedPairs.Select(x => GetExchangeRate(x));
+
             if (_configuration.SupportBackward)
             {
-                result = result.Union(_backwardPairs.Select(x => GetExchangeRate(x).Result));
+                result = result.Union(_backwardPairs.Select(x => GetExchangeRate(x)));
             }
 
-            return await Task.FromResult(result.ToArray());
+            Task.WaitAll(result.ToArray());
+            return await Task.FromResult(result.Select(x => x.Result).ToArray());
         }
 
         public async Task Subscribe()
