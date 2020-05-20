@@ -58,27 +58,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             using var scope = _serviceProvider.CreateScope();
             using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
-
-            var rates = ctx.ExchangeRates.OrderByDescending(x => x.DateTime);
-            var rate = await rates.FirstOrDefaultAsync(x => x.Base == pair.Base && x.Quote == pair.Quote);
-
-            if (rate == null)
-            {
-                var first = await rates.FirstOrDefaultAsync(x => x.Base == pair.Base && x.Quote == Currency.EURB)
-                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
-                var second = await rates.FirstOrDefaultAsync(x => x.Base == Currency.EURB && x.Quote == pair.Quote)
-                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
-
-                rate = new ExchangeRate
-                {
-                    Base = pair.Base,
-                    Quote = pair.Quote,
-                    DateTime = _dateTime.UtcNow,
-                    Rate = first.Rate * second.Rate
-                };
-            }
-
-            return rate;
+            return await GetExchangeRateInternal(ctx, pair);
         }
 
         public async Task<ExchangeRate[]> GetExchangeRateHistory(Pair pair)
@@ -102,11 +82,13 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task<ExchangeRate[]> GetExchangeRates()
         {
-            var result = _supportedPairs.Select(x => GetExchangeRate(x));
+            using var scope = _serviceProvider.CreateScope();
+            using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+            var result = _supportedPairs.Select(x => GetExchangeRateInternal(ctx, x));
 
             if (_configuration.SupportBackward)
             {
-                result = result.Union(_backwardPairs.Select(x => GetExchangeRate(x)));
+                result = result.Union(_backwardPairs.Select(x => GetExchangeRateInternal(ctx, x)));
             }
 
             Task.WaitAll(result.ToArray());
@@ -181,6 +163,30 @@ namespace Binebase.Exchange.Gateway.Application.Services
             ctx.ExchangeRates.Add(rate);
             ctx.ExchangeRates.Add(backward);
             await ctx.SaveChangesAsync();
+        }
+
+        private async Task<ExchangeRate> GetExchangeRateInternal(IApplicationDbContext ctx, Pair pair)
+        {
+            var rates = ctx.ExchangeRates.OrderByDescending(x => x.DateTime);
+            var rate = await rates.FirstOrDefaultAsync(x => x.Base == pair.Base && x.Quote == pair.Quote);
+
+            if (rate == null)
+            {
+                var first = await rates.FirstOrDefaultAsync(x => x.Base == pair.Base && x.Quote == Currency.EURB)
+                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
+                var second = await rates.FirstOrDefaultAsync(x => x.Base == Currency.EURB && x.Quote == pair.Quote)
+                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
+
+                rate = new ExchangeRate
+                {
+                    Base = pair.Base,
+                    Quote = pair.Quote,
+                    DateTime = _dateTime.UtcNow,
+                    Rate = first.Rate * second.Rate
+                };
+            }
+
+            return rate;
         }
 
         public void Dispose() => _timer?.Dispose();
