@@ -62,7 +62,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                             CreatedBy = user.Id,
                                             Id = tx.Id,
                                             Pair = new Pair(ex.Base, ex.Quote),
-                                            BaseAmount = tx.Amount / ex.Rate,
+                                            BaseAmount = tx.Amount * ex.Rate,
                                             QuoteAmount = tx.Amount
                                         };
 
