@@ -1,5 +1,4 @@
 ﻿using Binebase.Exchange.Common.Domain;
-using Binebase.Exchange.Gateway.Admin.Models;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
