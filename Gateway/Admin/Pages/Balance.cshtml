@@ -4,5 +4,137 @@
     ViewData["Title"] = "Balance";
 }
 
-<h1>Balance</h1>
+<h1>@ViewData["Title"]</h1>
+
+<form asp-page="/Balance" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="/Balance">Back to full List</a>
+        </p>
+    </div>
+</form>
+
+<table id="myTable" class="table" cellspacing="0">
+    <thead>
+        <tr>
+            @*<th>
+            <div class="btn-group">
+                <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder="@Model.DateSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Balance[0].Id)</a>
+                <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Tablet</a></li>
+                    <li><a href="#">Smartphone</a></li>
+                </ul>
+            </div>
+        </th>
+        <th>
+            <div class="btn-group">
+                <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder="@Model.NameSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Balance[0].UserName)</a>
+                <button type="button" class="btn btn-primary dropdown-toggle disabled " data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    @foreach (var userName in Model.UsersNames)
+                    {
+                        <li><a asp-page="/Balance" asp-route-currentFilterFieldName="userName" asp-route-currentFilter=@userName>@userName</a></li>
+                    }
+                </ul>
+            </div>
+        </th>
+        <th>
+            <div class="btn-group">
+                <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder="@Model.DateSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Balance[0].Registered)</a>
+                <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Tablet</a></li>
+                    <li><a href="#">Smartphone</a></li>
+                </ul>
+            </div>
+        </th>
+        <th>
+            <div class="btn-group">
+                <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                   asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Balance[0].PhoneNumber)</a>
+                <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Tablet</a></li>
+                    <li><a href="#">Smartphone</a></li>
+                </ul>
+            </div>
+        </th>
+        <th>
+            <div class="btn-group">
+                <a class="btn btn-primary" asp-page="/Balance" asp-route-sortOrder="@Model.TwoFactorEnabledSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Balance[0].TwoFactorEnabled)</a>
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a asp-page="/Balance" asp-route-currentFilterFieldName="TwoFactorEnabled" asp-route-currentFilter=true>true</a></li>
+                    <li><a asp-page="/Balance" asp-route-currentFilterFieldName="TwoFactorEnabled" asp-route-currentFilter=false>false</a></li>
+                </ul>
+            </div>
+        </th>
+        <th>
+            <div class="btn-group">
+                <a class="btn btn-primary" asp-page="/Balance" asp-route-sortOrder="@Model.EmailConfirmedSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Balance[0].EmailConfirmed)</a>
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a asp-page="/Balance" asp-route-currentFilterFieldName="EmailConfirmed" asp-route-currentFilter=true>true</a></li>
+                    <li><a asp-page="/Balance" asp-route-currentFilterFieldName="EmailConfirmed" asp-route-currentFilter=false>false</a></li>
+                </ul>
+            </div>
+        </th>
+        <th />*@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.BalanceRecords)
+        {
+            <tr>
+                @foreach (var property in item.GetType().GetProperties())
+                {
+                    <td>@property.GetValue(item)</td>
+                }
+                <td> <a asp-page="EditUser" asp-route-id="@item.Id">Detail</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.BalanceRecords.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.BalanceRecords.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="/Balance"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.BalanceRecords.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="/Balance"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.BalanceRecords.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
+<div>@Model.BalanceRecords.PageIndex/@Model.BalanceRecords.TotalPages  Total: @Model.BalanceRecords.Count() Balances (on page: @Model.BalanceRecords.Count)</div>
 
