@@ -114,7 +114,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             rate.Quote = Currency.EURB;
             ctx.ExchangeRates.Add(rate);
-            ctx.ExchangeRates.Add(new ExchangeRate { Base = Currency.EURB, Quote = rate.Base, DateTime = rate.DateTime, Rate = (1 + _configuration.ExchangeFee) / rate.Rate });
+            ctx.ExchangeRates.Add(new ExchangeRate { Base = Currency.EURB, Quote = rate.Base, DateTime = rate.DateTime, Rate = (1 - _configuration.ExchangeFee) / rate.Rate });
             await ctx.SaveChangesAsync();
         }
 
