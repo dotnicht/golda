@@ -30,7 +30,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         public async Task<string> GenerateAddress(uint index)
         {
             var mnemo = new Mnemonic(_configuration.Mnemonic, Wordlist.English);
-            var key = mnemo.DeriveExtKey(_configuration.Password);
+            var key = mnemo.DeriveExtKey();
             var address = key.Derive(index).ScriptPubKey.GetDestinationAddress(Network);
             return await Task.FromResult(address.ToString());
         }

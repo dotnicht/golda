@@ -8,6 +8,7 @@ namespace Binebase.Exchange.CryptoService.Domain.Enums
     {
         Internal = 0,
         Inbound = 1,
-        Outbound = 2
+        Outbound = 2,
+        Transfer = 3
     }
 }
