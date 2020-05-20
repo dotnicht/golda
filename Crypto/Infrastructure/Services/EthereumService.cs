@@ -55,9 +55,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 var content = await response.Content.ReadAsStringAsync();
 
                 var tx = JsonConvert.DeserializeObject<EtherscanTransactionsResponse>(content).Result
+                    .Where(x => x.Confirmations >= _configuration.ConfirmationsCount)
                     .Select(x => new Transaction
                     {
-                        Direction = TransactionDirection.Inbound,
+                        Direction = x.To == address ? TransactionDirection.Inbound : TransactionDirection.Transfer, 
+                        Confimations = x.Confirmations,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
                         Status = x.Confirmations > _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                         Hash = x.Hash,
@@ -81,11 +83,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             var web3 = new Web3(_configuration.EthereumNode.ToString());
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
-            var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
+            var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);            
             var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
+
             return new Transaction 
-            { 
-                Direction = TransactionDirection.Outbound,
+            {
                 Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
                 Status = receipt.Status.Value.IsZero ? TransactionStatus.Confirmed : TransactionStatus.Failed,
                 Hash = tx.TransactionHash,
