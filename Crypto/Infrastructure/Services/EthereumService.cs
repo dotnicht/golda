@@ -102,7 +102,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 throw new ArgumentNullException(nameof(address));
             }
 
-            var account = new Wallet(_configuration.Mnemonic, null).GetAccount(_configuration.WithdrawAccountIndex);
+            var account = new Wallet(_configuration.Mnemonic, _configuration.Password).GetAccount(_configuration.WithdrawAccountIndex);
             var web3 = new Web3(account, _configuration.EthereumNode.ToString());
             web3.TransactionManager.DefaultGasPrice = await web3.Eth.GasPrice.SendRequestAsync();
 
