@@ -13,10 +13,11 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
         private readonly ILogger<BalanceModel> _logger;
         private readonly IInfrastructureContext _dbContext;
 
+        public string DateSort { get; set; }
         public int PageSize { get; set; }
         public string CurrentFilter { get; set; }
         public string CurrentSort { get; set; }
-
+        public List<string> Currencies { get; set; }
         public List<BalanceConsistencyRecord> BalanceRecordsIQ { get; set; }
         public PaginatedList<BalanceConsistencyRecord> BalanceRecords { get; set; }
 
@@ -33,10 +34,8 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
             _logger.LogDebug("Loading balances");
 
             CurrentSort = sortOrder;
-            //NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            //DateSort = sortOrder == "Date" ? "date_desc" : "Date";
-            //TwoFactorEnabledSort = sortOrder == "TwoFactorEnabled" ? "TwoFactorDisabled" : "TwoFactorEnabled";
-            //EmailConfirmedSort = sortOrder == "EmailConfirmed" ? "EmailNotConfirmed" : "EmailConfirmed";
+            DateSort = sortOrder == "Date" ? "date_desc" : "Date";
+
             if (searchString != null)
             {
                 pageIndex = 1;
@@ -61,11 +60,8 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
             {
                 switch (currentFilterFieldName)
                 {
-                    case "TwoFactorEnabled":
-                        //UsersIQ = UsersIQ.Where(t => t.TwoFactorEnabled.ToString().Equals(currentFilter, System.StringComparison.OrdinalIgnoreCase)).ToList();
-                        break;
-                    case "EmailConfirmed":
-                        //UsersIQ = UsersIQ.Where(t => t.EmailConfirmed.ToString().Equals(currentFilter, System.StringComparison.OrdinalIgnoreCase)).ToList();
+                    case "Currency":
+                        BalanceRecordsIQ = BalanceRecordsIQ.Where(b => b.Currency.ToString().Contains(searchString)).ToList();
                         break;
                     default:
                         break;
@@ -76,35 +72,19 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
             #region Sorting
             switch (sortOrder)
             {
-                //case "name_desc":
-                //    UsersIQ = UsersIQ.OrderByDescending(u => u.UserName).ToList();
-                //    break;
-                //case "Date":
-                //    UsersIQ = UsersIQ.OrderBy(u => u.Registered).ToList();
-                //    break;
-                //case "date_desc":
-                //    UsersIQ = UsersIQ.OrderByDescending(u => u.Registered).ToList();
-                //    break;
-                //case "TwoFactorEnabled":
-                //    UsersIQ = UsersIQ.OrderBy(u => u.TwoFactorEnabled).ToList();
-                //    break;
-                //case "TwoFactorDisabled":
-                //    UsersIQ = UsersIQ.OrderByDescending(u => u.TwoFactorEnabled).ToList();
-                //    break;
-                //case "EmailConfirmed":
-                //    UsersIQ = UsersIQ.OrderBy(u => u.EmailConfirmed).ToList();
-                //    break;
-                //case "EmailNotConfirmed":
-                //    UsersIQ = UsersIQ.OrderByDescending(u => u.EmailConfirmed).ToList();
-                //    break;
-
+                case "Date":
+                    BalanceRecordsIQ = BalanceRecordsIQ.OrderBy(u => u.Created).ToList();
+                    break;
+                case "date_desc":
+                    BalanceRecordsIQ = BalanceRecordsIQ.OrderByDescending(u => u.Created).ToList();
+                    break;
                 default:
                     break;
             }
             #endregion
 
             #region filteringLists
-            //UsersNames = UsersIQ.Select(t => t.UserName.ToString()).Distinct().ToList();
+            Currencies = BalanceRecordsIQ.Select(b => b.Currency.ToString()).Distinct().ToList();
 
             #endregion
 

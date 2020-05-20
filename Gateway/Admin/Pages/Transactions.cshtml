@@ -46,7 +46,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Currency)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -186,4 +186,4 @@
    class="btn btn-primary @nextDisabled">
     Next
 </a>
-<div>@Model.Transactions.PageIndex/@Model.Transactions.TotalPages  Total: @Model.Transactions.Count() @ViewData["Title"] (on page: @Model.Transactions.Count)</div>
+<div>@Model.Transactions.PageIndex/@Model.Transactions.TotalPages  Total: @Model.TransactionsIQ.Count() @ViewData["Title"] (on page: @Model.Transactions.Count)</div>
