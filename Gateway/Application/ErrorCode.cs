@@ -39,6 +39,10 @@
         /// </summary>
         public const string InsufficientMinings = "insufficient_minings";
         /// <summary>
+        /// The error of some operation locked because of insufficient balance.
+        /// </summary>
+        public const string InsufficientBalance = "insufficient_balance";
+        /// <summary>
         /// The boost value is not supported.
         /// </summary>
         public const string UnsupportedBoost = "unsupported_boost";

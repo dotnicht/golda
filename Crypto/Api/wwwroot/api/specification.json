@@ -127,6 +127,31 @@
           }
         }
       }
+    },
+    "/api/Crypto/Transfer": {
+      "post": {
+        "tags": [
+          "Crypto"
+        ],
+        "operationId": "Crypto_Transfer",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferDepositsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {
@@ -283,12 +308,14 @@
         "x-enumNames": [
           "Internal",
           "Inbound",
-          "Outbound"
+          "Outbound",
+          "Transfer"
         ],
         "enum": [
           "Internal",
           "Inbound",
-          "Outbound"
+          "Outbound",
+          "Transfer"
         ]
       },
       "TransactionStatus": {
@@ -304,6 +331,10 @@
           "Confirmed",
           "Failed"
         ]
+      },
+      "TransferDepositsCommand": {
+        "type": "object",
+        "additionalProperties": false
       }
     },
     "securitySchemes": {

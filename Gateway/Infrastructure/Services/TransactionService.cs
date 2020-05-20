@@ -55,7 +55,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                     {
                                         await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, tx.Type);
 
-                                        var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency), false);
+                                        var ex = await _exchangeRateService.GetExchangeRate(new Pair(tx.Currency, Currency.EURB), false);
 
                                         var op = new ExchangeOperation
                                         {

@@ -24,5 +24,9 @@ namespace Binebase.Exchange.CryptoService.Api.Controllers
         [HttpGet, ProducesResponseType(typeof(TransactionsQueryResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionsQueryResult>> Transactions([FromQuery]TransactionsQuery query)
             => await Mediator.Send(query);
+
+        [HttpPost, ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Transfer(TransferDepositsCommand command)
+            => Convert(await Mediator.Send(command));
     }
 }
