@@ -84,15 +84,15 @@ namespace Binebase.Exchange.Gateway.Application.Services
         {
             using var scope = _serviceProvider.CreateScope();
             using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
-            var result = _supportedPairs.Select(x => GetExchangeRateInternal(ctx, x));
+
+            var result = _supportedPairs.Select(x => GetExchangeRateInternal(ctx, x).Result);
 
             if (_configuration.SupportBackward)
             {
-                result = result.Union(_backwardPairs.Select(x => GetExchangeRateInternal(ctx, x)));
+                result = result.Union(_backwardPairs.Select(x => GetExchangeRateInternal(ctx, x).Result));
             }
 
-            Task.WaitAll(result.ToArray());
-            return await Task.FromResult(result.Select(x => x.Result).ToArray());
+            return await Task.FromResult(result.ToArray());
         }
 
         public async Task Subscribe()

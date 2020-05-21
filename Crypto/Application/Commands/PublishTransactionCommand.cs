@@ -45,10 +45,10 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
 
                 address = _context.Addresses.SingleOrDefault(x => x.AccountId == request.Id && x.Currency == request.Currency && x.Type == AddressType.Withdraw && x.Public == request.Public)
                     ?? _context.Addresses.Add(new Address { AccountId = request.Id, Currency = request.Currency, Type = AddressType.Withdraw, Public = request.Public }).Entity;
-
+                
                 await _context.SaveChangesAsync();
 
-                var result = await service.PublishTransaction(request.Amount, request.Public);
+                var result = await service.PublishTransaction(request.Amount, request.Public);                
 
                 var tx = new Transaction
                 { 
@@ -57,7 +57,8 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
                     Amount = request.Amount,
                     RawAmount = result.Amount,
                     Hash = result.Hash,
-                    Direction = TransactionDirection.Outbound
+                    Direction = TransactionDirection.Outbound,
+                    Status = TransactionStatus.Published
                 };
 
                 _context.Transactions.Add(tx);
