@@ -58,7 +58,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     .Where(x => x.Confirmations >= _configuration.ConfirmationsCount)
                     .Select(x => new Transaction
                     {
-                        Direction = x.To == address ? TransactionDirection.Inbound : TransactionDirection.Transfer, 
+                        //Direction = x.To == address ? TransactionDirection.Inbound : TransactionDirection.Transfer, 
+                        Direction = TransactionDirection.Inbound,
                         Confimations = x.Confirmations,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
                         Status = x.Confirmations > _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
@@ -83,7 +84,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             var web3 = new Web3(_configuration.EthereumNode.ToString());
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
-            var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);            
+            var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
             var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
 
             return new Transaction 
