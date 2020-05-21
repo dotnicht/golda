@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Include="Properties\PublishProfiles\Crypto-Development - Web Deploy.pubxml.user" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Update="appsettings.Development.json">
             <DependentUpon>appsettings.json</DependentUpon>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
