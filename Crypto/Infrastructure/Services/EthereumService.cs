@@ -58,7 +58,8 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     .Where(x => x.Confirmations >= _configuration.ConfirmationsCount)
                     .Select(x => new Transaction
                     {
-                        Direction = x.To == address ? TransactionDirection.Inbound : TransactionDirection.Transfer, 
+                        //Direction = x.To == address ? TransactionDirection.Inbound : TransactionDirection.Transfer, 
+                        Direction = TransactionDirection.Inbound,
                         Confimations = x.Confirmations,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
                         Status = x.Confirmations > _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
