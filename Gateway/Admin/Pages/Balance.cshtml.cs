@@ -13,6 +13,7 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
         private readonly ILogger<BalanceModel> _logger;
         private readonly IInfrastructureContext _dbContext;
 
+        public string CurrencySort { get; set; }
         public string DateSort { get; set; }
         public int PageSize { get; set; }
         public string CurrentFilter { get; set; }
@@ -26,15 +27,17 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
             _dbContext = dbContext;
             _logger = logger;
             BalanceRecordsIQ = new List<BalanceConsistencyRecord>();
-            PageSize = 20;
+            PageSize = 10;
         }
 
         public void OnGet(string sortOrder, string currentFilterFieldName, string currentFilter, string searchString, int? pageIndex)
         {
             _logger.LogDebug("Loading balances");
 
+            CurrentFilter = currentFilter;
             CurrentSort = sortOrder;
-            DateSort = sortOrder == "Date" ? "date_desc" : "Date";
+            DateSort = sortOrder == "date" ? "date_desc" : "date";
+            CurrencySort = sortOrder == "currency" ? "currency_desc" : "currency";
 
             if (searchString != null)
             {
@@ -45,10 +48,11 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
                 searchString = currentFilter;
             }
 
-            CurrentFilter = searchString;
-
-
             BalanceRecordsIQ = _dbContext.BalanceRecords.ToList();
+
+            #region filteringLists
+            Currencies = BalanceRecordsIQ.Select(b => b.Currency.ToString()).Distinct().ToList();
+            #endregion
 
             if (!string.IsNullOrEmpty(searchString) && string.IsNullOrEmpty(currentFilterFieldName))
             {
@@ -61,7 +65,7 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
                 switch (currentFilterFieldName)
                 {
                     case "Currency":
-                        BalanceRecordsIQ = BalanceRecordsIQ.Where(b => b.Currency.ToString().Contains(searchString)).ToList();
+                        BalanceRecordsIQ = BalanceRecordsIQ.Where(b => b.Currency.ToString().Contains(currentFilter)).ToList();
                         break;
                     default:
                         break;
@@ -72,21 +76,23 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
             #region Sorting
             switch (sortOrder)
             {
-                case "Date":
+                case "date":
                     BalanceRecordsIQ = BalanceRecordsIQ.OrderBy(u => u.Created).ToList();
                     break;
                 case "date_desc":
                     BalanceRecordsIQ = BalanceRecordsIQ.OrderByDescending(u => u.Created).ToList();
+                    break;
+                case "currency":
+                    BalanceRecordsIQ = BalanceRecordsIQ.OrderBy(u => u.Currency).ToList();
+                    break;
+                case "currency_desc":
+                    BalanceRecordsIQ = BalanceRecordsIQ.OrderByDescending(u => u.Currency).ToList();
                     break;
                 default:
                     break;
             }
             #endregion
 
-            #region filteringLists
-            Currencies = BalanceRecordsIQ.Select(b => b.Currency.ToString()).Distinct().ToList();
-
-            #endregion
 
             BalanceRecords = PaginatedList<BalanceConsistencyRecord>.Create(
                 BalanceRecordsIQ, pageIndex ?? 1, PageSize);

@@ -21,20 +21,19 @@
         <tr>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Users" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary disabled" asp-page="/Users" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Users[0].Id)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Tablet</a></li>
-                        <li><a href="#">Smartphone</a></li>
+                        <li><a href="#">Empty</a></li>
                     </ul>
                 </div>
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Users" asp-route-sortOrder="@Model.NameSort"
+                    <a class="btn btn-primary disabled" asp-page="/Users" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Users[0].UserName)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled " data-toggle="dropdown">
                         <span class="caret"></span>
@@ -49,14 +48,13 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Users" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary" asp-page="/Users" asp-route-sortOrder="@Model.DateSort"
                        asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Users[0].Registered)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Tablet</a></li>
-                        <li><a href="#">Smartphone</a></li>
+                        <li><a href="#">Empty</a></li>
                     </ul>
                 </div>
             </th>
@@ -68,8 +66,7 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Tablet</a></li>
-                        <li><a href="#">Smartphone</a></li>
+                        <li><a href="#">Empty</a></li>
                     </ul>
                 </div>
             </th>
@@ -125,6 +122,7 @@
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.Users.PageIndex - 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
+   asp-route-currentFilterFieldName="@Model.СurrentFilterFieldName"
    class="btn btn-primary @prevDisabled">
     Previous
 </a>
@@ -132,6 +130,7 @@
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.Users.PageIndex + 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
+   asp-route-currentFilterFieldName="@Model.СurrentFilterFieldName"
    class="btn btn-primary @nextDisabled">
     Next
 </a>
