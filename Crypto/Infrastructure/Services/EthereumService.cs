@@ -60,7 +60,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     {
                         //Direction = x.To == address ? TransactionDirection.Inbound : TransactionDirection.Transfer, 
                         Direction = TransactionDirection.Inbound,
-                        Confirmations = x.Confirmations,
+                        Confirmations = (ulong)x.Confirmations,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
                         Status = x.Confirmations > _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                         Hash = x.Hash,
@@ -86,11 +86,12 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
             var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
             var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
+            var number = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
 
             return new Transaction 
             {
                 Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
-                // Confirmations = 
+                Confirmations = number.ToUlong() - block.Number.ToUlong(),
                 Status = receipt.Status.Value.IsZero ? TransactionStatus.Confirmed : TransactionStatus.Failed,
                 Hash = tx.TransactionHash,
                 Block = tx.BlockNumber.ToUlong(),
@@ -134,12 +135,10 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 public ulong BlockNumber { get; set; }
                 public long TimeStamp { get; set; }
                 public string Hash { get; set; }
-                public string BlockHash { get; set; }
-                public uint TransactionIndex { get; set; }
                 public string From { get; set; }
                 public string To { get; set; }
                 public ulong Value { get; set; }
-                public int Confirmations { get; set; }
+                public ulong Confirmations { get; set; }
             }
         }
     }

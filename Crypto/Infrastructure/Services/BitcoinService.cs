@@ -57,11 +57,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
             return balance.Operations
-                .Where(x => x.Confirmations >= _configuration.ConfirmationsCount)
+                .Where(x => (ulong)x.Confirmations >= _configuration.ConfirmationsCount)
                 .Select(x => new Domain.Entities.Transaction
                 {
                     Direction = TransactionDirection.Inbound,
-                    Confirmations = x.Confirmations,
+                    Confirmations = (ulong)x.Confirmations,
                     Confirmed = x.FirstSeen.DateTime,
                     Status = TransactionStatus.Confirmed,
                     Hash = x.TransactionId.ToString(),
@@ -94,9 +94,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             return new Domain.Entities.Transaction 
             { 
                 Direction = TransactionDirection.Outbound,
-                Confirmations = response.Block.Confirmations,
+                Confirmations = (ulong)response.Block.Confirmations,
                 Confirmed = response.FirstSeen.DateTime,
-                Status = response.Block.Confirmations >= _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
+                Status = (ulong)response.Block.Confirmations >= _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                 Hash = response.TransactionId.ToString(),
                 Block = (ulong)response.Block.Height,
                 RawAmount = (ulong)amount.Satoshi,
