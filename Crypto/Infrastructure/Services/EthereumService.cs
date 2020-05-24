@@ -45,24 +45,18 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             foreach (var operation in new[] { "txlist", "txlistinternal" })
             {
-                // TODO: remove obsolete balance query.
-                var uri = string.Format(_configuration.EtherscanUrlFormat,
-                    _configuration.IsTestNet ? "ropsten" : "api",
-                    "account",
-                    $"{operation}&address={address}");
-
+                var uri = $"https://{(_configuration.IsTestNet ? "ropsten" : "api")}.etherscan.io/api?module=account&action={operation}&address={address}&apikey={_configuration.EtherscanApiKey}";
                 var response = await _httpClient.GetAsync(uri);
                 var content = await response.Content.ReadAsStringAsync();
 
                 var tx = JsonConvert.DeserializeObject<EtherscanTransactionsResponse>(content).Result
-                    .Where(x => x.Confirmations >= _configuration.ConfirmationsCount)
+                    .Where(x => x.Confirmations >= _configuration.ConfirmationsCount && address.Equals(x.To, StringComparison.InvariantCultureIgnoreCase))
                     .Select(x => new Transaction
                     {
-                        //Direction = x.To == address ? TransactionDirection.Inbound : TransactionDirection.Transfer, 
                         Direction = TransactionDirection.Inbound,
-                        Confirmations = (ulong)x.Confirmations,
+                        Confirmations = x.Confirmations,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
-                        Status = x.Confirmations > _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
+                        Status = TransactionStatus.Confirmed,
                         Hash = x.Hash,
                         Block = x.BlockNumber,
                         RawAmount = x.Value,
@@ -83,6 +77,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             }
 
             var web3 = new Web3(_configuration.EthereumNode.ToString());
+
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
             var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
             var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);

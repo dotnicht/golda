@@ -11,7 +11,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
         public int WithdrawAccountIndex { get; set; }
         public ulong ConfirmationsCount { get; set; }
         public TimeSpan TransactionPoolingTimeout { get; set; }
-        public string EtherscanUrlFormat { get; set; }
+        public string EtherscanApiKey { get; set; }
         public Uri EthereumNode { get; set; }
         public Uri EarnAddress { get; set; }
     }
