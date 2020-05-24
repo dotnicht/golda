@@ -14,5 +14,6 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<string> GenerateAddress(Guid id, Currency currency);
         Task<Transaction[]> GetTransactions(Guid id);
         Task<string> PublishTransaction(Guid id, Currency currency, decimal amount, string address, Guid externalId);
+        Task Transfer();
     }
 }

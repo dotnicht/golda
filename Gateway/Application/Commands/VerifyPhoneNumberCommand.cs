@@ -3,6 +3,7 @@ using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +18,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
         public class VerifyPhoneNumberCommandHandler : IRequestHandler<VerifyPhoneNumberCommand, SignInCommandResult>
         {
+            private ILogger _logger;
             private readonly IPhoneService _phoneService;
             private readonly IIdentityService _identityService;
             private readonly IMapper _mapper;
 
-            public VerifyPhoneNumberCommandHandler(IIdentityService identityService, IPhoneService phoneService, IMapper mapper)
-                => (_identityService, _phoneService, _mapper) = (identityService, phoneService, mapper);
+            public VerifyPhoneNumberCommandHandler(ILogger<VerifyPhoneNumberCommandHandler> logger, IIdentityService identityService, IPhoneService phoneService, IMapper mapper)
+                => (_identityService, _phoneService, _mapper, _logger) = (identityService, phoneService, mapper, logger);
 
             public async Task<SignInCommandResult> Handle(VerifyPhoneNumberCommand request, CancellationToken cancellationToken)
             {
@@ -53,6 +55,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 SignInCommandResult result = _mapper.Map<SignInCommandResult>(user);
                 var token = await _identityService.GenerateAuthToken(user);
                 result.Token = token;
+
+                //_logger.LogInformation("User with Id ='{Id}', email = '{email}', phoneNumber = '{phoneNumber}' was signed up successful.", user.Id);
 
                 return result;
             }

@@ -53,6 +53,7 @@ namespace Binebase.Exchange.Gateway.Admin
             _transactions.AddRange(MapingHelper.MapToTransactionExt(inTransactions));
 
             CurrentSort = sortOrder;
+            CurrentFilter = currentFilter;
             NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             DateSort = sortOrder == "Date" ? "date_desc" : "Date";
             TwoFactorEnabledSort = sortOrder == "TwoFactorEnabled" ? "TwoFactorDisabled" : "TwoFactorEnabled";
