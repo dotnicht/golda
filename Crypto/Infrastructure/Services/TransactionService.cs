@@ -94,11 +94,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 target.Amount = source.Amount;
                 target.RawAmount = source.RawAmount;
                 target.Confirmed = source.Confirmed;
-
-                if (source.Confirmations != default)
-                {
-                    target.Confirmations = source.Confirmations;
-                }
+                target.Confirmations = source.Confirmations;
 
                 _logger.LogDebug("Updating transaction {hash}. Id {id}.", target.Hash, target.Id);
             }
