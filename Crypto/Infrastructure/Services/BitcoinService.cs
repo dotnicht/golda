@@ -61,7 +61,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 .Select(x => new Domain.Entities.Transaction
                 {
                     Direction = TransactionDirection.Inbound,
-                    Confimations = x.Confirmations,
+                    Confirmations = x.Confirmations,
                     Confirmed = x.FirstSeen.DateTime,
                     Status = TransactionStatus.Confirmed,
                     Hash = x.TransactionId.ToString(),
@@ -94,7 +94,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             return new Domain.Entities.Transaction 
             { 
                 Direction = TransactionDirection.Outbound,
-                Confimations = response.Block.Confirmations,
+                Confirmations = response.Block.Confirmations,
                 Confirmed = response.FirstSeen.DateTime,
                 Status = response.Block.Confirmations >= _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                 Hash = response.TransactionId.ToString(),

@@ -59,6 +59,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 var item = new Domain.Entities.Transaction
                 {
                     CreatedBy = id,
+                    DateTime = tx.DateTime.UtcDateTime,
                     Id = tx.Id,
                     Currency = (Common.Domain.Currency)tx.Currency,
                     Amount = tx.Amount,

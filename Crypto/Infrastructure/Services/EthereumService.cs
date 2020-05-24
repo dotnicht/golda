@@ -60,7 +60,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     {
                         //Direction = x.To == address ? TransactionDirection.Inbound : TransactionDirection.Transfer, 
                         Direction = TransactionDirection.Inbound,
-                        Confimations = x.Confirmations,
+                        Confirmations = x.Confirmations,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
                         Status = x.Confirmations > _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                         Hash = x.Hash,
@@ -90,6 +90,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             return new Transaction 
             {
                 Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
+                // Confirmations = 
                 Status = receipt.Status.Value.IsZero ? TransactionStatus.Confirmed : TransactionStatus.Failed,
                 Hash = tx.TransactionHash,
                 Block = tx.BlockNumber.ToUlong(),
