@@ -65,7 +65,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     Confirmed = x.FirstSeen.DateTime,
                     Status = TransactionStatus.Confirmed,
                     Hash = x.TransactionId.ToString(),
-                    Block = (ulong)x.Height,
                     RawAmount = (ulong)x.Amount.Satoshi,
                     Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
                 }).Where(x => x.Amount > 0).ToArray();
@@ -98,7 +97,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 Confirmed = response.FirstSeen.DateTime,
                 Status = (ulong)response.Block.Confirmations >= _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                 Hash = response.TransactionId.ToString(),
-                Block = (ulong)response.Block.Height,
                 RawAmount = (ulong)amount.Satoshi,
                 Amount = amount.ToDecimal(MoneyUnit.BTC)
             };

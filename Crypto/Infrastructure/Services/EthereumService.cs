@@ -58,7 +58,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
                         Status = TransactionStatus.Confirmed,
                         Hash = x.Hash,
-                        Block = x.BlockNumber,
                         RawAmount = x.Value,
                         Amount = Web3.Convert.FromWei(x.Value)
                     });
@@ -89,7 +88,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 Confirmations = number.ToUlong() - block.Number.ToUlong(),
                 Status = receipt.Status.Value.IsZero ? TransactionStatus.Confirmed : TransactionStatus.Failed,
                 Hash = tx.TransactionHash,
-                Block = tx.BlockNumber.ToUlong(),
                 RawAmount = tx.Value.ToUlong(),
                 Amount = Web3.Convert.FromWei(tx.Value)
             };
@@ -127,7 +125,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             public class Transaction
             {
-                public ulong BlockNumber { get; set; }
                 public long TimeStamp { get; set; }
                 public string Hash { get; set; }
                 public string From { get; set; }
