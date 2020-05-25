@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
+- develop
 
 pool:
   vmImage: 'windows-latest'
@@ -14,7 +14,7 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-#--------------------------------------------
+#----------------------------------------------
 - task: DotNetCoreCLI@2
   displayName: 'restore Account.Api'
   inputs:
@@ -26,12 +26,12 @@ steps:
   displayName: 'build Account.Api'
   inputs:
     solution: '**/Account/Api/Api.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Account_Api_Prod.zip"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Account_Api_Dev.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
 
-#--------------------------------------------
+    #--------------------------------------------
 - task: DotNetCoreCLI@2
   displayName: 'restore Crypto.Api'
   inputs:
@@ -43,7 +43,7 @@ steps:
   displayName: 'build Crypto.Api'
   inputs:
     solution: '**/Crypto/Api/Api.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Api_Prod.zip"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Crypto_Api_Dev.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -60,7 +60,7 @@ steps:
   displayName: 'build Gateway.Api'
   inputs:
     solution: '**/Gateway/Api/Api.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Api_Prod.zip"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Api_Dev.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -77,7 +77,7 @@ steps:
   displayName: 'build Gateway.Admin'
   inputs:
     solution: '**/Gateway/Admin/Admin.csproj'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Admin_Prod.zip"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Gateway_Admin_Dev.zip"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
@@ -90,7 +90,6 @@ steps:
     projects: '**/Gateway/Worker/Worker.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-#--------------------------------------------
 - task: VSBuild@1
   displayName: 'build Gateway.Worker'
   inputs:
@@ -108,7 +107,6 @@ steps:
     projects: '**/Crypto/Worker/Worker.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-#--------------------------------------------
 - task: VSBuild@1
   displayName: 'build Crypto.Worker'
   inputs:
