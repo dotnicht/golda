@@ -78,8 +78,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                             var updated = await service.GetTransaction(tx.Hash);
 
                             tx.Status = updated.Status;
-                            tx.Amount = updated.Amount;
-                            tx.RawAmount = updated.RawAmount;
                             tx.Confirmed = updated.Confirmed;
                             tx.Confirmations = updated.Confirmations;
 
