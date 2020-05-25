@@ -39,7 +39,6 @@ namespace Worker
                         b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
                     services.AddCommonInfrastructure(configuration);
-                    services.AddMemoryCache();
 
                     services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
                     services.AddSingleton<ICacheClient, RedisCacheClient>();
@@ -53,6 +52,7 @@ namespace Worker
                     services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
                     services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy();
 
+                    services.Configure<Redis>(configuration.GetSection("Infrastructure.Redis"));
                     services.Configure<Account>(configuration.GetSection("Infrastructure.Account"));
                     services.Configure<Crypto>(configuration.GetSection("Infrastructure.Crypto"));
                     services.Configure<Email>(configuration.GetSection("Infrastructure.Email"));

@@ -31,11 +31,13 @@ namespace Binebase.Exchange.Gateway.Application.Services
             IOptions<ExchangeRates> options,
             IDateTime dateTime,
             ICacheClient cacheClient,
+            IServiceProvider serviceProvider,
             IExchangeRateProvider exchangeRateProvider)
-            => (_configuration, _dateTime, _cacheClient, _exchangeRateProvider, _supportedPairs, _backwardPairs, _exchangeExcludePairs)
+            => (_configuration, _dateTime, _cacheClient, _serviceProvider, _exchangeRateProvider, _supportedPairs, _backwardPairs, _exchangeExcludePairs)
                 = (options.Value,
                    dateTime,
                    cacheClient,
+                   serviceProvider,
                    exchangeRateProvider,
                    options.Value.SupportedPairs.Select(x => Pair.Parse(x)).ToArray(),
                    options.Value.SupportedPairs.Select(x => Pair.Parse(x)).Select(x => new Pair(x.Quote, x.Base)).ToArray(),
@@ -102,7 +104,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         private void SaveExchangeRate(ExchangeRate rate)
         {
-            var symbol = new Pair(rate.Quote, Currency.EURB);
+            var symbol = new Pair(rate.Base, Currency.EURB);
             _cacheClient.Set(symbol.ToString(), rate);
             symbol = new Pair(Currency.EURB, rate.Base);
             _cacheClient.Set(symbol.ToString(), new ExchangeRate { Base = symbol.Base, Quote = symbol.Quote, DateTime = rate.DateTime, Rate = (1 - _configuration.ExchangeFee) / rate.Rate });

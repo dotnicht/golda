@@ -85,6 +85,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure
 
             services.AddAuthentication();
 
+            services.Configure<Redis>(configuration.GetSection("Infrastructure.Redis"));
             services.Configure<Account>(configuration.GetSection("Infrastructure.Account"));
             services.Configure<Crypto>(configuration.GetSection("Infrastructure.Crypto"));
             services.Configure<Email>(configuration.GetSection("Infrastructure.Email"));

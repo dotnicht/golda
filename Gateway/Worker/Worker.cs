@@ -33,7 +33,7 @@ namespace Worker
                 await Task.Delay(1000, stoppingToken);
             }
 
-            Task.WaitAll(tasks);
+            await Task.WhenAll(tasks);
         }
     }
 }

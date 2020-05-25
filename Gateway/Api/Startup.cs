@@ -36,7 +36,6 @@ namespace Binebase.Exchange.Gateway.Api
             services.AddInfrastructure(Configuration);
             services.AddHttpContextAccessor();
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
-            services.AddMemoryCache();
 
             services.AddControllers()
                 .AddFluentValidation(fv =>
