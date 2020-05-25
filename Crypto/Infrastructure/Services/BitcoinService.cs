@@ -56,6 +56,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
+
             return balance.Operations
                 .Where(x => (ulong)x.Confirmations >= _configuration.ConfirmationsCount)
                 .Select(x => new Domain.Entities.Transaction
@@ -67,8 +68,10 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     Hash = x.TransactionId.ToString(),
                     RawAmount = (ulong)x.Amount.Satoshi,
                     Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
-                }).Where(x => x.Amount > 0).ToArray();
-            }
+                })
+                .Where(x => x.Amount > 0)
+                .ToArray();
+        }
 
         public async Task<Domain.Entities.Transaction> GetTransaction(string hash)
         {
@@ -90,12 +93,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             var amount = response.SpentCoins.Select(x => x.Amount).Aggregate((x, y) => x.Add(y)) as Money;
 
-            return new Domain.Entities.Transaction 
-            { 
+            return new Domain.Entities.Transaction
+            {
                 Direction = TransactionDirection.Outbound,
                 Confirmations = (ulong)(response.Block?.Confirmations ?? 0),
                 Confirmed = response.FirstSeen.DateTime,
-                Status = response.Block == null ? TransactionStatus.Published : (ulong)response.Block.Confirmations >= _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
+                Status = response.Block == null || (ulong)response.Block.Confirmations < _configuration.ConfirmationsCount
+                    ? TransactionStatus.Published
+                    : TransactionStatus.Confirmed,
                 Hash = response.TransactionId.ToString(),
                 RawAmount = (ulong)amount.Satoshi,
                 Amount = amount.ToDecimal(MoneyUnit.BTC)
