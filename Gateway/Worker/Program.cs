@@ -39,6 +39,7 @@ namespace Worker
                         b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
                     services.AddCommonInfrastructure(configuration);
+                    services.AddMemoryCache();
 
                     services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
                     services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
