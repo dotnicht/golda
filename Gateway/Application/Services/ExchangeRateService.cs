@@ -5,6 +5,7 @@ using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -16,6 +17,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 {
     public sealed class ExchangeRateService : IExchangeRateService, IDisposable
     {
+        private readonly IMemoryCache _cache;
         private readonly ExchangeRates _configuration;
         private readonly IDateTime _dateTime;
         private readonly IExchangeRateProvider _exchangeRateProvider;
@@ -27,12 +29,14 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private readonly Pair[] _exchangeExcludePairs;
 
         public ExchangeRateService(
+            IMemoryCache cache,
             IOptions<ExchangeRates> options,
             IDateTime dateTime,
             IExchangeRateProvider exchangeRateProvider,
             IServiceProvider serviceProvider)
-            => (_configuration, _dateTime, _exchangeRateProvider, _serviceProvider, _supportedPairs, _backwardPairs, _exchangeExcludePairs)
-                = (options.Value,
+            => (_cache, _configuration, _dateTime, _exchangeRateProvider, _serviceProvider, _supportedPairs, _backwardPairs, _exchangeExcludePairs)
+                = (cache,
+                   options.Value,
                    dateTime,
                    exchangeRateProvider,
                    serviceProvider,
@@ -82,17 +86,27 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
         public async Task<ExchangeRate[]> GetExchangeRates()
         {
-            using var scope = _serviceProvider.CreateScope();
-            using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+            const string key = "RatesCacheKey";
 
-            var result = _supportedPairs.Select(x => GetExchangeRateInternal(ctx, x).Result);
-
-            if (_configuration.SupportBackward)
+            if (!_cache.TryGetValue(key, out ExchangeRate[] rates))
             {
-                result = result.Union(_backwardPairs.Select(x => GetExchangeRateInternal(ctx, x).Result));
+                using var scope = _serviceProvider.CreateScope();
+                using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+
+                var result = _supportedPairs.Select(x => GetExchangeRateInternal(ctx, x).Result);
+
+                if (_configuration.SupportBackward)
+                {
+                    result = result.Union(_backwardPairs.Select(x => GetExchangeRateInternal(ctx, x).Result));
+                }
+
+                rates = result.ToArray();
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(1));
+                _cache.Set(key, rates, cacheEntryOptions);
             }
 
-            return await Task.FromResult(result.ToArray());
+            return await Task.FromResult(rates);
         }
 
         public async Task Subscribe()

@@ -71,9 +71,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                             .SelectMany(x => x.Transactions)
                             .Where(x => x.Status == TransactionStatus.Published);
 
-                        var transfer = context.Transactions.Where(x => x.Direction == TransactionDirection.Transfer && x.Status == TransactionStatus.Published);
+                        //var transfer = context.Transactions.Where(x => x.Direction == TransactionDirection.Transfer && x.Status == TransactionStatus.Published);
 
-                        foreach (var tx in txs.Union(transfer))
+                        foreach (var tx in txs)
                         {
                             var updated = await service.GetTransaction(tx.Hash);
 
