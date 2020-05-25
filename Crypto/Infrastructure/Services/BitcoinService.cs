@@ -93,9 +93,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             return new Domain.Entities.Transaction 
             { 
                 Direction = TransactionDirection.Outbound,
-                Confirmations = (ulong)response.Block.Confirmations,
+                Confirmations = (ulong)(response.Block?.Confirmations ?? 0),
                 Confirmed = response.FirstSeen.DateTime,
-                Status = (ulong)response.Block.Confirmations >= _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
+                Status = response.Block == null ? TransactionStatus.Published : (ulong)response.Block.Confirmations >= _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                 Hash = response.TransactionId.ToString(),
                 RawAmount = (ulong)amount.Satoshi,
                 Amount = amount.ToDecimal(MoneyUnit.BTC)
