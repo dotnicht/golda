@@ -5,6 +5,7 @@ using Binebase.Exchange.Gateway.Api.Services;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
+using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
 using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
@@ -42,7 +43,7 @@ namespace Binebase.Exchange.Gateway.Admin
                 options.SignIn.RequireConfirmedAccount = true;
                 options.SignIn.RequireConfirmedEmail = true;
             })
-                    .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddRazorPages();
             services.AddControllersWithViews();
@@ -57,6 +58,7 @@ namespace Binebase.Exchange.Gateway.Admin
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDateTime, DateTimeService>();
             services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
+            services.AddTransient<IInfrastructureContext, ApplicationDbContext>();
             services.Configure<Account>(Configuration.GetSection("Infrastructure.Account"));
             services.Configure<Crypto>(Configuration.GetSection("Infrastructure.Crypto"));
         }

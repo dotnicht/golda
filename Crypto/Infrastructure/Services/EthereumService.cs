@@ -45,23 +45,19 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             foreach (var operation in new[] { "txlist", "txlistinternal" })
             {
-                // TODO: remove obsolete balance query.
-                var uri = string.Format(_configuration.EtherscanUrlFormat,
-                    _configuration.IsTestNet ? "ropsten" : "api",
-                    "account",
-                    $"{operation}&address={address}");
-
+                var uri = $"https://{(_configuration.IsTestNet ? "ropsten" : "api")}.etherscan.io/api?module=account&action={operation}&address={address}&apikey={_configuration.EtherscanApiKey}";
                 var response = await _httpClient.GetAsync(uri);
                 var content = await response.Content.ReadAsStringAsync();
 
                 var tx = JsonConvert.DeserializeObject<EtherscanTransactionsResponse>(content).Result
+                    .Where(x => x.Confirmations >= _configuration.ConfirmationsCount && address.Equals(x.To, StringComparison.InvariantCultureIgnoreCase))
                     .Select(x => new Transaction
                     {
                         Direction = TransactionDirection.Inbound,
+                        Confirmations = x.Confirmations,
                         Confirmed = DateTimeOffset.FromUnixTimeSeconds(x.TimeStamp).UtcDateTime,
-                        Status = x.Confirmations > _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
+                        Status = TransactionStatus.Confirmed,
                         Hash = x.Hash,
-                        Block = x.BlockNumber,
                         RawAmount = x.Value,
                         Amount = Web3.Convert.FromWei(x.Value)
                     });
@@ -80,16 +76,18 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             }
 
             var web3 = new Web3(_configuration.EthereumNode.ToString());
+
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
             var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
             var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
+            var number = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+
             return new Transaction 
-            { 
-                Direction = TransactionDirection.Outbound,
+            {
                 Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
+                Confirmations = number.ToUlong() - block.Number.ToUlong(),
                 Status = receipt.Status.Value.IsZero ? TransactionStatus.Confirmed : TransactionStatus.Failed,
                 Hash = tx.TransactionHash,
-                Block = tx.BlockNumber.ToUlong(),
                 RawAmount = tx.Value.ToUlong(),
                 Amount = Web3.Convert.FromWei(tx.Value)
             };
@@ -127,15 +125,12 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             public class Transaction
             {
-                public ulong BlockNumber { get; set; }
                 public long TimeStamp { get; set; }
                 public string Hash { get; set; }
-                public string BlockHash { get; set; }
-                public uint TransactionIndex { get; set; }
                 public string From { get; set; }
                 public string To { get; set; }
                 public ulong Value { get; set; }
-                public int Confirmations { get; set; }
+                public ulong Confirmations { get; set; }
             }
         }
     }

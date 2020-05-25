@@ -31,7 +31,7 @@ steps:
     configuration: '$(buildConfiguration)'
     msbuildArchitecture: 'x64'
 
-#--------------------------------------------
+    #--------------------------------------------
 - task: DotNetCoreCLI@2
   displayName: 'restore Crypto.Api'
   inputs:

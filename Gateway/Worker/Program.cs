@@ -29,6 +29,7 @@ namespace Worker
         {
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog()
+                .ConfigureHostConfiguration(x => x.AddEnvironmentVariables("ASPNETCORE_"))
                 .ConfigureServices((hostContext, services) =>
                 {
                     CommonInfrastructure.ConfigureLogging(hostContext.Configuration, hostContext.HostingEnvironment);
@@ -38,6 +39,7 @@ namespace Worker
                         b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
                     services.AddCommonInfrastructure(configuration);
+                    services.AddMemoryCache();
 
                     services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
                     services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();

@@ -85,7 +85,7 @@ namespace Binebase.Exchange.Common.Infrastructure
                   .Enrich.WithProperty("Environment", $"{environment.EnvironmentName}: {Assembly.GetCallingAssembly().GetName().Name}")
                   .ReadFrom.Configuration(configuration);
 
-            if (environment.IsProduction())
+            if (environment.IsProduction() || environment.IsDevelopment())
             {
                 loggerConfiguration
                     .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))

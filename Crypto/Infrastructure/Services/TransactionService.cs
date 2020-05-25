@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NBitcoin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                     using (new ElapsedTimer(_logger, "AddNewTx"))
                     {
-                        foreach (var address in addresses.Where(x => x.Type == AddressType.Deposit))
+                        foreach (var address in addresses.Where(x => x.Type == AddressType.Deposit && x.Index != _configuration.WithdrawAccountIndex))
                         {
                             _logger.LogDebug("Processing {currency} address {address}. Account Id {accountId}.", currency, address.Public, address.AccountId);
 
@@ -57,13 +58,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                                     context.Transactions.Add(tx);
                                     _logger.LogDebug("Adding transaction {hash}. Generated Id {id}.", tx.Hash, tx.Id);
                                 }
-                                else
-                                {
-                                    foreach (var item in existing.Where(x => x.Status == TransactionStatus.Published))
-                                    {
-                                        Update(tx, item);
-                                    }
-                                }
                             }
 
                             await context.SaveChangesAsync();
@@ -72,11 +66,24 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                     using (new ElapsedTimer(_logger, "UpdateExistingTx"))
                     {
-                        foreach (var tx in addresses.Where(x => x.Type == AddressType.Withdraw).SelectMany(x => x.Transactions).Where(x => x.Status == TransactionStatus.Published))
+                        var txs = addresses
+                            .Where(x => x.Type == AddressType.Withdraw)
+                            .SelectMany(x => x.Transactions)
+                            .Where(x => x.Status == TransactionStatus.Published);
+
+                        //var transfer = context.Transactions.Where(x => x.Direction == TransactionDirection.Transfer && x.Status == TransactionStatus.Published);
+
+                        foreach (var tx in txs)
                         {
-                            //var updated = await service.GetTransaction(tx.Hash);
-                            //Update(updated, tx);
-                            //await context.SaveChangesAsync();
+                            var updated = await service.GetTransaction(tx.Hash);
+
+                            tx.Status = updated.Status;
+                            tx.Amount = updated.Amount;
+                            tx.RawAmount = updated.RawAmount;
+                            tx.Confirmed = updated.Confirmed;
+                            tx.Confirmations = updated.Confirmations;
+
+                            _logger.LogDebug("Updating transaction {hash}. Id {id}.", tx.Hash, tx.Id); await context.SaveChangesAsync();
                         }
                     }
                 }
@@ -86,14 +93,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 }
 
                 await Task.Delay(_configuration.TransactionPoolingTimeout);
-            }
-
-            static void Update(Domain.Entities.Transaction source, Domain.Entities.Transaction target)
-            {
-                target.Status = source.Status;
-                //target.Amount = source.Amount;
-                //target.RawAmount = source.RawAmount;
-                target.Confirmed = source.Confirmed;
             }
         }
     }

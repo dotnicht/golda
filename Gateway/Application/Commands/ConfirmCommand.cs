@@ -3,6 +3,7 @@ using Binebase.Exchange.Common.Application.Exceptions;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,9 +20,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly IIdentityService _identityService;
             private readonly IAccountService _accountService;
             private readonly IMapper _mapper;
+            private readonly ILogger _logger;
 
-            public ConfirmCommandHandler(IIdentityService identityService, IAccountService accountService, IMapper mapper)
-                => (_identityService, _accountService, _mapper) = (identityService, accountService, mapper);
+            public ConfirmCommandHandler(IIdentityService identityService, IAccountService accountService, IMapper mapper, ILogger<ConfirmCommandHandler> logger)
+                => (_identityService, _accountService, _mapper, _logger) = (identityService, accountService, mapper, logger);
 
             public async Task<SignInCommandResult> Handle(ConfirmCommand request, CancellationToken cancellationToken)
             {
@@ -36,6 +38,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 {
                     throw result.ToValidationException(nameof(ConfirmCommandHandler)); // TODO: map err codes.
                 }
+
+                _logger.LogInformation("User with Id ='{Id}', email = '{email}' was signed up successful.", user.Id, user.Email);
 
                 return _mapper.Map<SignInCommandResult>(user);
             }

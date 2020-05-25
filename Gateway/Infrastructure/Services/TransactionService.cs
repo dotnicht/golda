@@ -51,18 +51,23 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                 {
                                     ctx.Transactions.Add(tx);
 
+                                    if (tx.Type == TransactionType.Withdraw)
+                                    {
+                                        await emailService.SendWithdrawNotificationEmail(new[] { user.Email }, "Withdraw Notification", tx.Amount, tx.Currency);
+                                    }
+
                                     if (tx.Type == TransactionType.Deposit)
                                     {
                                         await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, tx.Type);
 
-                                        var ex = await _exchangeRateService.GetExchangeRate(new Pair(Currency.EURB, tx.Currency), false);
+                                        var ex = await _exchangeRateService.GetExchangeRate(new Pair(tx.Currency, Currency.EURB), false);
 
                                         var op = new ExchangeOperation
                                         {
                                             CreatedBy = user.Id,
                                             Id = tx.Id,
-                                            Pair = ex.Pair,
-                                            BaseAmount = tx.Amount / ex.Rate,
+                                            Pair = new Pair(ex.Base, ex.Quote),
+                                            BaseAmount = tx.Amount * ex.Rate,
                                             QuoteAmount = tx.Amount
                                         };
 
@@ -78,6 +83,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                 {
                                     existing.Failed = true;
                                     await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, TransactionType.Compensating);
+                                    await emailService.SendErrorNotificationEmail(new[] { user.Email }, "Withdraw Error Notification", $"Error while withdrawing {tx.Currency}{tx.Amount}. Transaction hash {tx.Hash}.");
                                 }
                             }
 

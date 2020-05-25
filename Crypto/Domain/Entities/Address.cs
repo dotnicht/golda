@@ -11,7 +11,6 @@ namespace Binebase.Exchange.CryptoService.Domain.Entities
         public Currency Currency { get; set; }
         public AddressType Type { get; set; }
         public string Public { get; set; }
-        public ulong? Balance { get; set; }
         public uint? Index { get; set; }
         public virtual ICollection<Transaction> Transactions { get; } = new HashSet<Transaction>();
     }

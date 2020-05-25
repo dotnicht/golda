@@ -59,6 +59,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 var item = new Domain.Entities.Transaction
                 {
                     CreatedBy = id,
+                    DateTime = tx.DateTime.UtcDateTime,
                     Id = tx.Id,
                     Currency = (Common.Domain.Currency)tx.Currency,
                     Amount = tx.Amount,
@@ -83,6 +84,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         {
             var result = await _cryptoClient.TransactionsAsync(new PublishTransactionCommand { Id = id, Currency = (Currency)currency, Amount = amount, Public = address, ExternalId = externalId });
             return result.Hash;
+        }
+
+        public async Task Transfer()
+        {
+             await _cryptoClient.TransferAsync(new TransferDepositsCommand());        
         }
     }
 }

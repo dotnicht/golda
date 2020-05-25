@@ -34,7 +34,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
             _binanceSocketClient.SubscribeToSymbolTickerUpdates(symbol, x =>
             {
-                var rate = new ExchangeRate { Pair = pair, Rate = x.CurrentDayClosePrice, DateTime = _dateTime.UtcNow };
+                var rate = new ExchangeRate { Base = pair.Base, Quote = pair.Quote, Rate = x.CurrentDayClosePrice, DateTime = _dateTime.UtcNow };
                 handle(rate);
             });
 

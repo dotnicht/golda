@@ -104,8 +104,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
-                    Base = table.Column<string>(nullable: true),
-                    Quote = table.Column<string>(nullable: true),
+                    Base = table.Column<string>(nullable: false),
+                    Quote = table.Column<string>(nullable: false),
                     Rate = table.Column<decimal>(type: "decimal(18,8)", nullable: false),
                     DateTime = table.Column<DateTime>(nullable: false)
                 },
@@ -343,6 +343,16 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Migrations
                 table: "BalanceRecords",
                 column: "To")
                 .Annotation("SqlServer:Clustered", false);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExchangeRates_DateTime",
+                table: "ExchangeRates",
+                column: "DateTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExchangeRates_Base_Quote",
+                table: "ExchangeRates",
+                columns: new[] { "Base", "Quote" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Promotions_MiningRequestId",

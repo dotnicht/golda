@@ -57,14 +57,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var client = new QBitNinjaClient(Network);
             var balance = await client.GetBalance(BitcoinAddress.Create(address, Network));
             return balance.Operations
-                .Where(x => x.Confirmations > _configuration.ConfirmationsCount)
+                .Where(x => (ulong)x.Confirmations >= _configuration.ConfirmationsCount)
                 .Select(x => new Domain.Entities.Transaction
                 {
                     Direction = TransactionDirection.Inbound,
+                    Confirmations = (ulong)x.Confirmations,
                     Confirmed = x.FirstSeen.DateTime,
                     Status = TransactionStatus.Confirmed,
                     Hash = x.TransactionId.ToString(),
-                    Block = (ulong)x.Height,
                     RawAmount = (ulong)x.Amount.Satoshi,
                     Amount = x.Amount.ToDecimal(MoneyUnit.BTC)
                 }).Where(x => x.Amount > 0).ToArray();
@@ -89,13 +89,14 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             }
 
             var amount = response.SpentCoins.Select(x => x.Amount).Aggregate((x, y) => x.Add(y)) as Money;
+
             return new Domain.Entities.Transaction 
             { 
                 Direction = TransactionDirection.Outbound,
+                Confirmations = (ulong)(response.Block?.Confirmations ?? 0),
                 Confirmed = response.FirstSeen.DateTime,
-                Status = TransactionStatus.Confirmed,
+                Status = response.Block == null ? TransactionStatus.Published : (ulong)response.Block.Confirmations >= _configuration.ConfirmationsCount ? TransactionStatus.Confirmed : TransactionStatus.Published,
                 Hash = response.TransactionId.ToString(),
-                Block = (ulong)response.Block.Height,
                 RawAmount = (ulong)amount.Satoshi,
                 Amount = amount.ToDecimal(MoneyUnit.BTC)
             };
@@ -108,7 +109,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 .Derive((uint)_configuration.WithdrawAccountIndex);
 
             var client = new QBitNinjaClient(Network);
-            var balance = await client.GetBalance(key.ScriptPubKey);
+            var balance = await client.GetBalance(key.ScriptPubKey, true);
 
             var value = Money.Coins(amount);
             var collected = Money.Zero;

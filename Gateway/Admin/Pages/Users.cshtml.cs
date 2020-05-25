@@ -20,6 +20,7 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
         public string TwoFactorEnabledSort { get; set; }
         public string EmailConfirmedSort { get; set; }
         public string CurrentFilter { get; set; }
+        public string СurrentFilterFieldName { get; set; }
         public string CurrentSort { get; set; }
         public int PageSize { get; set; }
         public List<User>  UsersIQ { get; set; }
@@ -38,6 +39,8 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
         {
             await Task.CompletedTask;
 
+            СurrentFilterFieldName = currentFilterFieldName;
+            CurrentFilter = currentFilter;
             CurrentSort = sortOrder;
             NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             DateSort = sortOrder == "Date" ? "date_desc" : "Date";
@@ -52,7 +55,7 @@ namespace Binebase.Exchange.Gateway.Admin.Pages
                 searchString = currentFilter;
             }
 
-            CurrentFilter = searchString;
+            //CurrentFilter = searchString;
 
             UsersIQ = (from u in _userManager.Users
                                        select new User

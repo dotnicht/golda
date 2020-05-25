@@ -1,0 +1,185 @@
+﻿@page
+@model Binebase.Exchange.Gateway.Admin.Pages.BalanceModel
+@{
+    ViewData["Title"] = "Balance";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-page="/Users" method="get">
+    <div class="form-actions no-color">
+        <p>
+            <a asp-page="/Balance">Back to full List</a>
+        </p>
+    </div>
+</form>
+<table id="myTable" class="table" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary" asp-page="/Balance" asp-route-sortOrder="@Model.DateSort"
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].Created)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle-disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary" asp-page="/Balance" asp-route-sortOrder="@Model.CurrencySort"
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].Currency)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        @foreach (var currency in Model.Currencies)
+                        {
+                            <li><a asp-page="/Balance" asp-route-currentFilterFieldName="Currency" asp-route-currentFilter=@currency>@currency</a></li>
+                        }
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].TotalDebit)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].TotalCredit)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].DebitCount)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].CreditCount)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].StartBalance)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].EndBalance)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].From)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th>
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled" asp-page="/Balance" asp-route-sortOrder=""
+                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.BalanceRecords[0].To)</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Empty</a></li>
+                    </ul>
+                </div>
+            </th>
+            <th />
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.BalanceRecords)
+        {
+            <tr>
+                @*<td>@item.LastModified</td>*@
+                <td>@item.Created</td>
+                <td>@item.Currency</td>
+                <td>@item.TotalDebit</td>
+                <td>@item.TotalCredit</td>
+                <td>@item.DebitCount</td>
+                <td>@item.CreditCount</td>
+                <td>@item.StartBalance</td>
+                <td>@item.EndBalance</td>
+                <td>@item.From</td>
+                <td>@item.To</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.BalanceRecords.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.BalanceRecords.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="/Balance"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.BalanceRecords.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="/Balance"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.BalanceRecords.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
+<div>@Model.BalanceRecords.PageIndex/@Model.BalanceRecords.TotalPages  Total: @Model.BalanceRecordsIQ.Count() Balances (on page: @Model.BalanceRecords.Count)</div>
+

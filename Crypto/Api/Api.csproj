@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Include="Properties\PublishProfiles\Crypto-Development - Web Deploy.pubxml.user" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Update="appsettings.Development.json">
             <DependentUpon>appsettings.json</DependentUpon>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -16,10 +20,6 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Update="appsettings.Production.json">
-            <DependentUpon>appsettings.json</DependentUpon>
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="appsettings.Test.json">
             <DependentUpon>appsettings.json</DependentUpon>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>

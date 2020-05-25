@@ -51,13 +51,14 @@ namespace Binebase.Exchange.CryptoService.Application.Commands
                 var result = await service.PublishTransaction(request.Amount, request.Public);
 
                 var tx = new Transaction
-                { 
+                {
                     Id = request.ExternalId,
                     AddressId = address.Id,
                     Amount = request.Amount,
                     RawAmount = result.Amount,
                     Hash = result.Hash,
-                    Direction = TransactionDirection.Outbound
+                    Direction = TransactionDirection.Outbound,
+                    Status = TransactionStatus.Published
                 };
 
                 _context.Transactions.Add(tx);
