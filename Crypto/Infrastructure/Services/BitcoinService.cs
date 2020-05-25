@@ -109,7 +109,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 .Derive((uint)_configuration.WithdrawAccountIndex);
 
             var client = new QBitNinjaClient(Network);
-            var balance = await client.GetBalance(key.ScriptPubKey);
+            var balance = await client.GetBalance(key.ScriptPubKey, true);
 
             var value = Money.Coins(amount);
             var collected = Money.Zero;
