@@ -16,10 +16,11 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly Account _configuration;
         private readonly AccountClient _accountClient;
         private readonly AssetClient _assetClient;
+        private readonly ICacheClient _cacheClient;
 
-        public AccountService(HttpClient client, IOptions<Account> options)
-            => (_configuration, _accountClient, _assetClient) 
-                = (options.Value, new AccountClient(options.Value.Address.ToString(), client), new AssetClient(options.Value.Address.ToString(), client));
+        public AccountService(HttpClient client, IOptions<Account> options, ICacheClient cacheClient)
+            => (_configuration, _accountClient, _assetClient, _cacheClient) 
+                = (options.Value, new AccountClient(options.Value.Address.ToString(), client), new AssetClient(options.Value.Address.ToString(), client), cacheClient);
 
         public async Task CretateDefaultAccount(Guid id)
         {
@@ -29,6 +30,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             {
                 await _assetClient.AssetAsync(new AddAssetCommand { Id = id, AssetId = Guid.NewGuid(), Currency = (Currency)currency });
             }
+
+            await GetPortfolioInternal(id);
         }
 
         public async Task<decimal> GetBalance(Guid id, Common.Domain.Currency currency)
@@ -42,15 +45,15 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             throw new NotSupportedException(ErrorCode.CurrencyNotSupported);
         }
 
-        public async Task<Dictionary<Common.Domain.Currency, decimal>> GetPorfolio(Guid id)
+        public async Task<Dictionary<Common.Domain.Currency, decimal>> GetPorfolio(Guid id, bool force = false)
         {
-            var portfolio = await _accountClient.PortfolioAsync(id);
+            var portfolio = await GetPortfolioInternal(id, force);
             return portfolio.Portfolio.ToDictionary(k => (Common.Domain.Currency)k.Currency, k => k.Balance);
         }
 
         public async Task Debit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, Common.Domain.TransactionType type)
         {
-            var portfolio = await _accountClient.PortfolioAsync(id);
+            var portfolio = await GetPortfolioInternal(id);
 
             var cmd = new DebitCommand
             {
@@ -62,11 +65,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             };
 
             await _assetClient.DebitAsync(cmd);
+            await GetPortfolioInternal(id, true);
         }
 
         public async Task Credit(Guid id, Common.Domain.Currency currency, decimal amount, Guid externalId, Common.Domain.TransactionType type)
         {
-            var portfolio = await _accountClient.PortfolioAsync(id);
+            var portfolio = await GetPortfolioInternal(id);
 
             var cmd = new CreditCommand
             {
@@ -78,11 +82,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             };
 
             await _assetClient.CreditAsync(cmd);
+            await GetPortfolioInternal(id, true);
         }
 
         public async Task<Domain.Entities.Transaction[]> GetTransactions(Guid id)
         {
-            var portfolio = await _accountClient.PortfolioAsync(id);
+            var portfolio = await GetPortfolioInternal(id);
             var assets = portfolio.Portfolio.ToDictionary(x => x.Id, x => new Asset { Currency = x.Currency });
             var txs = await _accountClient.TransactionsAsync(id);
             var result = new List<Domain.Entities.Transaction>();
@@ -93,7 +98,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 {
                     Id = tx.TransactionId,
                     DateTime = tx.DateTime.DateTime,
-                    Amount = tx.Amount,
+                    Amount = tx.Amount,     
                     Currency = (Common.Domain.Currency)assets[tx.AssetId].Currency,
                     Type = (Common.Domain.TransactionType)tx.Type,
                 };
@@ -102,6 +107,18 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             }
 
             return result.ToArray();
+        }
+
+        private async Task<PortfolioQueryResult> GetPortfolioInternal(Guid id, bool force = false)
+        {
+            var portfolio = await _cacheClient.Get<PortfolioQueryResult>(id.ToString());
+            if (portfolio == null || force)
+            {
+                portfolio = await _accountClient.PortfolioAsync(id);
+                await _cacheClient.Set(id.ToString(), portfolio, _configuration.PortfolioCacheExpiration);
+            }
+
+            return portfolio;
         }
     }
 }

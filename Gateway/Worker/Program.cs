@@ -42,6 +42,7 @@ namespace Worker
                     services.AddMemoryCache();
 
                     services.AddSingleton<IExchangeRateProvider, ExchangeRateProvider>();
+                    services.AddSingleton<ICacheClient, RedisCacheClient>();
                     services.AddSingleton<IBinanceSocketClient, BinanceSocketClient>();
 
                     services.AddTransient<ITransactionService, TransactionService>();

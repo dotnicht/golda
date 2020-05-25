@@ -7,6 +7,7 @@ using Binebase.Exchange.Gateway.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -19,7 +20,9 @@ namespace Binebase.Exchange.Gateway.Application.Services
     {
         private readonly IMemoryCache _cache;
         private readonly ExchangeRates _configuration;
+        private readonly ILogger _logger;
         private readonly IDateTime _dateTime;
+        private readonly ICacheClient _cacheClient;
         private readonly IExchangeRateProvider _exchangeRateProvider;
         private readonly IServiceProvider _serviceProvider;
         private Timer _timer;
@@ -31,15 +34,16 @@ namespace Binebase.Exchange.Gateway.Application.Services
         public ExchangeRateService(
             IMemoryCache cache,
             IOptions<ExchangeRates> options,
+            ILogger<ExchangeRateService> logger,
             IDateTime dateTime,
-            IExchangeRateProvider exchangeRateProvider,
-            IServiceProvider serviceProvider)
-            => (_cache, _configuration, _dateTime, _exchangeRateProvider, _serviceProvider, _supportedPairs, _backwardPairs, _exchangeExcludePairs)
-                = (cache,
-                   options.Value,
-                   dateTime,
+            ICacheClient cacheClient,
+            IExchangeRateProvider exchangeRateProvider)
+            => (_configuration, _logger, _dateTime, _cacheClient, _exchangeRateProvider, _supportedPairs, _backwardPairs, _exchangeExcludePairs)
+                = (options.Value,
+                   logger, dateTime,
+                   cacheClient,
                    exchangeRateProvider,
-                   serviceProvider,
+                   context,
                    options.Value.SupportedPairs.Select(x => Pair.Parse(x)).ToArray(),
                    options.Value.SupportedPairs.Select(x => Pair.Parse(x)).Select(x => new Pair(x.Quote, x.Base)).ToArray(),
                    options.Value.ExchangeExcludePairs.Select(x => Pair.Parse(x)).ToArray());
@@ -51,19 +55,31 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 throw new ArgumentNullException(nameof(pair));
             }
 
-            if (forceSupported
-                && !_supportedPairs.Contains(pair)
-                && (_configuration.SupportBackward && !_backwardPairs.Contains(pair))
-                || forceExchange
+            if (forceSupported 
+                && !_supportedPairs.Contains(pair) 
+                && (_configuration.SupportBackward && !_backwardPairs.Contains(pair)) 
+                || forceExchange 
                 && _exchangeExcludePairs.Contains(pair))
             {
                 throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
             }
 
-            using var scope = _serviceProvider.CreateScope();
-            using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
-            return await GetExchangeRateInternal(ctx, pair);
-        }
+            var rate = await _cacheClient.GetLastFromList<ExchangeRate>(pair.ToString());
+
+            if (rate == null)
+            {
+                var first = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString())
+                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
+                var second = await _cacheClient.GetLastFromList<ExchangeRate>(new Pair(Currency.EURB, pair.Quote).ToString()) 
+                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
+
+                rate = new ExchangeRate
+                {
+                    Pair = pair,
+                    DateTime = _dateTime.UtcNow,
+                    Rate = first.Rate * second.Rate
+                };
+            }
 
         public async Task<ExchangeRate[]> GetExchangeRateHistory(Pair pair)
         {
@@ -82,6 +98,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
 
             var key = pair.ToString();
             return await ctx.ExchangeRates.Where(x => x.Base == pair.Base && x.Quote == pair.Quote).ToArrayAsync();
+            return await _cacheClient.GetList<ExchangeRate>(key);
         }
 
         public async Task<ExchangeRate[]> GetExchangeRates()
@@ -130,6 +147,12 @@ namespace Binebase.Exchange.Gateway.Application.Services
             ctx.ExchangeRates.Add(rate);
             ctx.ExchangeRates.Add(new ExchangeRate { Base = Currency.EURB, Quote = rate.Base, DateTime = rate.DateTime, Rate = (1 - _configuration.ExchangeFee) / rate.Rate });
             await ctx.SaveChangesAsync();
+        private void SaveExchangeRate(ExchangeRate rate)
+        {
+            rate.Pair = new Pair(rate.Pair.Base, Currency.EURB);
+            _cacheClient.AddToList(rate.Pair.ToString(), rate);
+            var symbol = new Pair(Currency.EURB, rate.Pair.Base);
+            _cacheClient.AddToList(symbol.ToString(), new ExchangeRate { Pair = symbol, DateTime = rate.DateTime, Rate = (1 - _configuration.ExchangeFee) / rate.Rate });
         }
 
         private async void Refresh(object state)
@@ -200,7 +223,14 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 };
             }
 
-            return rate;
+            try
+            {
+                Task.WaitAll(_cacheClient.AddToList(rate.Pair.ToString(), rate), _cacheClient.AddToList(backward.Pair.ToString(), backward));
+            }
+            catch (AggregateException ex)
+            {
+                _logger.LogError(ex, "Error adding exchange rate to cache.");
+            }
         }
 
         public void Dispose() => _timer?.Dispose();

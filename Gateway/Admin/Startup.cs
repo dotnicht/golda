@@ -3,6 +3,7 @@ using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.Common.Infrastructure.Services;
 using Binebase.Exchange.Gateway.Api.Services;
 using Binebase.Exchange.Gateway.Application.Interfaces;
+using Binebase.Exchange.Gateway.Infrastructure;
 using Binebase.Exchange.Gateway.Infrastructure.Configuration;
 using Binebase.Exchange.Gateway.Infrastructure.Identity;
 using Binebase.Exchange.Gateway.Infrastructure.Interfaces;
@@ -10,6 +11,7 @@ using Binebase.Exchange.Gateway.Infrastructure.Persistence;
 using Binebase.Exchange.Gateway.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +56,7 @@ namespace Binebase.Exchange.Gateway.Admin
 
             services.AddHttpContextAccessor();
             services.AddHttpClient<IAccountService, AccountService>().AddRetryPolicy();
+            services.AddSingleton<ICacheClient, RedisCacheClient>();
             services.AddHttpClient<ICryptoService, CryptoService>().AddRetryPolicy();
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDateTime, DateTimeService>();
@@ -64,9 +67,9 @@ namespace Binebase.Exchange.Gateway.Admin
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (Environment.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
