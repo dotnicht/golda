@@ -98,7 +98,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 {
                     Id = tx.TransactionId,
                     DateTime = tx.DateTime.DateTime,
-                    Amount = tx.Amount,     
+                    Amount = tx.Amount,
                     Currency = (Common.Domain.Currency)assets[tx.AssetId].Currency,
                     Type = (Common.Domain.TransactionType)tx.Type,
                 };

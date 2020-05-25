@@ -21,6 +21,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Persistence
 
         public DbSet<MiningRequest> MiningRequests { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<ExchangeOperation> ExchangeOperations { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<BalanceConsistencyRecord> BalanceRecords { get; set; }
