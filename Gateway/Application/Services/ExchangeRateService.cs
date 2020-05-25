@@ -105,6 +105,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
         private void SaveExchangeRate(ExchangeRate rate)
         {
             var symbol = new Pair(rate.Base, Currency.EURB);
+            rate.Quote = symbol.Quote;
             _cacheClient.Set(symbol.ToString(), rate);
             symbol = new Pair(Currency.EURB, rate.Base);
             _cacheClient.Set(symbol.ToString(), new ExchangeRate { Base = symbol.Base, Quote = symbol.Quote, DateTime = rate.DateTime, Rate = (1 - _configuration.ExchangeFee) / rate.Rate });
