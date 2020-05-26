@@ -68,11 +68,10 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 await _cryptoService.GenerateDefaultAddresses(id);
 
                 var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
-                if (mining != null && mining.Created + _configuration.MiningRequestWindow <= _dateTime.UtcNow && mining.IsAnonymous)
+                if (mining != null && mining.IsAnonymous && _dateTime.UtcNow - mining.Created <= _configuration.MiningRequestWindow)
                 {
                     await _accountService.Debit(id, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
                     mining.LastModifiedBy = id;
-                    mining.IsAnonymous = false;
                     await _context.SaveChangesAsync();
                 }
 
