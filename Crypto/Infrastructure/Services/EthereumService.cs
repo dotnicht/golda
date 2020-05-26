@@ -85,7 +85,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             {
                 Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
                 Confirmations = number.ToUlong() - block.Number.ToUlong(),
-                Status = receipt.Status.Value.IsZero ? TransactionStatus.Confirmed : TransactionStatus.Failed,
+                Status = receipt.Status.Value.IsOne ? TransactionStatus.Confirmed : receipt.Status.Value.IsZero ? TransactionStatus.Failed : TransactionStatus.Published,
                 Hash = tx.TransactionHash,
                 RawAmount = tx.Value.ToUlong(),
                 Amount = Web3.Convert.FromWei(tx.Value)
