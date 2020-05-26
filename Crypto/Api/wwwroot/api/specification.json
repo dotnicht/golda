@@ -139,7 +139,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TransferDepositsCommand"
+                "$ref": "#/components/schemas/TransferAssetsCommand"
               }
             }
           },
@@ -147,8 +147,15 @@
           "x-position": 1
         },
         "responses": {
-          "204": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferAssetsCommandResult"
+                }
+              }
+            }
           }
         }
       }
@@ -332,9 +339,24 @@
           "Failed"
         ]
       },
-      "TransferDepositsCommand": {
+      "TransferAssetsCommandResult": {
         "type": "object",
-        "additionalProperties": false
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "TransferAssetsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          }
+        }
       }
     },
     "securitySchemes": {

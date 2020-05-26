@@ -7,5 +7,6 @@ namespace Binebase.Exchange.CryptoService.Application.Interfaces
     public interface ITransactionService
     {
         Task Subscribe(Currency currency, CancellationToken cancellationToken);
+        Task<decimal> TransferAssets(Currency currency);
     }
 }

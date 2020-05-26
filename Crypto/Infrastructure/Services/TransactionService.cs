@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NBitcoin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,6 +91,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                 await Task.Delay(_configuration.TransactionPoolingTimeout);
             }
+        }
+
+        public async Task<decimal> TransferAssets(Currency currency)
+        {
+            throw new NotImplementedException();
         }
     }
 }

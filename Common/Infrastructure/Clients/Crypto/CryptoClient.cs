@@ -325,14 +325,14 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
         }
     
         /// <exception cref="CryptoException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task TransferAsync(TransferDepositsCommand command)
+        public System.Threading.Tasks.Task<TransferAssetsCommandResult> TransferAsync(TransferAssetsCommand command)
         {
             return TransferAsync(command, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="CryptoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task TransferAsync(TransferDepositsCommand command, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<TransferAssetsCommandResult> TransferAsync(TransferAssetsCommand command, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Crypto/Transfer");
@@ -346,6 +346,7 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
                     var url_ = urlBuilder_.ToString();
@@ -365,9 +366,10 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                         ProcessResponse(client_, response_);
     
                         var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "204") 
+                        if (status_ == "200") 
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<TransferAssetsCommandResult>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ != "200" && status_ != "204")
@@ -375,6 +377,8 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
                             throw new CryptoException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
+            
+                        return default(TransferAssetsCommandResult);
                     }
                     finally
                     {
@@ -647,8 +651,21 @@ namespace Binebase.Exchange.Common.Infrastructure.Clients.Crypto
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class TransferDepositsCommand 
+    public partial class TransferAssetsCommandResult 
     {
+        [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public decimal Amount { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class TransferAssetsCommand 
+    {
+        [Newtonsoft.Json.JsonProperty("currency", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public Currency Currency { get; set; }
+    
     
     }
 
