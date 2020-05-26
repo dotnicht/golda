@@ -68,12 +68,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.MiningInstantTimeout);
                 }
 
-                mining = new MiningRequest
-                {
-                    Id = Guid.NewGuid(),
-                    Type = MiningType.Instant
-                };
-
                 var mapping = _configuration.Instant.BoostMapping.Select(x => new { Key = int.Parse(x.Key), x.Value }).OrderByDescending(x => x.Key);
                 var currentUser = await _identityService.GetUser(_currentUserService.UserId);
                 var promotions = new List<Promotion>();
@@ -81,19 +75,23 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
                 for (var i = 0; i < times; i++)
                 {
+                    mining = new MiningRequest
+                    {
+                        Id = Guid.NewGuid(),
+                        Type = MiningType.Instant,
+                        Amount = await _calculationService.GenerateInstantReward()
+                    };
+
                     if (currentUser.ReferralId != null)
                     {
-                        var ammount = _configuration.Instant.Fee / 100 * 5;
-                        await _accountService.Debit(currentUser.ReferralId.Value, Currency.EURB, ammount, mining.Id, TransactionType.Refferal);
+                        await _accountService.Debit(currentUser.ReferralId.Value, Currency.EURB, _configuration.Instant.Fee / 100 * 5, mining.Id, TransactionType.Refferal);
                     }
 
                     await _accountService.Credit(_currentUserService.UserId, Currency.EURB, _configuration.Instant.Fee, mining.Id, TransactionType.Fee);
-                    var value = await _calculationService.GenerateInstantReward();
 
-                    if (value > 0)
+                    if (mining.Amount > 0)
                     {
-                        mining.Amount += value;
-                        var promotion = await _calculationService.GeneratePromotion(index, value);
+                        var promotion = await _calculationService.GeneratePromotion(index, mining.Amount);
                         if (promotion != null)
                         {
                             promotion.MiningRequestId = mining.Id;
@@ -101,21 +99,20 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                             promotions.Add(promotion);
                         }
                     }
-                }
 
-                if (mining.Amount > 0)
-                {
-                    if (currentUser.ReferralId != null)
+                    _context.MiningRequests.Add(mining);
+                    await _context.SaveChangesAsync();
+
+                    if (mining.Amount > 0)
                     {
-                        var ammount = mining.Amount / 100 * 5;
-                        await _accountService.Debit(currentUser.ReferralId.Value, Currency.BINE, ammount, mining.Id, TransactionType.Refferal);
+                        if (currentUser.ReferralId != null)
+                        {
+                            await _accountService.Debit(currentUser.ReferralId.Value, Currency.BINE, mining.Amount / 100 * 5, mining.Id, TransactionType.Refferal);
+                        }
+
+                        await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
                     }
-
-                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
                 }
-
-                _context.MiningRequests.Add(mining);
-                await _context.SaveChangesAsync();
 
                 var result = _mapper.Map<MiningInstantCommandResult>(mining);
                 result.Promotions = _mapper.Map<MiningInstantCommandResult.PromotionItem[]>(promotions);
