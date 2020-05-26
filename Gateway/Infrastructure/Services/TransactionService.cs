@@ -22,11 +22,18 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         private readonly ICryptoService _cryptoService;
         private readonly IAccountService _accountService;
         private readonly IExchangeRateService _exchangeRateService;
+        private readonly IEmailService _emailService;
         private readonly IServiceProvider _serviceProvider;
 
         public TransactionService(IOptions<Crypto> options, ILogger<TransactionService> logger, IServiceProvider serviceProvider) =>
-             (_configuration, _logger, _cryptoService, _accountService, _exchangeRateService, _serviceProvider)
-                = (options.Value, logger, serviceProvider.GetRequiredService<ICryptoService>(), serviceProvider.GetRequiredService<IAccountService>(), serviceProvider.GetRequiredService<IExchangeRateService>(), serviceProvider);
+             (_configuration, _logger, _cryptoService, _accountService, _exchangeRateService, _emailService, _serviceProvider)
+                = (options.Value, 
+                   logger, 
+                   serviceProvider.GetRequiredService<ICryptoService>(), 
+                   serviceProvider.GetRequiredService<IAccountService>(), 
+                   serviceProvider.GetRequiredService<IExchangeRateService>(),
+                   serviceProvider.GetRequiredService<IEmailService>(),
+                   serviceProvider);
 
         public async Task SyncTransactions(CancellationToken cancellationToken)
         {
@@ -40,8 +47,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                         using var users = scope.ServiceProvider.GetRequiredService<IInfrastructureContext>();
                         using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
-                        var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
-
                         foreach (var user in users.Users)
                         {
                             foreach (var tx in await _cryptoService.GetTransactions(user.Id))
@@ -53,10 +58,17 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
                                     if (tx.Type == TransactionType.Withdraw)
                                     {
-                                        await emailService.SendWithdrawNotificationEmail(new[] { user.Email }, "Withdraw Notification", tx.Amount, tx.Currency);
+                                        if (tx.Failed)
+                                        {
+                                            await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, TransactionType.Compensating);
+                                            await _emailService.SendErrorNotificationEmail(new[] { user.Email }, "Withdraw Error Notification", $"Error while withdrawing {tx.Currency}{tx.Amount}. Transaction hash {tx.Hash}.");
+                                        }
+                                        else
+                                        {
+                                            await _emailService.SendWithdrawNotificationEmail(new[] { user.Email }, "Withdraw Notification", tx.Amount, tx.Currency);
+                                        }
                                     }
-
-                                    if (tx.Type == TransactionType.Deposit)
+                                    else if (tx.Type == TransactionType.Deposit)
                                     {
                                         await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, tx.Type);
 
@@ -76,14 +88,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
                                         ctx.ExchangeOperations.Add(op);
 
-                                        await emailService.SendDepositNotificationEmail(new[] { user.Email }, "Deposit Notification", tx.Amount, tx.Currency, op.BaseAmount, Currency.EURB);
+                                        await _emailService.SendDepositNotificationEmail(new[] { user.Email }, "Deposit Notification", tx.Amount, tx.Currency, op.BaseAmount, Currency.EURB);
                                     }
-                                }
-                                else if (tx.Type == TransactionType.Withdraw && tx.Failed && !existing.Failed)
-                                {
-                                    existing.Failed = true;
-                                    await _accountService.Debit(user.Id, tx.Currency, tx.Amount, tx.Id, TransactionType.Compensating);
-                                    await emailService.SendErrorNotificationEmail(new[] { user.Email }, "Withdraw Error Notification", $"Error while withdrawing {tx.Currency}{tx.Amount}. Transaction hash {tx.Hash}.");
                                 }
                             }
 
