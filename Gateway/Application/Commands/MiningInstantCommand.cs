@@ -73,6 +73,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var promotions = new List<Promotion>();
                 var times = request.Boost > 0 ? mapping.FirstOrDefault(x => x.Value <= request.Boost)?.Value ?? 1 : 1;
 
+                var amount = 0M;
+
                 for (var i = 0; i < times; i++)
                 {
                     mining = new MiningRequest
@@ -81,6 +83,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                         Type = MiningType.Instant,
                         Amount = await _calculationService.GenerateInstantReward()
                     };
+
+                    amount += mining.Amount;
 
                     if (currentUser.ReferralId != null)
                     {
@@ -114,10 +118,13 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     }
                 }
 
-                var result = _mapper.Map<MiningInstantCommandResult>(mining);
-                result.Promotions = _mapper.Map<MiningInstantCommandResult.PromotionItem[]>(promotions);
-
-                return result;
+                return new MiningInstantCommandResult 
+                {
+                    Id = mining.Id,
+                    Index = mining.Index,
+                    Amount = amount,
+                    Promotions = _mapper.Map<MiningInstantCommandResult.PromotionItem[]>(promotions)
+                };
             }
         }
     }
