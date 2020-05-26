@@ -59,7 +59,25 @@ namespace Binebase.Exchange.Gateway.Application.Services
                 throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
             }
 
-            return await _cacheClient.Get<ExchangeRate>(pair.ToString());
+            var rate = await _cacheClient.Get<ExchangeRate>(pair.ToString());
+
+            if (rate == null)
+            {
+                var first = await _cacheClient.Get<ExchangeRate>(new Pair(pair.Base, Currency.EURB).ToString())
+                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
+                var second = await _cacheClient.Get<ExchangeRate>(new Pair(Currency.EURB, pair.Quote).ToString())
+                    ?? throw new NotSupportedException(ErrorCode.ExchangeRateNotSupported);
+
+                rate = new ExchangeRate
+                {
+                    Base = pair.Base,
+                    Quote = pair.Quote,
+                    DateTime = _dateTime.UtcNow,
+                    Rate = first.Rate * second.Rate
+                };
+            }
+
+            return rate;
         }
 
         public async Task<ExchangeRate[]> GetExchangeRates()
