@@ -86,9 +86,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             return result.Hash;
         }
 
-        public async Task Transfer()
-        {
-             await _cryptoClient.TransferAsync(new TransferDepositsCommand());        
-        }
+        /// <summary>
+        /// Transfers this instance.
+        /// </summary>
+        public async Task Transfer() => await Task.WhenAll(new[] { Currency.ETH, Currency.BTC }.Select(x => _cryptoClient.TransferAsync(new TransferAssetsCommand { Currency = x })));
+        
     }
 }
