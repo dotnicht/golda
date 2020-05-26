@@ -81,11 +81,15 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
             var number = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
 
-            return new Transaction 
+            return new Transaction
             {
                 Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
                 Confirmations = number.ToUlong() - block.Number.ToUlong(),
-                Status = receipt.Status.Value.IsOne ? TransactionStatus.Confirmed : receipt.Status.Value.IsZero ? TransactionStatus.Failed : TransactionStatus.Published,
+                Status = receipt.Status.Value.IsOne 
+                    ? TransactionStatus.Confirmed 
+                    : receipt.Status.Value.IsZero 
+                        ? TransactionStatus.Failed 
+                        : TransactionStatus.Published,
                 Hash = tx.TransactionHash,
                 RawAmount = tx.Value.ToUlong(),
                 Amount = Web3.Convert.FromWei(tx.Value)
@@ -105,6 +109,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
             var wei = new HexBigInteger(Web3.Convert.ToWei(amount));
             var balance = await web3.Eth.GetBalance.SendRequestAsync(account.Address);
+
             if (balance.Value < wei.Value)
             {
                 throw new InvalidOperationException(ErrorCode.InsufficientBalance);
@@ -116,9 +121,50 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         public Task<bool> ValidateAddress(string address)
             => Task.FromResult(AddressUtil.Current.IsValidEthereumAddressHexFormat(address));
 
-        public Task<Transaction[]> TransferAssets(Address[] addresses, string address)
+        public async Task<Transaction[]> TransferAssets(Address[] addresses, string address)
         {
-            throw new NotImplementedException();
+            if (addresses is null)
+            {
+                throw new ArgumentNullException(nameof(addresses));
+            }
+
+            if (address is null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
+            var list = new List<Transaction>();
+
+            foreach (var addr in addresses)
+            {
+                var account = new Wallet(_configuration.Mnemonic, _configuration.Password).GetAccount((int)addr.Index.Value);
+                var web3 = new Web3(account, _configuration.EthereumNode.ToString());
+                web3.TransactionManager.DefaultGasPrice = await web3.Eth.GasPrice.SendRequestAsync();
+
+                var balance = await web3.Eth.GetBalance.SendRequestAsync(account.Address);
+                var fee = web3.TransactionManager.DefaultGas * web3.TransactionManager.DefaultGasPrice;
+
+                if (balance > fee)
+                {
+                    var wei = new HexBigInteger(balance - fee);
+                    var hash = await web3.TransactionManager.SendTransactionAsync(account.Address, address, wei);
+
+                    var tx = new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        AddressId = addr.Id,
+                        Direction = TransactionDirection.Transfer,
+                        Status = TransactionStatus.Published,
+                        RawAmount = wei.ToUlong(),
+                        Amount = Web3.Convert.FromWei(wei),
+                        Hash = hash
+                    };
+
+                    list.Add(tx);
+                }
+            }
+
+            return list.ToArray();
         }
 
         private class EtherscanTransactionsResponse

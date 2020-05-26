@@ -102,11 +102,17 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                 .Where(x => x.Index != _configuration.WithdrawAccountIndex && x.Currency == currency && x.Type == AddressType.Deposit)
                 .ToArray();
 
-            var txs = await service.TransferAssets(indexes, _configuration.TransferAddresses[currency]);
-            context.Transactions.AddRange(txs);
-            await context.SaveChangesAsync();
+            if (await service.ValidateAddress(_configuration.TransferAddresses[currency]))
+            {
+                var txs = await service.TransferAssets(indexes, _configuration.TransferAddresses[currency]);
 
-            return txs.Sum(x => x.Amount);
+                context.Transactions.AddRange(txs);
+                await context.SaveChangesAsync();
+
+                return txs.Sum(x => x.Amount);
+            }
+
+            throw new InvalidOperationException();
         }
     }
 }
