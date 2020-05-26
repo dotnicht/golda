@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure.Services
@@ -171,9 +172,73 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             return await Task.FromResult(result);
         }
 
-        public Task<Domain.Entities.Transaction[]> TransferAssets(Address[] addresses, string address)
+        public async Task<Domain.Entities.Transaction[]> TransferAssets(Address[] addresses, string address)
         {
-            throw new NotImplementedException();
+            if (addresses is null)
+            {
+                throw new ArgumentNullException(nameof(addresses));
+            }
+
+            if (address is null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
+            var list = new List<Domain.Entities.Transaction>();
+            var client = new QBitNinjaClient(Network);
+            var root = new Mnemonic(_configuration.Mnemonic, Wordlist.English).DeriveExtKey(_configuration.Password);
+
+            var transaction = NBitcoin.Transaction.Create(Network);
+            var coins = new List<ICoin>();
+            var secrets = new List<ISecret>();
+
+            var total = Money.Zero;
+
+            foreach (var addr in addresses)
+            {
+                var key = root.Derive(addr.Index.Value);
+                var balance = await client.GetBalance(key.ScriptPubKey, true);
+                var received = balance.Operations.SelectMany(x => x.ReceivedCoins).ToArray();
+
+                coins.AddRange(received);
+                secrets.Add(key.PrivateKey.GetBitcoinSecret(Network));
+                var value = Money.Zero;
+
+                foreach (var coin in received)
+                {
+                    transaction.Inputs.Add(new TxIn(coin.Outpoint, key.ScriptPubKey));
+                    value += coin.Amount as Money;
+                }
+
+                var tx = new Domain.Entities.Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    AddressId = addr.Id,
+                    Direction = TransactionDirection.Transfer,
+                    Status = TransactionStatus.Published,
+                    RawAmount = value,
+                    Amount = value.ToDecimal(MoneyUnit.BTC)
+                };
+
+                total += value;
+                list.Add(tx);
+            }
+
+            var response = await _httpClient.Get<EarnResponse>(_configuration.EarnAddress);
+            total -= Money.Satoshis(response.FastestFee * transaction.GetVirtualSize());
+
+            transaction.Outputs.Add(new TxOut(total, BitcoinAddress.Create(address, Network)));
+            transaction.Sign(secrets.ToArray(), coins.ToArray());
+            var result = await client.Broadcast(transaction);
+
+            if (!result.Success)
+            {
+                throw new InvalidOperationException(result.Error.ErrorCode.ToString());
+            }
+
+            var hash = transaction.GetHash().ToString();
+            list.ForEach(x => x.Hash = hash);
+            return list.ToArray();
         }
 
         private class EarnResponse
