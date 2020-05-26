@@ -116,6 +116,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
         public Task<bool> ValidateAddress(string address)
             => Task.FromResult(AddressUtil.Current.IsValidEthereumAddressHexFormat(address));
 
+        public Task<Transaction[]> TransferAssets(Address[] addresses, string address)
+        {
+            throw new NotImplementedException();
+        }
+
         private class EtherscanTransactionsResponse
         {
             public string Status { get; set; }

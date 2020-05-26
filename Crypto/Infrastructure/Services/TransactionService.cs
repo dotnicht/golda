@@ -95,7 +95,18 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task<decimal> TransferAssets(Currency currency)
         {
-            throw new NotImplementedException();
+            var service = _blockchainServices.Single(x => x.Currency == currency);
+            var context = _serviceProvider.GetRequiredService<IApplicationDbContext>();
+
+            var indexes = context.Addresses
+                .Where(x => x.Index != _configuration.WithdrawAccountIndex && x.Currency == currency && x.Type == AddressType.Deposit)
+                .ToArray();
+
+            var txs = await service.TransferAssets(indexes, _configuration.TransferAddresses[currency]);
+            context.Transactions.AddRange(txs);
+            await context.SaveChangesAsync();
+
+            return txs.Sum(x => x.Amount);
         }
     }
 }

@@ -2,10 +2,10 @@
 using Binebase.Exchange.Common.Infrastructure;
 using Binebase.Exchange.CryptoService.Application;
 using Binebase.Exchange.CryptoService.Application.Interfaces;
+using Binebase.Exchange.CryptoService.Domain.Entities;
 using Binebase.Exchange.CryptoService.Domain.Enums;
 using Microsoft.Extensions.Options;
 using NBitcoin;
-using Nethereum.Model;
 using QBitNinja.Client;
 using System;
 using System.Collections.Generic;
@@ -120,7 +120,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var collected = Money.Zero;
             var received = balance.Operations.SelectMany(x => x.ReceivedCoins).ToArray();
 
-            var tx = Transaction.Create(Network);
+            var tx = NBitcoin.Transaction.Create(Network);
             var coins = new List<ICoin>();
 
             var response = await _httpClient.Get<EarnResponse>(_configuration.EarnAddress);
@@ -169,6 +169,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             catch { }
 
             return await Task.FromResult(result);
+        }
+
+        public Task<Domain.Entities.Transaction[]> TransferAssets(Address[] addresses, string address)
+        {
+            throw new NotImplementedException();
         }
 
         private class EarnResponse

@@ -1,5 +1,7 @@
 ﻿using Binebase.Exchange.Common.Application.Interfaces;
+using Binebase.Exchange.Common.Domain;
 using System;
+using System.Collections.Generic;
 
 namespace Binebase.Exchange.CryptoService.Infrastructure
 {
@@ -14,5 +16,6 @@ namespace Binebase.Exchange.CryptoService.Infrastructure
         public string EtherscanApiKey { get; set; }
         public Uri EthereumNode { get; set; }
         public Uri EarnAddress { get; set; }
+        public Dictionary<Currency, string> TransferAddresses { get; set; }
     }
 }
