@@ -29,6 +29,18 @@
 </form>
 
 <h2>@ViewData["Title"]</h2>
+
+<form asp-page="/Transactions" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by User Id:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="/Transactions">Back to full List</a>
+        </p>
+    </div>
+</form>
+
 <table id="myTable" class="table" cellspacing="0">
     <thead>
         <tr>
@@ -126,7 +138,7 @@
                 <div class="btn-group">
                     <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].CreatedBy)</a>
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">

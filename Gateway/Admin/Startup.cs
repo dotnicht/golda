@@ -64,7 +64,7 @@ namespace Binebase.Exchange.Gateway.Admin
             services.AddTransient<IInfrastructureContext, ApplicationDbContext>();
             services.Configure<Account>(Configuration.GetSection("Infrastructure.Account"));
             services.Configure<Crypto>(Configuration.GetSection("Infrastructure.Crypto"));
-            services.Configure<Crypto>(Configuration.GetSection("Infrastructure.Redis"));
+            services.Configure<Redis>(Configuration.GetSection("Infrastructure.Redis"));
 
         }
 

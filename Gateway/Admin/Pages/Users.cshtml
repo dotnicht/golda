@@ -70,19 +70,19 @@
                     </ul>
                 </div>
             </th>
-            <th>
-                <div class="btn-group">
-                    <a class="btn btn-primary" asp-page="/Users" asp-route-sortOrder="@Model.TwoFactorEnabledSort"
-                       asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Users[0].TwoFactorEnabled)</a>
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a asp-page="/Users" asp-route-currentFilterFieldName="TwoFactorEnabled" asp-route-currentFilter=true>true</a></li>
-                        <li><a asp-page="/Users" asp-route-currentFilterFieldName="TwoFactorEnabled" asp-route-currentFilter=false>false</a></li>
-                    </ul>
-                </div>
-            </th>
+            @*<th>
+                    <div class="btn-group">
+                        <a class="btn btn-primary" asp-page="/Users" asp-route-sortOrder="@Model.TwoFactorEnabledSort"
+                           asp-route-currentFilter="@Model.CurrentFilter">@Html.DisplayNameFor(model => model.Users[0].TwoFactorEnabled)</a>
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a asp-page="/Users" asp-route-currentFilterFieldName="TwoFactorEnabled" asp-route-currentFilter=true>true</a></li>
+                            <li><a asp-page="/Users" asp-route-currentFilterFieldName="TwoFactorEnabled" asp-route-currentFilter=false>false</a></li>
+                        </ul>
+                    </div>
+                </th>*@
             <th>
                 <div class="btn-group">
                     <a class="btn btn-primary" asp-page="/Users" asp-route-sortOrder="@Model.EmailConfirmedSort"
@@ -103,10 +103,11 @@
         @foreach (var item in Model.Users)
         {
             <tr>
-                @foreach (var property in item.GetType().GetProperties())
-                {
-                    <td>@property.GetValue(item)</td>
-                }
+                <td>@item.Id</td>
+                <td>@item.UserName</td>
+                <td>@item.Registered</td>
+                <td>@item.PhoneNumber</td>
+                <td>@item.EmailConfirmed</td>
                 <td> <a asp-page="EditUser" asp-route-id="@item.Id">Detail</a></td>
             </tr>
         }

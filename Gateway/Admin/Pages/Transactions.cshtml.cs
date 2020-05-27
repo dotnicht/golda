@@ -72,6 +72,12 @@ namespace Binebase.Exchange.Gateway.Admin
             TransactionsIQ = _transactions.Where(t => t.Type == (ActiveTab == Tab.Deposits ?
                                                                    Binebase.Exchange.Common.Domain.TransactionType.Deposit :
                                                                    Binebase.Exchange.Common.Domain.TransactionType.Withdraw)).ToList();
+            
+            if (!string.IsNullOrEmpty(searchString) && string.IsNullOrEmpty(currentFilterFieldName))
+            {
+                TransactionsIQ = TransactionsIQ.Where(t => t.CreatedBy.ToString().Contains(searchString)).ToList();
+            }
+
             #region Filtering
             if (!string.IsNullOrEmpty(currentFilter))
             {
