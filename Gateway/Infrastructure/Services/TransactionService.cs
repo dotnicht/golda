@@ -65,7 +65,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                                         }
                                         else
                                         {
-                                            await _emailService.SendWithdrawNotificationEmail(new[] { user.Email }, "Withdraw Notification", tx.Amount, tx.Currency);
+                                            await _emailService.SendWithdrawNotificationEmail(new[] { user.Email }, "Withdrawal Successful", tx.Amount, tx.Currency);
                                         }
                                     }
                                     else if (tx.Type == TransactionType.Deposit)
