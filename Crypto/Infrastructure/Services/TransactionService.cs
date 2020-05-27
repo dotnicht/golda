@@ -30,13 +30,13 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
         public async Task Subscribe(Currency currency, CancellationToken cancellationToken)
         {
-            var service = _blockchainServices.Single(x => x.Currency == currency);
-            var context = _serviceProvider.GetRequiredService<IApplicationDbContext>();
-
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
+                    var service = _blockchainServices.Single(x => x.Currency == currency);
+                    var context = _serviceProvider.GetRequiredService<IApplicationDbContext>();
+
                     var addresses = context.Addresses
                         .Include(x => x.Transactions)
                         .Where(x => x.Currency == currency)
@@ -65,20 +65,19 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                     using (new ElapsedTimer(_logger, "UpdateExistingTx"))
                     {
-                        var txs = addresses
-                            .Where(x => x.Type == AddressType.Withdraw && x.Type == AddressType.Deposit)
-                            .SelectMany(x => x.Transactions)
-                            .Where(x => x.Status == TransactionStatus.Published);
+                        var txs = context.Transactions.Where(x => x.Status == TransactionStatus.Published && x.Address.Currency == currency);
 
                         foreach (var tx in txs)
                         {
+                            _logger.LogDebug("Updating transaction {hash}. Id {id}.", tx.Hash, tx.Id); await context.SaveChangesAsync();
+
                             var updated = await service.GetTransaction(tx.Hash);
 
                             tx.Status = updated.Status;
                             tx.Confirmed = updated.Confirmed;
                             tx.Confirmations = updated.Confirmations;
 
-                            _logger.LogDebug("Updating transaction {hash}. Id {id}.", tx.Hash, tx.Id); await context.SaveChangesAsync();
+                            await context.SaveChangesAsync();
                         }
                     }
                 }
