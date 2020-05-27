@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Binebase.Exchange.Gateway.Application.Interfaces;
 using Binebase.Exchange.Gateway.Admin.Models;
 using Binebase.Exchange.Gateway.Admin.Helpers;
+using Binebase.Exchange.Gateway.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Binebase.Exchange.Gateway.Admin
 {
@@ -32,13 +34,17 @@ namespace Binebase.Exchange.Gateway.Admin
 
         public List<TransactionExt> TransactionsIQ { get; set; }
         public PaginatedList<TransactionExt> Transactions { get; set; }
-        public TransactionsModel(ILogger<TransactionsModel> logger, IApplicationDbContext dbContext)
+
+        public Email Configuration { get; set; }
+
+        public TransactionsModel(ILogger<TransactionsModel> logger, IApplicationDbContext dbContext, IOptions<Email> options)
         {
             _dbContext = dbContext;
             _logger = logger;
             _allTransactions = new List<Domain.Entities.Transaction>();
             _transactions = new List<TransactionExt>();
             PageSize = 10;
+            Configuration = options.Value;
         }
 
         public async Task OnGet(Tab aTab, string sortOrder, string currentFilterFieldName, string currentFilter, string searchString, int? pageIndex)

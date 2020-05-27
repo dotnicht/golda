@@ -167,18 +167,25 @@
     <tbody>
         @foreach (TransactionExt item in Model.Transactions)
         {
-            <tr>
-                <td>@item.Id</td>
-                @*<td>@item.UserId</td>*@
-                <td>@item.Currency</td>
-                <td>@item.Amount</td>
-                <td>@item.Balance</td>
-                <td>@item.DateTime</td>
-                <td class="table-hash">@item.Hash</td>
-                <td>@item.Type</td>
-                <td>@item.CreatedBy</td>
-                <td>@item.Created</td>
-            </tr>
+        <tr>
+            <td>@item.Id</td>
+            @*<td>@item.UserId</td>*@
+            <td>@item.Currency</td>
+            <td>@item.Amount</td>
+            <td>@item.Balance</td>
+            <td>@item.DateTime</td>
+            @{
+                string url = string.Empty;
+                if (item.Currency == Binebase.Exchange.Common.Domain.Currency.BTC)
+                    url = Model.Configuration.ExplorerUrlMasks.BTCMask+item.Hash;
+                if (item.Currency == Binebase.Exchange.Common.Domain.Currency.ETH)
+                    url = Model.Configuration.ExplorerUrlMasks.ETHMask+item.Hash;
+            }
+            <td class="table-hash"><a href=@url>@item.Hash</a></td>
+            <td>@item.Type</td>
+            <td>@item.CreatedBy</td>
+            <td>@item.Created</td>
+        </tr>
         }
     </tbody>
 </table>
