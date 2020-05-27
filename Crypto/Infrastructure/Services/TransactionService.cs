@@ -66,11 +66,9 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
                     using (new ElapsedTimer(_logger, "UpdateExistingTx"))
                     {
                         var txs = addresses
-                            .Where(x => x.Type == AddressType.Withdraw)
+                            .Where(x => x.Type == AddressType.Withdraw && x.Type == AddressType.Deposit)
                             .SelectMany(x => x.Transactions)
                             .Where(x => x.Status == TransactionStatus.Published);
-
-                        //var transfer = context.Transactions.Where(x => x.Direction == TransactionDirection.Transfer && x.Status == TransactionStatus.Published);
 
                         foreach (var tx in txs)
                         {

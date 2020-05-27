@@ -13,11 +13,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
     public sealed class RedisCacheClient : ICacheClient, IDisposable
     {
         private readonly ILogger _logger;
-        private readonly Redis _configuration;
-        private ConnectionMultiplexer _redis;
+        private readonly Lazy<ConnectionMultiplexer> _redis;
 
         public RedisCacheClient(ILogger<RedisCacheClient> logger, IOptions<Redis> options) 
-            => (_logger, _configuration) = (logger, options.Value);
+            => (_logger, _redis) = (logger, new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(options.Value.ConnectionString)));
 
         public Task Set<T>(string key, T value, TimeSpan? expiration = null) where T : class
             => Set(key, JsonConvert.SerializeObject(value), expiration);
@@ -30,7 +29,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             }
 
             _logger.LogDebug("Cache key {key} item set {value} with {expiration} expiration.", key, value, expiration ?? Timeout.InfiniteTimeSpan);
-            await GetDatabase().StringSetAsync(key, value, expiration);
+            await _redis.Value.GetDatabase().StringSetAsync(key, value, expiration);
         }
 
         public async Task<T> Get<T>(string key) where T : class
@@ -48,32 +47,9 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return await GetDatabase().StringGetAsync(key);
+            return await _redis.Value.GetDatabase().StringGetAsync(key);
         }
 
-        public void Dispose() => _redis?.Dispose();
-
-        private IDatabase GetDatabase()
-        {
-            if (_redis == null || !_redis.IsConnected || !_redis.IsConnecting)
-            {
-                try
-                {
-                    _redis = ConnectionMultiplexer.Connect(_configuration.ConnectionString);
-                }
-                catch (RedisConnectionException ex)
-                {
-                    _logger.LogError(ex, "An error occurred while connecting to Redis instance.");
-                    throw;
-                }
-            }
-
-            if (_redis == null || !_redis.IsConnected)
-            {
-                throw new InvalidOperationException("Not connected to Redis server.");
-            }
-
-            return _redis.GetDatabase();
-        }
+        public void Dispose() => _redis?.Value.Dispose();
     }
 }
