@@ -64,6 +64,8 @@ namespace Binebase.Exchange.Gateway.Admin
             services.AddTransient<IInfrastructureContext, ApplicationDbContext>();
             services.Configure<Account>(Configuration.GetSection("Infrastructure.Account"));
             services.Configure<Crypto>(Configuration.GetSection("Infrastructure.Crypto"));
+            services.Configure<Crypto>(Configuration.GetSection("Infrastructure.Redis"));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
