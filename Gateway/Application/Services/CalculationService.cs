@@ -160,7 +160,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
                         {
                             MiningCalculation.PromotionItem.Category.LastRange => last * Random(0.4M, 0.75M),
                             MiningCalculation.PromotionItem.Category.LastAll => last,
-                            MiningCalculation.PromotionItem.Category.AllRange => balance * Random(0.1M, 05M),
+                            MiningCalculation.PromotionItem.Category.AllRange => balance * Random(0.1M, 0.5M),
                             _ => throw new InvalidOperationException(),
                         };
 
