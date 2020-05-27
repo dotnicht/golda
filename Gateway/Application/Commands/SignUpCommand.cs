@@ -53,7 +53,9 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     }
                 }
 
-                var id = request.MiningRequestId ?? Guid.NewGuid();
+                var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
+
+                var id = mining == null ? Guid.NewGuid() : request.MiningRequestId.Value;
 
                 var result = await _identityService.CreateUser(id, request.Email, request.Password, request.ReferralCode);
                 if (!result.Succeeded)
@@ -61,21 +63,19 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw result.ToValidationException(nameof(SignUpCommandHandler));
                 }
 
-                var ticket = await _identityService.GenerateConfirmationToken(id);
-                await _emailService.SendConfirmRegistrationEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id));
-
                 await _accountService.CretateDefaultAccount(id);
                 await _cryptoService.GenerateDefaultAddresses(id);
 
-                var mining = _context.MiningRequests.SingleOrDefault(x => x.Id == request.MiningRequestId);
                 if (mining != null && mining.IsAnonymous && _dateTime.UtcNow - mining.Created <= _configuration.MiningRequestWindow)
                 {
                     await _accountService.Debit(id, Currency.BINE, mining.Amount, mining.Id, TransactionType.Mining);
+                    mining.IsAnonymous = false;
                     mining.LastModifiedBy = id;
                     await _context.SaveChangesAsync();
                 }
 
                 await _accountService.Debit(id, Currency.EURB, 100, Guid.NewGuid(), TransactionType.SignUp);
+                await _emailService.SendConfirmRegistrationEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id));
 
                 return Unit.Value;
             }

@@ -14,7 +14,6 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task<Result> Authenticate(User user);
         Task<string> GenerateConfirmationUrl(Guid userId);
         Task<string> GenerateResetPasswordUrl(Guid userId);
-        Task<string> GenerateConfirmationToken(Guid userId);
         Task<string> GenerateAuthToken(User user);
         Task<Result> ResetPassword(Guid userId, string token, string newPassword);
         Task<Result> ConfirmToken(Guid userId, string code);

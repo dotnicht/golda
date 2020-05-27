@@ -54,8 +54,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
                 throw new ArgumentException("Empty GUID not allowed.", nameof(id));
             }
 
-            var referral = _userManager.Users.SingleOrDefault(x => code != null && x.ReferralCode == code.Trim());
-
             var user = new ApplicationUser
             {
                 Id = id,
@@ -63,7 +61,8 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
                 Email = userName,
                 Registered = _dateTime.UtcNow,
                 ReferralCode = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[/+=]", string.Empty),
-                ReferralId = referral?.Id
+                ReferralId = _userManager.Users.SingleOrDefault(x => code != null && x.ReferralCode == code.Trim())?.Id,
+                //IsSystem = _userManager.Users.Count() == 0
             };
 
             var result = await _userManager.CreateAsync(user, password);
@@ -71,13 +70,10 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Identity
         }
 
         public async Task<string> GenerateConfirmationUrl(Guid userId)
-            => await Task.FromResult(string.Format(_configuration.ConfirmationUrlFormat, userId, HttpUtility.UrlEncode(await GenerateConfirmationToken(userId))));
+            => string.Format(_configuration.ConfirmationUrlFormat, userId, HttpUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(await _userManager.FindByIdAsync(userId.ToString()))));
 
         public async Task<string> GenerateResetPasswordUrl(Guid userId)
             => string.Format(_configuration.ResetPasswordUrlFormat, userId, HttpUtility.UrlEncode(await _userManager.GeneratePasswordResetTokenAsync(_userManager.Users.Single(u => u.Id == userId))));
-
-        public Task<string> GenerateConfirmationToken(Guid userId)
-            => _userManager.GenerateEmailConfirmationTokenAsync(_userManager.Users.Single(u => u.Id == userId));
 
         public async Task<Result> ResetPassword(Guid userId, string token, string newPassword)
         {
