@@ -11,5 +11,12 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Configuration
         public string DepositConfirmTemplateKey { get; set; }
         public string WithdrawRequestTemplateKey { get; set; }
         public string ErrorNotificationTemplateKey { get; set; }
+        public ExplorerUrlMasksIem ExplorerUrlMasks { get; set; }
+
+    public class ExplorerUrlMasksIem
+    {
+        public string BTCMask { get; set; }
+        public string ETHMask { get; set; }
     }
+}
 }
