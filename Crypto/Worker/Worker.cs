@@ -23,7 +23,7 @@ namespace Binebase.Exchange.Crypto.Worker
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var tasks = new[] { Currency.BTC, Currency.ETH }
-                .Select(x => _services.CreateScope().ServiceProvider.GetRequiredService<ITransactionService>().Subscribe(x, stoppingToken))
+                .Select(x => _services.GetRequiredService<ITransactionService>().Subscribe(x, stoppingToken))
                 .ToArray();
 
             while (!stoppingToken.IsCancellationRequested)
