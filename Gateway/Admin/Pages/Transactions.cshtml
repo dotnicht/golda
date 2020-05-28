@@ -46,7 +46,7 @@
         <tr>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Id)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -58,7 +58,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Currency)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -73,7 +73,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Amount)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -85,7 +85,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Balance)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -97,7 +97,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].DateTime)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -109,7 +109,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Hash)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -121,7 +121,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Type)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -136,7 +136,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder=""
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].CreatedBy)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>
@@ -151,7 +151,7 @@
             </th>
             <th>
                 <div class="btn-group">
-                    <a class="btn btn-primary disabled" asp-page="/Transactions" asp-route-sortOrder="@Model.DateSort"
+                    <a class="btn btn-primary" asp-page="/Transactions" asp-route-sortOrder="@Model.CreatedByDateSort"
                        asp-route-currentFilter="@Model.CurrentFilter"> @Html.DisplayNameFor(model => model.Transactions[0].Created)</a>
                     <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown">
                         <span class="caret"></span>

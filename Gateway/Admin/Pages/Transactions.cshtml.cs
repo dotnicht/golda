@@ -21,6 +21,7 @@ namespace Binebase.Exchange.Gateway.Admin
         public Tab ActiveTab { get; set; }
         public string NameSort { get; set; }
         public string DateSort { get; set; }
+        public string CreatedByDateSort { get; set; }     
         public string TwoFactorEnabledSort { get; set; }
         public string EmailConfirmedSort { get; set; }
         public string CurrentFilter { get; set; }
@@ -62,6 +63,7 @@ namespace Binebase.Exchange.Gateway.Admin
             CurrentFilter = currentFilter;
             NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             DateSort = sortOrder == "Date" ? "date_desc" : "Date";
+            CreatedByDateSort = sortOrder == "CreatedByDate" ? "CreatedByDate_desc" : "CreatedByDate";
             TwoFactorEnabledSort = sortOrder == "TwoFactorEnabled" ? "TwoFactorDisabled" : "TwoFactorEnabled";
             EmailConfirmedSort = sortOrder == "EmailConfirmed" ? "EmailNotConfirmed" : "EmailConfirmed";
 
@@ -121,6 +123,12 @@ namespace Binebase.Exchange.Gateway.Admin
                     break;
                 case "date_desc":
                     TransactionsIQ = TransactionsIQ.OrderByDescending(u => u.DateTime).ToList();
+                    break;
+                case "CreatedByDate":
+                    TransactionsIQ = TransactionsIQ.OrderBy(u => u.Created).ToList();
+                    break;
+                case "CreatedByDate_desc":
+                    TransactionsIQ = TransactionsIQ.OrderByDescending(u => u.Created).ToList();
                     break;
                 default:
                     TransactionsIQ = TransactionsIQ.OrderBy(u => u.UserId).ToList();
