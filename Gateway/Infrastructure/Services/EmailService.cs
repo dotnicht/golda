@@ -74,7 +74,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
 
             var msg = new SendGridMessage
             {
-                From = new EmailAddress(_configuration.FromAddress),
+                From = new EmailAddress(_configuration.FromAddress, "Binebase Support"),
                 TemplateId = templateId
             };
 
