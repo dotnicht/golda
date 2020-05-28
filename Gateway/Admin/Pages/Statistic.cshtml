@@ -1,0 +1,20 @@
+﻿@page
+@model Binebase.Exchange.Gateway.Admin.Pages.StatisticModel
+@{
+    ViewData["Title"] = "Statistic";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table id="myTable" class="table">
+    <tbody>
+        <tr>
+            <th>Show sign up statistic diagram</th>
+            <td>
+                <form method="post">
+                    <a href="http://13.95.24.207:5601/app/kibana#/visualize/edit/835def60-9e5d-11ea-b4f6-15b57d621bd0?_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-30d%2Cto%3Anow))">Show diagram</a>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>

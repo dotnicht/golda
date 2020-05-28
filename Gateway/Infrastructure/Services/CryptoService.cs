@@ -24,12 +24,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
         }
 
         public async Task GenerateDefaultAddresses(Guid id)
-        {
-            foreach (var currency in _configuration.Currencies)
-            {
-                await GenerateAddress(id, currency);
-            }
-        }
+            => await Task.WhenAll(_configuration.Currencies.Select(x => GenerateAddress(id, x)).ToArray());
 
         public async Task<string> GetAddress(Guid id, Common.Domain.Currency currency)
         {
@@ -70,7 +65,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
                         TransactionDirection.Inbound => TransactionType.Deposit,
                         TransactionDirection.Outbound => TransactionType.Withdraw,
                         TransactionDirection.Internal => TransactionType.Internal,
-                        _ => throw new InvalidOperationException(),
+                        _ => throw new NotSupportedException(),
                     }
                 };
 
@@ -86,10 +81,6 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             return result.Hash;
         }
 
-        /// <summary>
-        /// Transfers this instance.
-        /// </summary>
         public async Task Transfer() => await Task.WhenAll(new[] { Currency.ETH, Currency.BTC }.Select(x => _cryptoClient.TransferAsync(new TransferAssetsCommand { Currency = x })));
-        
     }
 }

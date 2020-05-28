@@ -109,7 +109,7 @@ namespace Binebase.Exchange.Gateway.Application.Services
             using var ctx = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
             return await ctx.ExchangeRates
                 .Where(x => x.Base == pair.Base && x.Quote == pair.Quote)
-                .OrderByDescending(x => x.DateTime)
+                .OrderBy(x => x.DateTime)
                 .ToArrayAsync();
         }
 

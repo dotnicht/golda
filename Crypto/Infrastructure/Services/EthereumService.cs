@@ -78,6 +78,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var web3 = new Web3(_configuration.EthereumNode.ToString());
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
             var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
+
             var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
             var number = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
 

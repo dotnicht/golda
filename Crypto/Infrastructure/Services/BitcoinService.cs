@@ -206,34 +206,43 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                 foreach (var coin in received)
                 {
-                    transaction.Inputs.Add(new TxIn(coin.Outpoint, key.ScriptPubKey));
-                    value += coin.Amount as Money;
+                    if (coin.Amount as Money > Money.Zero)
+                    {
+                        transaction.Inputs.Add(new TxIn(coin.Outpoint, key.ScriptPubKey));
+                        value += coin.Amount as Money;
+                    }
                 }
 
-                var tx = new Domain.Entities.Transaction
+                if (value > Money.Zero)
                 {
-                    Id = Guid.NewGuid(),
-                    AddressId = addr.Id,
-                    Direction = TransactionDirection.Transfer,
-                    Status = TransactionStatus.Published,
-                    RawAmount = value,
-                    Amount = value.ToDecimal(MoneyUnit.BTC)
-                };
+                    var tx = new Domain.Entities.Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        AddressId = addr.Id,
+                        Direction = TransactionDirection.Transfer,
+                        Status = TransactionStatus.Published,
+                        RawAmount = value,
+                        Amount = value.ToDecimal(MoneyUnit.BTC)
+                    };
 
-                total += value;
-                list.Add(tx);
+                    total += value;
+                    list.Add(tx);
+                }
             }
 
             var response = await _httpClient.Get<EarnResponse>(_configuration.EarnAddress);
             total -= Money.Satoshis(response.FastestFee * transaction.GetVirtualSize());
 
-            transaction.Outputs.Add(new TxOut(total, BitcoinAddress.Create(address, Network)));
-            transaction.Sign(secrets.ToArray(), coins.ToArray());
-            var result = await client.Broadcast(transaction);
-
-            if (!result.Success)
+            if (total > Money.Zero)
             {
-                throw new InvalidOperationException(result.Error.ErrorCode.ToString());
+                transaction.Outputs.Add(new TxOut(total, BitcoinAddress.Create(address, Network)));
+                transaction.Sign(secrets.ToArray(), coins.ToArray());
+                var result = await client.Broadcast(transaction);
+
+                if (!result.Success)
+                {
+                    throw new InvalidOperationException(result.Error.ErrorCode.ToString());
+                }
             }
 
             var hash = transaction.GetHash().ToString();

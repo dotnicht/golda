@@ -24,7 +24,7 @@ namespace Binebase.Exchange.CryptoService.Application.Queries
             {
                 var tx = await _context.Transactions
                     .Include(x => x.Address)
-                    .Where(x => x.Address.AccountId == request.Id && x.Status == Domain.Enums.TransactionStatus.Confirmed)
+                    .Where(x => x.Address.AccountId == request.Id && x.Status == Domain.Enums.TransactionStatus.Confirmed && x.Direction != Domain.Enums.TransactionDirection.Transfer)
                     .OrderByDescending(x => x.Created)
                     .ToArrayAsync();
 
