@@ -34,52 +34,55 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             {
                 try
                 {
-                    var service = _blockchainServices.Single(x => x.Currency == currency);
-                    using var context = _serviceProvider.GetRequiredService<IApplicationDbContext>();
-
-                    var addresses = context.Addresses
-                        .Include(x => x.Transactions)
-                        .Where(x => x.Currency == currency)
-                        .ToArray();
-
-                    using (new ElapsedTimer(_logger, "AddNewTx"))
+                    using var scope = _serviceProvider.CreateScope();
+                    using var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
                     {
-                        foreach (var address in addresses.Where(x => x.Type == AddressType.Deposit && x.Index != _configuration.WithdrawAccountIndex))
-                        {
-                            _logger.LogDebug("Processing {currency} address {address}. Account Id {accountId}.", currency, address.Public, address.AccountId);
+                        var service = _blockchainServices.Single(x => x.Currency == currency);
 
-                            foreach (var tx in await service.GetTransactions(address.Public))
-                            {
-                                var existing = address.Transactions.Where(x => x.Hash == tx.Hash);
-                                if (!existing.Any())
-                                {
-                                    tx.AddressId = address.Id;
-                                    context.Transactions.Add(tx);
-                                    _logger.LogDebug("Adding transaction {hash}. Generated Id {id}.", tx.Hash, tx.Id);
-                                }
-                            }
-
-                            await context.SaveChangesAsync();
-                        }
-                    }
-
-                    using (new ElapsedTimer(_logger, "UpdateExistingTx"))
-                    {
-                        var txs = context.Transactions
-                            .Where(x => x.Status == TransactionStatus.Published && x.Address.Currency == currency)
+                        var addresses = context.Addresses
+                            .Include(x => x.Transactions)
+                            .Where(x => x.Currency == currency)
                             .ToArray();
 
-                        foreach (var tx in txs)
+                        using (new ElapsedTimer(_logger, "AddNewTx"))
                         {
-                            _logger.LogDebug("Updating transaction {hash}. Id {id}.", tx.Hash, tx.Id); await context.SaveChangesAsync();
+                            foreach (var address in addresses.Where(x => x.Type == AddressType.Deposit && x.Index != _configuration.WithdrawAccountIndex))
+                            {
+                                _logger.LogDebug("Processing {currency} address {address}. Account Id {accountId}.", currency, address.Public, address.AccountId);
 
-                            var updated = await service.GetTransaction(tx.Hash);
+                                foreach (var tx in await service.GetTransactions(address.Public))
+                                {
+                                    var existing = address.Transactions.Where(x => x.Hash == tx.Hash);
+                                    if (!existing.Any())
+                                    {
+                                        tx.AddressId = address.Id;
+                                        context.Transactions.Add(tx);
+                                        _logger.LogDebug("Adding transaction {hash}. Generated Id {id}.", tx.Hash, tx.Id);
+                                    }
+                                }
 
-                            tx.Status = updated.Status;
-                            tx.Confirmed = updated.Confirmed;
-                            tx.Confirmations = updated.Confirmations;
+                                await context.SaveChangesAsync();
+                            }
+                        }
 
-                            await context.SaveChangesAsync();
+                        using (new ElapsedTimer(_logger, "UpdateExistingTx"))
+                        {
+                            var txs = context.Transactions
+                                .Where(x => x.Status == TransactionStatus.Published && x.Address.Currency == currency)
+                                .ToArray();
+
+                            foreach (var tx in txs)
+                            {
+                                _logger.LogDebug("Updating transaction {hash}. Id {id}.", tx.Hash, tx.Id); await context.SaveChangesAsync();
+
+                                var updated = await service.GetTransaction(tx.Hash);
+
+                                tx.Status = updated.Status;
+                                tx.Confirmed = updated.Confirmed;
+                                tx.Confirmations = updated.Confirmations;
+
+                                await context.SaveChangesAsync();
+                            }
                         }
                     }
                 }
