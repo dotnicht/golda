@@ -75,12 +75,20 @@ namespace Binebase.Exchange.Gateway.Admin
             {
                 searchString = currentFilter;
             }
-            CurrentFilter = searchString;
+            //CurrentFilter = searchString;
 
             TransactionsIQ = _transactions.Where(t => t.Type == (ActiveTab == Tab.Deposits ?
                                                                    Binebase.Exchange.Common.Domain.TransactionType.Deposit :
                                                                    Binebase.Exchange.Common.Domain.TransactionType.Withdraw)).ToList();
-            
+
+            #region filteringLists
+            Currencies = TransactionsIQ.Select(t => t.Currency.ToString()).Distinct().ToList();
+            Sources = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
+            UserIds = TransactionsIQ.Select(t => t.CreatedBy.ToString()).Distinct().ToList();
+            Types = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
+            #endregion
+
+
             if (!string.IsNullOrEmpty(searchString) && string.IsNullOrEmpty(currentFilterFieldName))
             {
                 TransactionsIQ = TransactionsIQ.Where(t => t.CreatedBy.ToString().Contains(searchString)).ToList();
@@ -134,13 +142,6 @@ namespace Binebase.Exchange.Gateway.Admin
                     TransactionsIQ = TransactionsIQ.OrderBy(u => u.UserId).ToList();
                     break;
             }
-            #endregion
-
-            #region filteringLists
-            Currencies = TransactionsIQ.Select(t => t.Currency.ToString()).Distinct().ToList();
-            Sources = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
-            UserIds = TransactionsIQ.Select(t => t.CreatedBy.ToString()).Distinct().ToList();
-            Types = TransactionsIQ.Select(t => t.Type.ToString()).Distinct().ToList();
             #endregion
 
             Transactions = PaginatedList<TransactionExt>.Create(TransactionsIQ, pageIndex ?? 1, PageSize);
