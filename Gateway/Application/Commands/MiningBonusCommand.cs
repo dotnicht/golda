@@ -44,7 +44,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     .FirstOrDefault(
                         x => (x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default)
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
-                        && x.Created > _dateTime.UtcNow - _configuration.Weekly.Timeout);
+                        && _dateTime.UtcNow - x.Created < _configuration.Weekly.Timeout);
 
                 if (mining != null)
                 {

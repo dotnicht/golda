@@ -56,8 +56,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 var token = await _identityService.GenerateAuthToken(user);
                 result.Token = token;
 
-                //_logger.LogInformation("User with Id ='{Id}', email = '{email}', phoneNumber = '{phoneNumber}' was signed up successful.", user.Id);
-
                 return result;
             }
         }

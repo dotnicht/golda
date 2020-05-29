@@ -72,14 +72,7 @@ namespace Binebase.Exchange.Gateway.Infrastructure.Services
             templateData.Name = emails[0];
             templateData.Message = message;
 
-            var msg = new SendGridMessage
-            {
-                From = new EmailAddress(_configuration.FromAddress),
-                TemplateId = templateId
-            };
-
-            msg.SetTemplateData(templateData);
-            msg.AddTos(emails.Select(x => new EmailAddress(x)).ToList());
+            var msg = MailHelper.CreateSingleTemplateEmail(new EmailAddress(_configuration.FromAddress, "Binebase Support"), new EmailAddress(emails[0]), templateId, templateData);
 
             var client = new SendGridClient(_configuration.ApiKey);
             var result = await client.SendEmailAsync(msg);

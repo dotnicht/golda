@@ -79,18 +79,28 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
             var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
 
-            var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
-            var number = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+            if (tx.BlockHash != null)
+            {
+                var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
+                var number = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+
+                return new Transaction
+                {
+                    Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
+                    Confirmations = number.ToUlong() - block.Number.ToUlong(),
+                    Status = receipt.Status.Value.IsOne
+                        ? TransactionStatus.Confirmed
+                        : receipt.Status.Value.IsZero
+                            ? TransactionStatus.Failed
+                            : TransactionStatus.Published,
+                    Hash = tx.TransactionHash,
+                    RawAmount = tx.Value.ToUlong(),
+                    Amount = Web3.Convert.FromWei(tx.Value)
+                };
+            }
 
             return new Transaction
             {
-                Confirmed = DateTimeOffset.FromUnixTimeSeconds(block.Timestamp.ToLong()).UtcDateTime,
-                Confirmations = number.ToUlong() - block.Number.ToUlong(),
-                Status = receipt.Status.Value.IsOne 
-                    ? TransactionStatus.Confirmed 
-                    : receipt.Status.Value.IsZero 
-                        ? TransactionStatus.Failed 
-                        : TransactionStatus.Published,
                 Hash = tx.TransactionHash,
                 RawAmount = tx.Value.ToUlong(),
                 Amount = Web3.Convert.FromWei(tx.Value)
