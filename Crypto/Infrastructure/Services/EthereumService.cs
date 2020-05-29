@@ -79,6 +79,11 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(hash);
             var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
 
+            if (tx == null)
+            {
+                return new Transaction { Hash = hash, Status = TransactionStatus.Failed };
+            }
+
             if (tx.BlockHash != null)
             {
                 var block = await web3.Eth.Blocks.GetBlockWithTransactionsHashesByHash.SendRequestAsync(tx.BlockHash);
