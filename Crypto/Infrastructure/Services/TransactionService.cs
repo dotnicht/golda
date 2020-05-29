@@ -73,7 +73,7 @@ namespace Binebase.Exchange.CryptoService.Infrastructure.Services
 
                             foreach (var tx in txs)
                             {
-                                _logger.LogDebug("Updating transaction {hash}. Id {id}.", tx.Hash, tx.Id); await context.SaveChangesAsync();
+                                _logger.LogDebug("Updating transaction {hash}. Id {id}.", tx.Hash, tx.Id); 
 
                                 var updated = await service.GetTransaction(tx.Hash);
 
