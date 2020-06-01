@@ -39,12 +39,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<MiningBonusCommandResult> Handle(MiningBonusCommand request, CancellationToken cancellationToken)
             {
+                var created = _dateTime.UtcNow - _configuration.Weekly.Timeout;
+
                 var mining =_context.MiningRequests
                     .OrderByDescending(x => x.Created)
                     .FirstOrDefault(
                         x => (x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default)
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
-                        && _dateTime.UtcNow - x.Created < _configuration.Weekly.Timeout);
+                        && x.Created > created);
 
                 if (mining != null)
                 {
