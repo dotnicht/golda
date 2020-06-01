@@ -56,12 +56,14 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     throw new NotSupportedException(ErrorCode.InsufficientBalance);
                 }
 
+                var created = _dateTime.UtcNow - _configuration.Instant.Timeout;
+
                 var mining = _context.MiningRequests
                     .OrderByDescending(x => x.Created)
                     .FirstOrDefault(
                         x => x.Type == MiningType.Instant
                         && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
-                        && x.Created > _dateTime.UtcNow - _configuration.Instant.Timeout);
+                        && x.Created > created);
 
                 if (mining != null)
                 {
