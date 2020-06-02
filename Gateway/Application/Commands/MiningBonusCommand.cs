@@ -18,6 +18,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
     {
         public class MiningBonusCommandHandler : IRequestHandler<MiningBonusCommand, MiningBonusCommandResult>
         {
+            private readonly ICacheClient _cacheClient;
             private readonly ICurrentUserService _currentUserService;
             private readonly ICalculationService _calculationService;
             private readonly IAccountService _accountService;
@@ -27,6 +28,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
             private readonly MiningCalculation _configuration;
 
             public MiningBonusCommandHandler(
+                ICacheClient cacheClient,
                 ICurrentUserService currentUserService,
                 ICalculationService calculationService,
                 IAccountService accountService,
@@ -34,8 +36,8 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                 IDateTime dateTime,
                 IMapper mapper,
                 IOptions<MiningCalculation> options)
-                => (_currentUserService, _calculationService, _accountService, _context, _dateTime, _mapper, _configuration)
-                    = (currentUserService, calculationService, accountService, context, dateTime, mapper, options.Value);
+                => (_cacheClient, _currentUserService, _calculationService, _accountService, _context, _dateTime, _mapper, _configuration)
+                    = (cacheClient, currentUserService, calculationService, accountService, context, dateTime, mapper, options.Value);
 
             public async Task<MiningBonusCommandResult> Handle(MiningBonusCommand request, CancellationToken cancellationToken)
             {
@@ -67,10 +69,18 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     Type = type
                 };
 
-                await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining);
+                using (var @lock = await _cacheClient.Lock(_currentUserService.UserId.ToString()))
+                {
+                    if (@lock == null)
+                    {
+                        throw new NotSupportedException(ErrorCode.MiningBonusTimeout);
+                    }
 
-                _context.MiningRequests.Add(mining);
-                await _context.SaveChangesAsync();
+                    await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining);
+
+                    _context.MiningRequests.Add(mining);
+                    await _context.SaveChangesAsync();
+                }
 
                 return _mapper.Map<MiningBonusCommandResult>(mining);
             }

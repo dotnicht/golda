@@ -9,5 +9,6 @@ namespace Binebase.Exchange.Gateway.Application.Interfaces
         Task Set(string key, string value, TimeSpan? expiration = null);
         Task<T> Get<T>(string key) where T : class;
         Task<string> Get(string key);
+        Task<IDisposable> Lock(string name);
     }
 }
