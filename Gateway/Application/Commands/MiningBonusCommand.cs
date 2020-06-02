@@ -11,7 +11,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Binebase.Exchange.Gateway.Application.Commands
 {
@@ -42,34 +41,6 @@ namespace Binebase.Exchange.Gateway.Application.Commands
 
             public async Task<MiningBonusCommandResult> Handle(MiningBonusCommand request, CancellationToken cancellationToken)
             {
-                var created = _dateTime.UtcNow - _configuration.Weekly.Timeout;
-
-                var mining =_context.MiningRequests
-                    .OrderByDescending(x => x.Created)
-                    .FirstOrDefault(
-                        x => (x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default)
-                        && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
-                        && x.Created > created);
-
-                if (mining != null)
-                {
-                    throw new NotSupportedException(ErrorCode.MiningBonusTimeout);
-                }
-
-                var (amount, type) = await _calculationService.GenerateBonusReward();
-
-                if (type == MiningType.Default && amount == 0)
-                {
-                    (amount, type) = await _calculationService.GenerateWeeklyReward();
-                }
-
-                mining = new MiningRequest
-                {
-                    Id = Guid.NewGuid(),
-                    Amount = amount,
-                    Type = type
-                };
-
                 using (var @lock = await _cacheClient.Lock(_currentUserService.UserId.ToString()))
                 {
                     if (@lock == null)
@@ -77,13 +48,41 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                         throw new NotSupportedException(ErrorCode.MiningBonusTimeout);
                     }
 
+                    var created = _dateTime.UtcNow - _configuration.Weekly.Timeout;
+
+                    var mining = _context.MiningRequests
+                        .OrderByDescending(x => x.Created)
+                        .FirstOrDefault(
+                            x => (x.Type == MiningType.Weekly || x.Type == MiningType.Bonus || x.Type == MiningType.Default)
+                            && (x.CreatedBy == _currentUserService.UserId || x.LastModifiedBy == _currentUserService.UserId)
+                            && x.Created > created);
+
+                    if (mining != null)
+                    {
+                        throw new NotSupportedException(ErrorCode.MiningBonusTimeout);
+                    }
+
+                    var (amount, type) = await _calculationService.GenerateBonusReward();
+
+                    if (type == MiningType.Default && amount == 0)
+                    {
+                        (amount, type) = await _calculationService.GenerateWeeklyReward();
+                    }
+
+                    mining = new MiningRequest
+                    {
+                        Id = Guid.NewGuid(),
+                        Amount = amount,
+                        Type = type
+                    };
+
                     await _accountService.Debit(_currentUserService.UserId, Currency.BINE, amount, mining.Id, TransactionType.Mining);
 
                     _context.MiningRequests.Add(mining);
                     await _context.SaveChangesAsync();
-                }
 
-                return _mapper.Map<MiningBonusCommandResult>(mining);
+                    return _mapper.Map<MiningBonusCommandResult>(mining);
+                }
             }
         }
     }
