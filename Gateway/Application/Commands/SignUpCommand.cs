@@ -74,7 +74,7 @@ namespace Binebase.Exchange.Gateway.Application.Commands
                     await _context.SaveChangesAsync();
                 }
 
-                await _accountService.Debit(id, Currency.EURB, 100, Guid.NewGuid(), TransactionType.SignUp);
+                await _accountService.Debit(id, Currency.EURB, 50, Guid.NewGuid(), TransactionType.SignUp);
                 await _emailService.SendConfirmRegistrationEmail(new[] { request.Email }, "Email Confirmation", await _identityService.GenerateConfirmationUrl(id));
 
                 return Unit.Value;
